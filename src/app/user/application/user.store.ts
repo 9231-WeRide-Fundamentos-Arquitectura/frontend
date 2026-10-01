@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { AuthService } from '../../core/services/auth.service';
+import { inject, Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { User } from '../domain/model/user.entity';
@@ -8,6 +9,7 @@ import { UserApiEndpoint } from '../infrastructure/user-api-endpoint';
   providedIn: 'root'
 })
 export class UserStore {
+  private auth = inject(AuthService);
   private usersSubject = new BehaviorSubject<User[]>([]);
   readonly users$ = this.usersSubject.asObservable();
 
@@ -53,7 +55,7 @@ export class UserStore {
 
   getGuestUser$(): Observable<User | null> {
     return this.users$.pipe(
-      map(users => users.length ? users[0] : null),
+      map(users => users.find(user => String(user.id) === this.auth.session()?.id) ?? null),
       tap(user => this.selectedUserSubject.next(user))
     );
   }

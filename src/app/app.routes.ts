@@ -5,8 +5,11 @@ import { TRIP_ROUTES } from './trip/presentation/views/trip.routes';
 import { PLAN_ROUTES } from './plans/presentation/views/plan.routes';
 import { GARAGE_ROUTES } from './garage/garage.routes';
 import { USER_ROUTES } from './user/user.routes';
+import { authGuard } from './core/services/auth.service';
 
 export const routes: Routes = [
+  { path: 'auth/login', loadComponent: () => import('./public/components/auth/auth').then(m => m.AuthComponent) },
+  { path: 'auth/register', data: { register: true }, loadComponent: () => import('./public/components/auth/auth').then(m => m.AuthComponent) },
   {
     path: '',
     redirectTo: '/auth/login',
@@ -15,6 +18,8 @@ export const routes: Routes = [
   {
     path: '',
     component: LayoutComponent,
+    canActivate: [authGuard],
+    canActivateChild: [authGuard],
     children: [
       {
         path: 'home',
@@ -49,5 +54,6 @@ export const routes: Routes = [
         children: USER_ROUTES
       }
     ]
-  }
+  },
+  { path: '**', redirectTo: 'home' }
 ];

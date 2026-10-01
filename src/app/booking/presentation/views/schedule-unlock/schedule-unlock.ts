@@ -19,6 +19,7 @@ import { firstValueFrom } from 'rxjs';
 import { ManualUnlockModal } from '../../../../garage/presentation/views/manual-unlock-modal/manual-unlock-modal';
 import { QrScannerModal } from '../../../../garage/presentation/views/qr-scanner-modal/qr-scanner-modal';
 import { BookingSuccessModal } from '../../../../public/components/booking-success-modal/booking-success-modal';
+import { AuthService } from '../../../../core/services/auth.service';
 import { DraftBookingService } from '../../../application/draft-booking.service';
 import { BookingDraft } from '../../../domain/model/booking-draft.entity';
 
@@ -30,6 +31,7 @@ import { BookingDraft } from '../../../domain/model/booking-draft.entity';
 })
 export class ScheduleUnlockComponent implements OnInit {
   private router = inject(Router);
+  private auth = inject(AuthService);
   private snackBar = inject(MatSnackBar);
   private bookingsApi = inject(BookingsApiEndpoint);
   private activeBookingService = inject(ActiveBookingService);
@@ -281,7 +283,7 @@ export class ScheduleUnlockComponent implements OnInit {
    */
   private async createUnlockRequest(bookingId: string, scheduledUnlockTime: Date, method: 'manual' | 'qr_code'): Promise<UnlockRequest | null> {
     try {
-      const userId = '1'; // TODO: Get from AuthService
+      const userId = this.auth.userId;
       const location = await this.getCurrentLocation();
       const unlockCode = this.generateUnlockCode();
 
@@ -526,7 +528,7 @@ export class ScheduleUnlockComponent implements OnInit {
     }
 
     // Get current user ID (replace with actual user service)
-    const userId = '1'; // TODO: Get from AuthService
+    const userId = this.auth.userId;
 
     // Create booking data with explicit status type
     const status: 'pending' | 'confirmed' | 'completed' | 'cancelled' = this.isImmediate ? 'confirmed' : 'pending';
@@ -611,7 +613,7 @@ export class ScheduleUnlockComponent implements OnInit {
     this.isSavingDraft = true;
 
     const draftData: Partial<BookingDraft> = {
-      userId: '1',
+      userId: this.auth.userId,
       vehicleId: this.selectedVehicle.id,
       selectedDate: this.selectedDate,
       unlockTime: this.unlockTime,

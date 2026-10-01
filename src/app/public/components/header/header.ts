@@ -12,6 +12,7 @@ import { NotificationsApiEndpoint } from '../../../booking/infraestructure/notif
 import { Notification } from '../../../booking/domain/model/notification';
 import { toDomainNotification } from '../../../booking/infraestructure/notification-assembler';
 import { NotificationResponse } from '../../../booking/infraestructure/notifications-response';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-header',
@@ -33,6 +34,7 @@ export class HeaderComponent implements OnInit {
 
   private notificationsApi = inject(NotificationsApiEndpoint);
   private router = inject(Router);
+  private auth = inject(AuthService);
 
   notifications = signal<Notification[]>([]);
   unreadCount = computed(() => this.notifications().filter(n => !n.isRead).length);
@@ -91,6 +93,7 @@ export class HeaderComponent implements OnInit {
   }
 
   logout() {
+    this.auth.logout();
     this.router.navigate(['/auth/login']);
   }
 
