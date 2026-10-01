@@ -7,7 +7,7 @@ import { FavoriteStore } from '../favorite.store';
 export class ToggleFavoriteUseCase {
   private favoriteStore = inject(FavoriteStore);
 
-  execute(userId: string, vehicleId: string): void {
-    this.favoriteStore.toggleFavorite({ userId, vehicleId });
+  execute(userId: string, vehicleId: string): Promise<void> {
+    return this.favoriteStore.toggleFavorite({ userId, vehicleId });
   }
 }

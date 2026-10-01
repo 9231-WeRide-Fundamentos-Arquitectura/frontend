@@ -1,4 +1,5 @@
-import { Component, OnInit, QueryList, ViewChildren, inject } from '@angular/core';
+import { Component, OnInit, QueryList, ViewChildren, inject, effect } from '@angular/core';
+import { AuthService } from '../../../../core/services/auth.service';
 import { CommonModule } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -11,7 +12,7 @@ import { VehicleCard } from '../vehicle-card/vehicle-card';
 import { VehicleDetailsModal } from '../vehicle-details-modal/vehicle-details-modal';
 import { QrScannerModal } from '../qr-scanner-modal/qr-scanner-modal';
 import { ManualUnlockModal } from '../manual-unlock-modal/manual-unlock-modal';
-import { ReportProblemModal } from '../report-problem-modal/report-problem-modal';
+import { ReportProblemModal } from '../../../../trip/presentation/views/report-problem-modal/report-problem-modal';
 import { MatButton } from '@angular/material/button';
 import { Vehicle } from '../../../domain/model/vehicle.model';
 import { VehicleFilter } from '../../../domain/model/vehicle-filter.model';
@@ -47,6 +48,8 @@ export class GarageLayout implements OnInit {
   private snackBar = inject(MatSnackBar);
   private activeBookingService = inject(ActiveBookingService);
   private favoriteStore = inject(FavoriteStore);
+  private auth = inject(AuthService);
+  private syncFavorites = effect(() => this.updateFavoriteStatus());
 
   constructor(
     private dialog: MatDialog,
@@ -64,11 +67,13 @@ export class GarageLayout implements OnInit {
     this.isLoading = true;
     this.error = null;
     try {
+      await this.favoriteStore.loadUserFavorites(this.auth.userId);
+      if (this.favoriteStore.error()) throw new Error(this.favoriteStore.error()!);
       this.vehicles = await this.getVehiclesUseCase.execute();
       this.filteredVehicles = this.vehicles;
       this.updateFavoriteStatus();
     } catch (error) {
-      this.error = this.translate.instant('garage.error');
+      this.error = this.translate.instant(this.favoriteStore.error() || 'garage.error');
       console.error('Error loading vehicles:', error);
     } finally {
       this.isLoading = false;
@@ -84,7 +89,7 @@ export class GarageLayout implements OnInit {
     this.filteredVehicles = this.filteredVehicles.map(v => ({
       ...v,
       favorite: favoriteIds.includes(v.id)
-    }));
+    })).filter(v => this.currentView !== 'favorites' || v.favorite);
   }
 
   async applyFilter(filter: VehicleFilter) {
@@ -107,7 +112,7 @@ export class GarageLayout implements OnInit {
 
   switchView(view: 'all' | 'favorites') {
     this.currentView = view;
-    // Update favorite status first to ensure we have the latest from localStorage
+    // Apply persisted favorites before filtering the selected tab.
     this.updateFavoriteStatus();
     // Then reapply current filters with new view
     this.applyFilter({});
@@ -153,13 +158,19 @@ export class GarageLayout implements OnInit {
   }
 
   openReportProblemModal(vehicle: Vehicle) {
-    this.dialog.open(ReportProblemModal, {
+    const reportDialog = this.dialog.open(ReportProblemModal, {
       data: vehicle,
       width: '900px',
       maxWidth: '95vw',
       maxHeight: '90vh',
       panelClass: 'report-problem-dialog',
       autoFocus: false
+    });
+    reportDialog.afterClosed().subscribe(report => {
+      if (report) {
+        if (report.chargeWaived) this.activeBookingService.clearActiveBooking();
+        this.loadVehicles();
+      }
     });
   }
 
