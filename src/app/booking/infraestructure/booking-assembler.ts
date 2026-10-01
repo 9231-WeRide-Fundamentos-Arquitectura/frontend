@@ -21,7 +21,7 @@ export function toDomainBooking(raw: BackendBookingResponse): Booking {
     response.startLocationId,
     response.endLocationId,
     new Date(response.reservedAt),
-    new Date(response.startDate),
+    new Date(response.startDate ?? response.reservedAt),
     response.endDate ? new Date(response.endDate) : null,
     response.actualStartDate ? new Date(response.actualStartDate) : null,
     response.actualEndDate ? new Date(response.actualEndDate) : null,
