@@ -75,7 +75,7 @@
   <div class="dropdown-container">
     <button class="nav-button user-button" (click)="toggleUserMenu()">
       <span class="user-name-nav"
-        >{{ ('navigation.user' | translate) }}</span
+        >{{ username() || ('navigation.user' | translate) }}</span
       >
       <span class="icon">👤</span>
     </button>
@@ -88,7 +88,7 @@
         </div>
         <div class="user-info">
           <div class="user-name">
-            {{ ('navigation.user' | translate) }}
+            {{ username() || ('navigation.user' | translate) }}
           </div>
           <div class="user-subtitle">
             {{ 'navbar.userMenu.subtitle' | translate }}

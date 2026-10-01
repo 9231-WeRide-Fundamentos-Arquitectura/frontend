@@ -97,7 +97,9 @@ export class HeaderComponent implements OnInit {
     this.router.navigate(['/auth/login']);
   }
 
+  username = computed(() => this.auth.session()?.username ?? '');
+
   getUserInitials(): string {
-    return 'U';
+    return this.username().charAt(0).toUpperCase() || 'U';
   }
 }

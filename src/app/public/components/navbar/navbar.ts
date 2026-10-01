@@ -7,6 +7,7 @@ import { NotificationsApiEndpoint } from '../../../booking/infraestructure/notif
 import { Notification } from '../../../booking/domain/model/notification';
 import { toDomainNotification } from '../../../booking/infraestructure/notification-assembler';
 import { NotificationResponse } from '../../../booking/infraestructure/notifications-response';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-navbar',
@@ -23,6 +24,7 @@ export class Navbar implements OnInit {
 
   private notificationsApi = inject(NotificationsApiEndpoint);
   private router = inject(Router);
+  private auth = inject(AuthService);
 
   notifications = signal<Notification[]>([]);
   unreadCount = computed(() => this.notifications().filter(n => !n.isRead).length);
@@ -117,8 +119,10 @@ export class Navbar implements OnInit {
     this.router.navigate(['/']);
   }
 
+  username = computed(() => this.auth.session()?.username ?? '');
+
   getUserInitials(): string {
-    return 'U';
+    return this.username().charAt(0).toUpperCase() || 'U';
   }
 
   trackByNotificationId(index: number, notification: Notification): string {

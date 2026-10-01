@@ -26,7 +26,7 @@
 
     <div class="user-profile">
       <span class="user-name-nav"
-        >{{ ('navigation.user' | translate) }}</span
+        >{{ username() || ('navigation.user' | translate) }}</span
       >
       <button mat-icon-button [matMenuTriggerFor]="userMenu">
         <mat-icon>account_circle</mat-icon>
@@ -93,7 +93,7 @@
     </div>
     <div class="user-info">
       <div class="user-name">
-        {{ ('navigation.user' | translate) }}
+        {{ username() || ('navigation.user' | translate) }}
       </div>
       <div class="user-subtitle">
         {{ 'navbar.userMenu.subtitle' | translate }}
