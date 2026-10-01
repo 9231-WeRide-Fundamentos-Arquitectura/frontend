@@ -9,8 +9,11 @@
   <div class="card-content">
     <div class="help-section">
       <h3>{{ 'user.help.faqs' | translate }}</h3>
+      <label for="faq-search">{{ 'user.help.search' | translate }}</label>
+      <input id="faq-search" type="search" [(ngModel)]="searchTerm" [placeholder]="'user.help.search' | translate" />
       <div class="faqs-list">
-        <div *ngFor="let faq of faqs" class="faq-item">
+        <p *ngIf="filteredFaqs.length === 0" role="status">{{ 'user.help.noResults' | translate }}</p>
+        <div *ngFor="let faq of filteredFaqs" class="faq-item">
           <div class="faq-question">
             <mat-icon>help_outline</mat-icon>
             <span>{{ faq.question }}</span>
@@ -43,7 +46,7 @@
           <mat-icon>schedule</mat-icon>
           <div>
             <span class="contact-label">{{ 'user.help.contactHours' | translate }}</span>
-            <span class="contact-value">{{ contactInfo.hours }}</span>
+            <span class="contact-value">{{ 'user.help.hours' | translate }}</span>
           </div>
         </div>
       </div>
