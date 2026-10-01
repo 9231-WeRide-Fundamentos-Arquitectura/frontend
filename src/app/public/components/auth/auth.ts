@@ -73,7 +73,11 @@ export class AuthComponent {
       : this.auth.signIn(email, password);
     request.pipe(finalize(() => this.busy.set(false))).subscribe({
       next: () => void this.router.navigate(['/home']),
-      error: (e: { status?: number }) => this.error.set(e.status === 0 ? 'auth.emailLogin.connectionError' : register ? 'auth.register.failed' : 'auth.emailLogin.invalidCredentials')
+      error: (e: { status?: number }) => this.error.set(
+        e.status === 0 ? 'auth.emailLogin.connectionError'
+        : !register ? 'auth.emailLogin.invalidCredentials'
+        : e.status === 409 ? 'auth.register.emailTaken'
+        : 'auth.register.failed')
     });
   }
 }

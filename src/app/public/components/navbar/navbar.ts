@@ -111,7 +111,7 @@ export class Navbar implements OnInit {
 
   navigateToProfile() {
     this.closeMenus();
-    this.router.navigate(['/profile']);
+    this.router.navigate(['/user']);
   }
 
   logout() {
