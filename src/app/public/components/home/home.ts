@@ -10,6 +10,7 @@ import { HomeStore } from '../../application/home.store';
 import { SkeletonLoaderComponent } from '../skeleton-loader/skeleton-loader';
 import { ErrorStateComponent } from '../error-state/error-state';
 import { ActiveBookingCardComponent } from '../active-booking-card/active-booking-card';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-home',
@@ -38,7 +39,14 @@ export class Home {
   readonly hasError = this.homeStore.hasError;
   readonly features = this.homeStore.features;
 
-  readonly activeBooking = computed(() => this.activeBookingService.getActiveBooking());
+  readonly activeBooking = this.activeBookingService.booking;
+
+  constructor() {
+    const userId = inject(AuthService).userId;
+    void this.activeBookingService.checkAndStoreActiveBooking(userId).catch(() => {
+      this.snackBar.open('No se pudo consultar tu reserva activa', 'Cerrar', { duration: 4000 });
+    });
+  }
 
   onRetry(): void {
     this.homeStore.retry();

@@ -1,4 +1,5 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, effect } from '@angular/core';
+import { AuthService } from '../../core/services/auth.service';
 import { BehaviorSubject, Observable, firstValueFrom } from 'rxjs';
 import { Booking, BookingActivationStatus } from '../domain/model/booking.entity';
 import { BookingStorageService } from './booking-storage.service';
@@ -15,6 +16,13 @@ export class BookingStore {
 
   constructor() {
     this.loadFromLocalStorage();
+    const auth = inject(AuthService);
+    effect(() => {
+      auth.session();
+      this.loadFromLocalStorage();
+      this.activeBookingSubject.next(null);
+      this.selectedBookingSubject.next(null);
+    });
   }
 
   getBookings(): Observable<Booking[]> {

@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
+import { AuthService } from '../../core/services/auth.service';
 import { Booking } from '../domain/model/booking.entity';
 
 const STORAGE_KEY = 'weride_bookings';
@@ -7,6 +8,7 @@ const STORAGE_KEY = 'weride_bookings';
   providedIn: 'root'
 })
 export class BookingStorageService {
+  private auth = inject(AuthService);
   
   /**
    * Save a new booking to localStorage
@@ -34,7 +36,8 @@ export class BookingStorageService {
       
       const parsed = JSON.parse(data);
       // Convert date strings back to Date objects
-      return parsed.map((b: any) => this.deserializeBooking(b));
+      return parsed.filter((b: any) => String(b.userId) === this.auth.session()?.id)
+        .map((b: any) => this.deserializeBooking(b));
     } catch (error) {
       console.error('Error reading bookings from localStorage:', error);
       return [];
