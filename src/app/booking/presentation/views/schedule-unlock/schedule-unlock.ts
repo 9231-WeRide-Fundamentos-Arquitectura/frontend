@@ -7,7 +7,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
-import { Vehicle } from '../../../../garage/domain/model/vehicle.model';
+import { Vehicle, hasCriticalBattery } from '../../../../garage/domain/model/vehicle.model';
 import { BookingsApiEndpoint } from '../../../infraestructure/bookings-api-endpoint';
 import { toDomainBooking } from '../../../infraestructure/booking-assembler';
 import { ActiveBookingService } from '../../../application/active-booking.service';
@@ -22,6 +22,10 @@ import { BookingSuccessModal } from '../../../../public/components/booking-succe
 import { AuthService } from '../../../../core/services/auth.service';
 import { DraftBookingService } from '../../../application/draft-booking.service';
 import { BookingDraft } from '../../../domain/model/booking-draft.entity';
+import { GetVehiclesUseCase } from '../../../../garage/application/use-cases/get-vehicles.usecase';
+import { LocationsApiEndpoint } from '../../../../trip/infrastructure/locations-api-endpoint';
+import { Location } from '../../../../trip/domain/model/location.entity';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-schedule-unlock',
@@ -39,6 +43,20 @@ export class ScheduleUnlockComponent implements OnInit {
   private dialog = inject(MatDialog);
   private unlockRequestsApi = inject(UnlockRequestsApiEndpoint);
   private draftService = inject(DraftBookingService);
+  private getVehicles = inject(GetVehiclesUseCase);
+  private locationsApi = inject(LocationsApiEndpoint);
+  private translate = inject(TranslateService);
+  locations: Location[] = [];
+
+  stationName(vehicle: Vehicle | null): string {
+    return this.locations.find(location => location.id === String(vehicle?.location))?.name
+      ?? this.translate.instant('scheduleUnlock.stationUnavailable');
+  }
+
+  private async loadVehicles(): Promise<void> {
+    this.vehicles = await this.getVehicles.execute();
+    this.filterVehicles();
+  }
 
   availabilityError: string = '';
   vehicleAvailable: boolean = false;
@@ -60,6 +78,11 @@ export class ScheduleUnlockComponent implements OnInit {
   drafts$ = this.draftService.drafts$;
 
   ngOnInit() {
+    this.locationsApi.getAll().subscribe({
+      next: locations => { this.locations = locations; },
+      error: () => { this.snackBar.open(this.translate.instant('scheduleUnlock.locationsError'), this.translate.instant('common.close'), { duration: 4000 }); }
+    });
+    this.loadVehicles().catch(() => this.snackBar.open(this.translate.instant('garage.error'), this.translate.instant('common.close'), { duration: 4000 }));
     // Get vehicle from router state
     const navigation = this.router.getCurrentNavigation();
     const state = navigation?.extras?.state || history.state;
@@ -100,7 +123,7 @@ export class ScheduleUnlockComponent implements OnInit {
       this.filteredVehicles = this.vehicles.filter(vehicle =>
         vehicle.brand.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
         vehicle.model.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        vehicle.location.toLowerCase().includes(this.searchTerm.toLowerCase())
+        this.stationName(vehicle).toLowerCase().includes(this.searchTerm.toLowerCase())
       );
     }
   }
@@ -128,8 +151,10 @@ export class ScheduleUnlockComponent implements OnInit {
   }
 
   get isFormValid(): boolean {
-    return !!(this.selectedVehicle && this.selectedDate && this.unlockTime);
+    return !!(this.selectedVehicle && this.selectedDate && this.unlockTime) && !this.criticalBattery;
   }
+
+  get criticalBattery(): boolean { return hasCriticalBattery(this.selectedVehicle); }
 
   get dateError(): string | null {
     if (!this.selectedDate || !this.unlockTime) return null;
@@ -206,48 +231,13 @@ export class ScheduleUnlockComponent implements OnInit {
   }
 
   /**
-   * Genera un código de desbloqueo único
-   */
-  private generateUnlockCode(): string {
-    const prefix = 'UNLOCK';
-    const randomPart = Math.random().toString(36).substring(2, 10).toUpperCase();
-    return `${prefix}${randomPart}`;
-  }
-
-  /**
-   * Obtiene la ubicación actual del usuario
-   */
-  private async getCurrentLocation(): Promise<{ lat: number; lng: number }> {
-    return new Promise((resolve) => {
-      if ('geolocation' in navigator) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            resolve({
-              lat: position.coords.latitude,
-              lng: position.coords.longitude
-            });
-          },
-          () => {
-            // Ubicación por defecto si no se puede obtener (Lima, Perú)
-            resolve({ lat: -12.046374, lng: -77.042793 });
-          },
-          { timeout: 5000 }
-        );
-      } else {
-        // Ubicación por defecto
-        resolve({ lat: -12.046374, lng: -77.042793 });
-      }
-    });
-  }
-
-  /**
    * Crea un unlock request
    */
   private async createUnlockRequest(bookingId: string, scheduledUnlockTime: Date, method: 'manual' | 'qr_code'): Promise<UnlockRequest | null> {
     try {
       const userId = this.auth.userId;
-      const location = await this.getCurrentLocation();
-      const unlockCode = this.generateUnlockCode();
+      const location = { lat: 0, lng: 0 };
+      const unlockCode = '';
 
       const unlockRequestData = {
         userId: userId,
@@ -339,14 +329,6 @@ export class ScheduleUnlockComponent implements OnInit {
   /**
    * Actualiza el booking en la API cuando se desbloquea
    */
-  private async updateBookingOnUnlock(booking: any): Promise<void> {
-    const response = await firstValueFrom(this.bookingsApi.start(booking.id));
-    const domainBooking = toDomainBooking(response);
-    Object.assign(booking, domainBooking);
-    this.activeBookingService.setActiveBooking(domainBooking);
-    this.bookingStore.updateBooking(domainBooking);
-  }
-
   /**
    * Abre el modal de confirmación de reserva exitosa
    */
@@ -385,9 +367,7 @@ export class ScheduleUnlockComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(async (result) => {
-      if (result && result.unlocked) {
-        // Actualizar el booking en la API
-        await this.updateBookingOnUnlock(booking);
+      if (result && result.success) {
 
         // Abrir modal de confirmación
         this.openBookingSuccessModal(booking);
@@ -412,9 +392,7 @@ export class ScheduleUnlockComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(async (result) => {
-      if (result && result.unlocked) {
-        // Actualizar el booking en la API
-        await this.updateBookingOnUnlock(booking);
+      if (result && result.success) {
 
         // Abrir modal de confirmación
         this.openBookingSuccessModal(booking);
@@ -423,6 +401,10 @@ export class ScheduleUnlockComponent implements OnInit {
   }
 
   async scheduleUnlock() {
+    if (this.criticalBattery) {
+      this.snackBar.open(this.translate.instant('garage.vehicle.criticalBattery'), this.translate.instant('common.close'), { duration: 4000 });
+      return;
+    }
     // Validar campos requeridos
     if (!this.selectedVehicle || !this.selectedDate || !this.unlockTime) {
       this.snackBar.open('Por favor completa todos los campos requeridos', 'Cerrar', {
@@ -527,7 +509,9 @@ export class ScheduleUnlockComponent implements OnInit {
 
         // Mensajes de error más específicos
         if (error.status === 409) {
-          errorMessage = 'El vehículo ya está reservado en ese horario. Por favor, selecciona otro horario.';
+          errorMessage = error.error?.message === 'Batería crítica'
+            ? this.translate.instant('garage.vehicle.criticalBattery')
+            : 'El vehículo ya está reservado en ese horario. Por favor, selecciona otro horario.';
         } else if (error.status === 400) {
           errorMessage = 'Los datos de la reserva no son válidos. Verifica la información.';
         }
@@ -586,7 +570,20 @@ export class ScheduleUnlockComponent implements OnInit {
     });
   }
 
-  loadDraft(draft: BookingDraft) {
+  async loadDraft(draft: BookingDraft) {
+    try {
+      if (draft.expiresAt <= new Date()) throw new Error('Expired draft');
+      if (!this.vehicles.length) await this.loadVehicles();
+      const vehicle = this.vehicles.find(vehicle => String(vehicle.id) === String(draft.vehicleId));
+      if (!vehicle) throw new Error('Vehicle no longer exists');
+      this.selectVehicle(vehicle);
+    } catch {
+      this.snackBar.open(this.translate.instant('scheduleUnlock.draftRestoreError'), this.translate.instant('common.close'), { duration: 4000 });
+      return;
+    }
+    this.isImmediate = false;
+    this.vehicleAvailable = false;
+    this.availabilityError = '';
     this.selectedDate = draft.selectedDate;
     this.unlockTime = draft.unlockTime;
     this.duration = draft.duration;

@@ -21,6 +21,8 @@ import { BookingConfirmationModal } from '../booking-confirmation-modal/booking-
 import { UnlockMethodSelectionModal } from '../unlock-method-selection-modal/unlock-method-selection-modal';
 import { BookingFilterService } from '../../../application/booking-filter.service';
 import { BookingFilter } from '../../../domain/model/booking-filter.model';
+import { ManualUnlockModal } from '../../../../garage/presentation/views/manual-unlock-modal/manual-unlock-modal';
+import { QrScannerModal } from '../../../../garage/presentation/views/qr-scanner-modal/qr-scanner-modal';
 import { forkJoin } from 'rxjs';
 
 interface BookingView {
@@ -304,49 +306,19 @@ export class BookingListComponent implements OnInit {
   }
 
   private activateBookingNow(booking: any, vehicle: any): void {
-    this.bookingsApi.start(booking.id).subscribe({
-      next: response => {
-        booking = toDomainBooking(response);
-        this.bookingStore.updateBooking(booking);
-        this.activeBookingService.setActiveBooking(booking);
-    // Update the view
-    const bookingView = this.bookings.find(b => b.id === booking.id);
-    if (bookingView) {
-      bookingView.status = 'active';
-    }
-
-    // Open unlock method selection modal
     const dialogRef = this.dialog.open(UnlockMethodSelectionModal, {
-      width: '500px',
-      data: { booking, vehicle },
-      disableClose: true
+      width: '500px', data: { booking, vehicle }
     });
-
     dialogRef.afterClosed().subscribe(result => {
-      if (result?.method === 'manual') {
-        // Navigate to manual unlock
-        this.router.navigate(['/garage'], {
-          queryParams: { 
-            action: 'unlock-manual',
-            vehicleId: vehicle.id,
-            bookingId: booking.id 
-          }
-        });
-      } else if (result?.method === 'qr_code') {
-        // Navigate to QR scanner
-        this.router.navigate(['/garage'], {
-          queryParams: { 
-            action: 'unlock-qr',
-            vehicleId: vehicle.id,
-            bookingId: booking.id 
-          }
+      if (result?.method === 'manual' || result?.method === 'qr_code') {
+        const data = { booking, vehicle };
+        const unlockRef = result.method === 'manual'
+          ? this.dialog.open(ManualUnlockModal, { width: '600px', maxWidth: '95vw', data })
+          : this.dialog.open(QrScannerModal, { width: '600px', maxWidth: '95vw', data });
+        unlockRef.afterClosed().subscribe(unlock => {
+          if (unlock?.success) this.loadBookings();
         });
       }
-    });
-
-    this.showSuccessMessage('booking.activatedSuccessfully');
-      },
-      error: () => this.showErrorMessage('booking.activateError')
     });
   }
 

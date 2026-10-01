@@ -1,15 +1,19 @@
 import { Injectable, inject, effect } from '@angular/core';
 import { AuthService } from '../../core/services/auth.service';
 import { BehaviorSubject, Observable, firstValueFrom } from 'rxjs';
-import { Booking, BookingActivationStatus } from '../domain/model/booking.entity';
+import { Booking } from '../domain/model/booking.entity';
 import { BookingStorageService } from './booking-storage.service';
 import { BookingsApiEndpoint } from '../infraestructure/bookings-api-endpoint';
+import { UnlockRequestsApiEndpoint } from '../infraestructure/unlockRequests-api-endpoint';
+import { ActiveBookingService } from './active-booking.service';
 import { toDomainBooking } from '../infraestructure/booking-assembler';
 
 @Injectable({ providedIn: 'root' })
 export class BookingStore {
   private storageService = inject(BookingStorageService);
   private bookingsApi = inject(BookingsApiEndpoint);
+  private unlockRequestsApi = inject(UnlockRequestsApiEndpoint);
+  private activeBookingService = inject(ActiveBookingService);
   private bookingsSubject = new BehaviorSubject<Booking[]>([]);
   private selectedBookingSubject = new BehaviorSubject<Booking | null>(null);
   private activeBookingSubject = new BehaviorSubject<Booking | null>(null);
@@ -96,75 +100,42 @@ export class BookingStore {
     this.activeBookingSubject.next(booking);
   }
 
-  async activateBooking(bookingId: string): Promise<void> {
-    const response = await firstValueFrom(this.bookingsApi.start(bookingId));
-    const activatedBooking = toDomainBooking(response);
-    activatedBooking.activationStatus = 'active';
-    activatedBooking.isActivated = true;
-    activatedBooking.activatedAt = activatedBooking.actualStartDate ?? undefined;
-
-    this.activeBookingSubject.next(activatedBooking);
-    this.updateBooking(activatedBooking);
+  async unlockVehicleByQR(qrCode: string, booking?: Booking, requestId?: string) {
+    return this.unlockVehicle('qr_code', qrCode, booking, requestId);
   }
 
-  async unlockVehicleByQR(qrCode: string): Promise<{
-    success: boolean;
-    vehicleId?: string;
-    bookingId?: string;
-    location?: any;
-    error?: string;
-  }> {
-    try {
-      const booking = this.activeBookingSubject.getValue();
-      if (!booking) {
-        return { success: false, error: 'No hay reserva activa' };
-      }
-
-      await this.activateBooking(booking.id);
-
-      return {
-        success: true,
-        vehicleId: booking.vehicleId,
-        bookingId: booking.id,
-        location: { lat: -12.046374, lng: -77.042793 }
-      };
-    } catch (error) {
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : 'Error desconocido'
-      };
-    }
+  async unlockVehicleManually(_vehiclePhone: string, unlockCode: string, booking?: Booking, requestId?: string) {
+    return this.unlockVehicle('manual', unlockCode, booking, requestId);
   }
 
-  async unlockVehicleManually(
-    vehiclePhone: string,
-    unlockCode: string
-  ): Promise<{
-    success: boolean;
-    vehicleId?: string;
-    bookingId?: string;
-    location?: any;
-    error?: string;
-  }> {
+  private async unlockVehicle(method: 'manual' | 'qr_code', unlockCode: string, selected?: Booking, requestId?: string) {
     try {
-      const booking = this.activeBookingSubject.getValue();
-      if (!booking) {
-        return { success: false, error: 'No hay reserva activa' };
+      const booking = selected || this.activeBookingSubject.getValue() || this.activeBookingService.getActiveBooking();
+      if (!booking) return { success: false, error: 'No hay reserva activa' };
+      if (!requestId) {
+        const previous = await firstValueFrom(this.unlockRequestsApi.getByBookingId(booking.id));
+        requestId = previous[0]?.id;
       }
-
-      await this.activateBooking(booking.id);
-
-      return {
-        success: true,
-        vehicleId: booking.vehicleId,
-        bookingId: booking.id,
-        location: { lat: -12.046374, lng: -77.042793 }
-      };
-    } catch (error) {
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : 'Error desconocido'
-      };
+      if (!requestId) {
+        const request = await firstValueFrom(this.unlockRequestsApi.create({
+          userId: booking.userId, vehicleId: booking.vehicleId, bookingId: booking.id,
+          requestedAt: new Date().toISOString(), scheduledUnlockTime: (booking.startDate || new Date()).toISOString(),
+          actualUnlockTime: null, status: 'pending', method, location: { lat: 0, lng: 0 },
+          unlockCode: '', attempts: 0, errorMessage: null
+        }));
+        requestId = request.id;
+      }
+      this.activeBookingService.setActiveBooking(booking);
+      const request = await firstValueFrom(this.unlockRequestsApi.update(requestId, { method, unlockCode }));
+      if (request.status !== 'unlocked') return { success: false, error: request.errorMessage || 'Código incorrecto' };
+      // El servidor valida el código e inicia la reserva en la misma transacción.
+      const updated = await this.getBookingByIdAsync(booking.id);
+      this.setActiveBooking(updated);
+      this.updateBooking(updated);
+      this.activeBookingService.setActiveBooking(updated);
+      return { success: true, vehicleId: updated.vehicleId, bookingId: updated.id };
+    } catch (error: any) {
+      return { success: false, error: error?.error?.message || error?.error?.detail || error?.message || 'Error al desbloquear' };
     }
   }
 

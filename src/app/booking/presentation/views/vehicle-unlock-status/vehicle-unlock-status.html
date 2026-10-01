@@ -133,15 +133,15 @@
             [disabled]="unlockStatus === 'Locked' || unlockStatus === 'Pending'"
           >
             <mat-icon>lock</mat-icon>
-            Lock Vehicle
+            Ir al viaje para finalizar
           </button>
           <button
             class="btn-unlock"
             (click)="unlockVehicle()"
-            [disabled]="unlockStatus === 'Unlocked' || unlockStatus === 'Pending'"
+            [disabled]="unlockStatus === 'Unlocked'"
           >
             <mat-icon>lock_open</mat-icon>
-            Unlock Vehicle
+            Desbloquear vehículo
           </button>
         </div>
       </div>

@@ -61,12 +61,13 @@
         <h3>{{ selectedVehicle?.brand }} {{ selectedVehicle?.model }}</h3>
         <p class="vehicle-location">
           <mat-icon>location_on</mat-icon>
-          {{ selectedVehicle?.location }}
+          {{ stationName(selectedVehicle) }}
         </p>
       </div>
     </div>
 
     <div class="form-section">
+      <p *ngIf="criticalBattery" role="alert" class="error-text">{{ 'garage.vehicle.criticalBattery' | translate }}</p>
       <div class="form-group">
         <label for="date-input">{{ 'booking.selectDate' | translate }}</label>
         <input

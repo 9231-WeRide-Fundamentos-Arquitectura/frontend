@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MatDialog } from '@angular/material/dialog';
+import { ManualUnlockModal } from '../../../../garage/presentation/views/manual-unlock-modal/manual-unlock-modal';
 import { Router } from '@angular/router';
 import { TripStore } from '../../../../trip/application/trip.store';
 import { ActiveBookingService } from '../../../application/active-booking.service';
@@ -41,12 +43,13 @@ interface Activity {
 })
 export class VehicleUnlockStatusComponent implements OnInit, OnDestroy {
   private router = inject(Router);
+  private dialog = inject(MatDialog);
   private tripStore = inject(TripStore);
   private activeBookingService = inject(ActiveBookingService);
   private unlockRequestsApi = inject(UnlockRequestsApiEndpoint);
   private vehiclesApi = inject(VehiclesApiEndpoint);
 
-  isActiveTrip = computed(() => this.tripStore.isActiveTrip());
+  isActiveTrip = computed(() => this.tripStore.isActiveTrip() || !!this.activeBookingService.booking());
   currentVehicle = computed(() => this.tripStore.currentVehicle());
 
   vehicleInfo = signal<VehicleInfo>({
@@ -211,7 +214,7 @@ export class VehicleUnlockStatusComponent implements OnInit, OnDestroy {
           model: vehicle.model,
           licensePlate: vehicle.licensePlate,
           status: unlockStatus,
-          lastUpdated: mostRecentRequest ? this.formatLastUpdated(mostRecentRequest.requestedAt) : 'N/A',
+          lastUpdated: mostRecentRequest ? this.formatLastUpdated(mostRecentRequest.actualUnlockTime || mostRecentRequest.requestedAt) : 'N/A',
           bookingStartDate: startDate,
           bookingEndDate: endDate,
           elapsedTime: elapsedTime,
@@ -324,7 +327,7 @@ export class VehicleUnlockStatusComponent implements OnInit, OnDestroy {
   }
 
   calculateElapsedTime(startDate: Date, now: Date): string {
-    const diffMs = now.getTime() - startDate.getTime();
+    const diffMs = Math.max(0, now.getTime() - startDate.getTime());
     const diffMins = Math.floor(diffMs / 60000);
     const hours = Math.floor(diffMins / 60);
     const minutes = diffMins % 60;
@@ -342,56 +345,17 @@ export class VehicleUnlockStatusComponent implements OnInit, OnDestroy {
     return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
   }
 
-  async lockVehicle() {
-    if (!this.isActiveTrip()) return;
-
-    try {
-      const booking = this.activeBooking();
-      if (!booking) return;
-
-      await firstValueFrom(
-        this.unlockRequestsApi.update(booking.unlockRequestId || '', {
-          status: 'pending',
-          actualUnlockTime: null
-        })
-      );
-
-      this.vehicleInfo.update(info => ({ ...info, status: 'Locked' }));
-
-      this.recentActivity.update(activities => [{
-        type: 'info',
-        message: 'Vehículo bloqueado',
-        time: this.formatTime(new Date())
-      }, ...activities]);
-    } catch (error) {
-      console.error('Error locking vehicle:', error);
-    }
+  lockVehicle() {
+    // Finalizar el viaje en el flujo existente evita fingir un bloqueo físico.
+    this.router.navigate(['/trip']);
   }
 
   async unlockVehicle() {
-    if (!this.isActiveTrip()) return;
-
-    try {
-      const booking = this.activeBooking();
-      if (!booking) return;
-
-      await firstValueFrom(
-        this.unlockRequestsApi.update(booking.unlockRequestId || '', {
-          status: 'unlocked',
-          actualUnlockTime: new Date().toISOString()
-        })
-      );
-
-      this.vehicleInfo.update(info => ({ ...info, status: 'Unlocked' }));
-
-      this.recentActivity.update(activities => [{
-        type: 'success',
-        message: 'Vehículo desbloqueado',
-        time: this.formatTime(new Date())
-      }, ...activities]);
-    } catch (error) {
-      console.error('Error unlocking vehicle:', error);
-    }
+    const booking = this.activeBooking();
+    if (!booking) return;
+    const vehicle = await firstValueFrom(this.vehiclesApi.getById(booking.vehicleId));
+    this.dialog.open(ManualUnlockModal, { data: { booking, vehicle }, width: '600px', maxWidth: '95vw' })
+      .afterClosed().subscribe(() => this.loadActiveTripStatus());
   }
 
   goToGarage() {

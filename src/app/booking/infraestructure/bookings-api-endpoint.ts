@@ -30,11 +30,7 @@ export class BookingsApiEndpoint {
 
   // Obtener una reserva por ID
   getById(id: string): Observable<BookingResponse> {
-    return this.getAll().pipe(map(bookings => {
-      const booking = bookings.find(b => b.id === id);
-      if (!booking) throw new Error(`Reserva ${id} no encontrada`);
-      return booking;
-    }));
+    return this.http.get<BackendBookingResponse>(`${this.baseUrl}/${encodeURIComponent(id)}`).pipe(map(normalizeBookingResponse));
   }
 
   // Actualizar una reserva
@@ -46,7 +42,7 @@ export class BookingsApiEndpoint {
     return this.http.put<BackendBookingResponse>(`${this.baseUrl}/${id}/start`, null).pipe(map(normalizeBookingResponse));
   }
 
-  complete(id: string, metrics: Pick<BookingResponse, 'totalCost' | 'discount' | 'distance' | 'duration' | 'averageSpeed' | 'rating'>): Observable<BookingResponse> {
+  complete(id: string, metrics: Pick<BookingResponse, 'totalCost' | 'discount' | 'distance' | 'duration' | 'averageSpeed' | 'rating'> & { routeCoordinates?: { lat: number; lng: number }[]; routeSource?: 'gps' | 'simulated' }): Observable<BookingResponse> {
     return this.http.post<BackendBookingResponse>(`${this.baseUrl}/${id}/complete`, metrics).pipe(map(normalizeBookingResponse));
   }
 
