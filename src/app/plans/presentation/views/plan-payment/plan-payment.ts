@@ -116,17 +116,7 @@ export class PlanPayment implements OnInit, OnDestroy {
 
   endPayment(): void {
     if (this.isFormValid()) {
-      console.log('Procesando pago...', {
-        planId: this.selectedPlan?.id,
-        cardNumber: this.cardNumber,
-        expiryDate: this.expiryDate,
-        cvv: this.cvv,
-        saveCard: this.saveCard,
-        billingAddress: this.billingAddress,
-        total: this.total
-      });
-
-      this.router.navigate(['/payment-success']);
+      this.router.navigate(['/user']);
     }
   }
 
