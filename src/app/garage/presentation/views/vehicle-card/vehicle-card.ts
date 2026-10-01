@@ -1,3 +1,4 @@
+import { TripInitializerService } from '../../../../trip/application/trip-initializer.service';
 import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -9,10 +10,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { Vehicle } from '../../../domain/model/vehicle.model';
-import { TripStore } from '../../../../trip/application/trip.store';
-import { Vehicle as TripVehicle } from '../../../../trip/domain/model/vehicle.entity';
-import { Location } from '../../../../trip/domain/model/location.entity';
-import { LocationsApiEndpoint } from '../../../../trip/infrastructure/locations-api-endpoint';
 import { BookingConfirmationModal } from '../../../../booking/presentation/views/booking-confirmation-modal/booking-confirmation-modal';
 import { FavoriteStore } from '../../../application/favorite.store';
 
@@ -44,8 +41,8 @@ export class VehicleCard {
   @Output() reserve = new EventEmitter<Vehicle>();
   private translate = inject(TranslateService);
   private router = inject(Router);
-  private tripStore = inject(TripStore);
-  private locationsApi = inject(LocationsApiEndpoint);
+  private tripInitializer = inject(TripInitializerService);
+  private bookingBusy = false;
   private dialog = inject(MatDialog);
   private snackBar = inject(MatSnackBar);
   private favoriteStore = inject(FavoriteStore);
@@ -111,72 +108,15 @@ export class VehicleCard {
     });
   }
 
-  private startImmediateTrip() {
-    // Load locations to find vehicle location
-    this.locationsApi.getAll().subscribe({
-      next: (locations: Location[]) => {
-        const vehicleLocation = locations.find(loc => loc.id === this.vehicle.location);
-
-        if (vehicleLocation) {
-          // Convert garage vehicle to trip vehicle format
-          const tripVehicle: TripVehicle = {
-            id: this.vehicle.id,
-            brand: this.vehicle.brand,
-            model: this.vehicle.model,
-            year: this.vehicle.year,
-            battery: this.vehicle.battery,
-            maxSpeed: this.vehicle.maxSpeed,
-            range: this.vehicle.range,
-            weight: this.vehicle.weight,
-            color: this.vehicle.color,
-            licensePlate: this.vehicle.licensePlate,
-            location: this.vehicle.location,
-            status: this.vehicle.status,
-            type: this.vehicle.type,
-            companyId: this.vehicle.companyId,
-            pricePerMinute: this.vehicle.pricePerMinute,
-            image: this.vehicle.image,
-            features: this.vehicle.features,
-            maintenanceStatus: this.vehicle.maintenanceStatus,
-            lastMaintenance: this.vehicle.lastMaintenance,
-            nextMaintenance: this.vehicle.nextMaintenance,
-            totalKilometers: this.vehicle.totalKilometers,
-            rating: this.vehicle.rating
-          };
-
-          // Set vehicle and location in trip store
-          this.tripStore.setCurrentVehicle(tripVehicle);
-          this.tripStore.setCurrentLocation(vehicleLocation);
-          this.tripStore.setLocations(locations);
-
-          // Set random destination
-          const destinationLocation = this.getRandomDestination(vehicleLocation, locations);
-          if (destinationLocation) {
-            this.tripStore.setDestinationLocation(destinationLocation);
-          }
-
-          // Start trip with estimated time
-          const startTime = new Date();
-          const estimatedEndTime = new Date(startTime.getTime() + 30 * 60000); // 30 minutes
-          this.tripStore.startTrip(startTime, estimatedEndTime, tripVehicle);
-
-          // Navigate to trip map
-          this.router.navigate(['/trip/map']);
-        }
-      },
-      error: (error) => {
-        console.error('Error loading locations for trip:', error);
-      }
-    });
-  }
-
-  private getRandomDestination(startLocation: Location, locations: Location[]): Location | null {
-    const availableDestinations = locations.filter(loc => loc.id !== startLocation.id);
-    if (availableDestinations.length > 0) {
-      const randomIndex = Math.floor(Math.random() * availableDestinations.length);
-      return availableDestinations[randomIndex];
-    }
-    return null;
+  private async startImmediateTrip() {
+    if (this.bookingBusy) return;
+    this.bookingBusy = true;
+    try {
+      await this.tripInitializer.reserveAndStart(this.vehicle.id, this.vehicle.location);
+      await this.router.navigate(['/trip/map']);
+    } catch (error) {
+      this.snackBar.open(error instanceof Error ? error.message : 'No se pudo iniciar la reserva', 'Cerrar', { duration: 4000 });
+    } finally { this.bookingBusy = false; }
   }
 
   getStatusLabel(): string {

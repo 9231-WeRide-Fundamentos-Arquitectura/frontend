@@ -6,6 +6,11 @@ import { VehiclesApiEndpoint } from '../infrastructure/vehicles-api-endpoint';
 import { LocationsApiEndpoint } from '../infrastructure/locations-api-endpoint';
 import { Vehicle } from '../domain/model/vehicle.entity';
 import { Location } from '../domain/model/location.entity';
+import { AuthService } from '../../core/services/auth.service';
+import { BookingsApiEndpoint } from '../../booking/infraestructure/bookings-api-endpoint';
+import { ActiveBookingService } from '../../booking/application/active-booking.service';
+import { BookingStore } from '../../booking/application/booking.store';
+import { toDomainBooking } from '../../booking/infraestructure/booking-assembler';
 
 @Injectable({
   providedIn: 'root'
@@ -14,6 +19,30 @@ export class TripInitializerService {
   private tripStore = inject(TripStore);
   private vehiclesApi = inject(VehiclesApiEndpoint);
   private locationsApi = inject(LocationsApiEndpoint);
+  private auth = inject(AuthService);
+  private bookingsApi = inject(BookingsApiEndpoint);
+  private activeBooking = inject(ActiveBookingService);
+  private bookingStore = inject(BookingStore);
+
+  async reserveAndStart(vehicleId: string, startLocationId: string, endLocationId = startLocationId): Promise<void> {
+    let booking = await this.activeBooking.checkAndStoreActiveBooking(this.auth.userId);
+    if (booking && (booking.vehicleId !== vehicleId || booking.status === 'active')) {
+      throw new Error('Ya tienes una reserva. Continúa desde tus reservas.');
+    }
+    if (!booking) {
+      booking = toDomainBooking(await firstValueFrom(this.bookingsApi.create({
+        userId: this.auth.userId, vehicleId, startLocationId, endLocationId
+      })));
+      this.activeBooking.setActiveBooking(booking);
+      this.bookingStore.addBooking(booking);
+    }
+    booking = toDomainBooking(await firstValueFrom(this.bookingsApi.start(booking.id)));
+    this.activeBooking.setActiveBooking(booking);
+    this.bookingStore.updateBooking(booking);
+    if (!await this.initializeTripFromBooking(booking)) {
+      throw new Error('La reserva se inició, pero no se pudo cargar el viaje. Vuelve a abrir el mapa.');
+    }
+  }
 
   /**
    * Inicializa un viaje activo desde un Booking desbloqueado

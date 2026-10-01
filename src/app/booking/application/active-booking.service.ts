@@ -35,7 +35,7 @@ export class ActiveBookingService {
       return null;
     } catch (error) {
       console.error('Error checking active booking:', error);
-      return null;
+      throw error;
     }
   }
 

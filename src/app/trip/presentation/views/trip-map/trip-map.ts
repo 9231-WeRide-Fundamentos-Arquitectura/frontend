@@ -1,3 +1,8 @@
+import { firstValueFrom } from 'rxjs';
+import { AuthService } from '../../../../core/services/auth.service';
+import { BookingsApiEndpoint } from '../../../../booking/infraestructure/bookings-api-endpoint';
+import { BookingStore } from '../../../../booking/application/booking.store';
+import { toDomainBooking } from '../../../../booking/infraestructure/booking-assembler';
 import {Component, OnDestroy, OnInit, signal, inject, computed} from '@angular/core';
 import { MapComponent, MarkerComponent} from 'ngx-mapbox-gl';
 import {LocationsApiEndpoint} from '../../../infrastructure/locations-api-endpoint';
@@ -37,6 +42,11 @@ export class TripMap implements OnInit, OnDestroy {
   private translate = inject(TranslateService);
   private activeBookingService = inject(ActiveBookingService);
   private tripInitializer = inject(TripInitializerService);
+  private auth = inject(AuthService);
+  private bookingsApi = inject(BookingsApiEndpoint);
+  private bookingStore = inject(BookingStore);
+  private bookingBusy = false;
+  private completedBookingId: string | null = null;
 
   userLocation = signal<[number, number] | null>(null);
   markers: Array<{lng: number, lat: number}> = [];
@@ -81,7 +91,9 @@ export class TripMap implements OnInit, OnDestroy {
     if (!this.isActiveTrip()) {
       // Esperar un momento para que las ubicaciones y vehículos se carguen
       setTimeout(async () => {
-        const activeBooking = this.activeBookingService.getActiveBooking();
+        let activeBooking;
+        try { activeBooking = await this.activeBookingService.checkAndStoreActiveBooking(this.auth.userId); }
+        catch { this.showMessage('No se pudo consultar tu reserva activa', 'error'); return; }
 
         if (activeBooking && this.tripInitializer.canInitializeTripFromBooking(activeBooking)) {
           // Intentar inicializar el viaje desde el booking
@@ -253,39 +265,18 @@ export class TripMap implements OnInit, OnDestroy {
     });
   }
 
-  reserveVehicle(vehicle: Vehicle) {
-    const locations = this.tripStore.locations();
-    const vehicleLocation = locations.find(loc => loc.id === vehicle.location);
-
-    if (vehicleLocation) {
-      this.tripStore.setCurrentVehicle(vehicle);
-      this.tripStore.setCurrentLocation(vehicleLocation);
-
-      const destinationLocation = this.getRandomDestination(vehicleLocation);
-      if (destinationLocation) {
-        this.tripStore.setDestinationLocation(destinationLocation);
-      }
-
-      const startTime = new Date();
-      const estimatedEndTime = new Date(startTime.getTime() + 30 * 60000);
-      this.tripStore.startTrip(startTime, estimatedEndTime, vehicle);
-
+  async reserveVehicle(vehicle: Vehicle) {
+    if (this.bookingBusy || this.isActiveTrip()) return;
+    const location = this.tripStore.locations().find(loc => loc.id === vehicle.location);
+    if (!location) { this.showMessage('No se pudo encontrar la ubicación del vehículo', 'error'); return; }
+    this.bookingBusy = true;
+    try {
+      await this.tripInitializer.reserveAndStart(vehicle.id, location.id, this.destinationLocation()?.id ?? location.id);
       this.currentBattery.set(vehicle.battery);
-      const distance = this.calculateDistanceBetweenLocations(vehicleLocation, destinationLocation!);
-      this.estimatedDistance.set(distance);
-
       this.clearSelection();
-    }
-  }
-
-  getRandomDestination(startLocation: Location): Location | null {
-    const locations = this.tripStore.locations();
-    const availableDestinations = locations.filter(loc => loc.id !== startLocation.id);
-    if (availableDestinations.length > 0) {
-      const randomIndex = Math.floor(Math.random() * availableDestinations.length);
-      return availableDestinations[randomIndex];
-    }
-    return null;
+    } catch (error) {
+      this.showMessage(error instanceof Error ? error.message : 'No se pudo iniciar la reserva', 'error');
+    } finally { this.bookingBusy = false; }
   }
 
   calculateDistanceBetweenLocations(loc1: Location, loc2: Location): number {
@@ -356,18 +347,33 @@ export class TripMap implements OnInit, OnDestroy {
     return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
   }
 
-  endTrip() {
-    const currentTrip = this.tripStore.currentTrip();
-
-    // Open rate trip modal after ending trip
-    this.openRateTripModal();
-
-    // End the trip in store
-    this.tripStore.endTrip();
-    this.elapsedTime.set('00:00:00');
-    this.remainingTime.set('00:00:00');
-    this.currentBattery.set(0);
-    this.estimatedDistance.set(0);
+  async endTrip() {
+    if (this.bookingBusy) return;
+    const booking = this.activeBookingService.getActiveBooking();
+    const vehicle = this.currentVehicle();
+    const start = this.tripStartTime();
+    if (!booking || !vehicle || !start) { this.showMessage('No hay una reserva activa para finalizar', 'error'); return; }
+    this.bookingBusy = true;
+    try {
+      const duration = Math.max(0, Math.ceil((Date.now() - start.getTime()) / 60000));
+      const distance = this.estimatedDistance();
+      const response = await firstValueFrom(this.bookingsApi.complete(booking.id, {
+        totalCost: duration * vehicle.pricePerMinute, discount: 0, distance, duration,
+        averageSpeed: duration ? distance / (duration / 60) : 0, rating: null
+      }));
+      this.bookingStore.updateBooking(toDomainBooking(response));
+      this.bookingStore.setActiveBooking(null);
+      this.completedBookingId = booking.id;
+      this.activeBookingService.clearActiveBooking();
+      this.openRateTripModal();
+      this.tripStore.endTrip();
+      this.elapsedTime.set('00:00:00');
+      this.remainingTime.set('00:00:00');
+      this.currentBattery.set(0);
+      this.estimatedDistance.set(0);
+    } catch {
+      this.showMessage('No se pudo finalizar el viaje. Tu reserva sigue activa; intenta nuevamente.', 'error');
+    } finally { this.bookingBusy = false; }
   }
 
   openReportProblemModal() {
@@ -458,7 +464,7 @@ export class TripMap implements OnInit, OnDestroy {
 
   submitRating(ratingData: any) {
     // La calificación se guarda sobre la reserva; un viaje iniciado solo en local no tiene nada que calificar en el backend.
-    const bookingId = this.activeBookingService.getActiveBooking()?.id;
+    const bookingId = this.completedBookingId ?? this.activeBookingService.getActiveBooking()?.id;
     if (!bookingId) {
       console.warn('Calificación descartada: no hay reserva activa a la que asociarla');
       return;
