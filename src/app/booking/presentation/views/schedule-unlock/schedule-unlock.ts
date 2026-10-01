@@ -80,13 +80,17 @@ export class ScheduleUnlockComponent implements OnInit {
 
   setImmediateBooking() {
     const now = new Date();
-    this.selectedDate = now.toISOString().split('T')[0];
+    this.selectedDate = now.toLocaleDateString('sv-SE');
     this.unlockTime = now.toTimeString().substring(0, 5);
   }
 
   setDefaultDateTime() {
-    const today = new Date();
-    this.selectedDate = today.toISOString().split('T')[0];
+    this.selectedDate = new Date().toLocaleDateString('sv-SE');
+  }
+
+  // "YYYY-MM-DD" del input date, a medianoche local (new Date('YYYY-MM-DD') lo toma como UTC y corre el día).
+  private localDate(): Date {
+    return new Date(`${this.selectedDate}T00:00:00`);
   }
 
   filterVehicles() {
@@ -128,7 +132,7 @@ export class ScheduleUnlockComponent implements OnInit {
   }
 
   get dateError(): string | null {
-    if (!this.selectedDate) return null;
+    if (!this.selectedDate || !this.unlockTime) return null;
     if (!this.validateDateTime()) {
       return 'La fecha debe ser futura';
     }
@@ -140,7 +144,7 @@ export class ScheduleUnlockComponent implements OnInit {
       return 'Select date and time';
     }
 
-    const date = new Date(this.selectedDate);
+    const date = this.localDate();
     const time = this.unlockTime;
 
     const formattedDate = date.toLocaleDateString('en-US', {
@@ -172,7 +176,7 @@ export class ScheduleUnlockComponent implements OnInit {
     }
 
     const [hours, minutes] = this.unlockTime.split(':');
-    const selectedDateTime = new Date(this.selectedDate);
+    const selectedDateTime = this.localDate();
     selectedDateTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
     const now = new Date();
 
@@ -188,57 +192,15 @@ export class ScheduleUnlockComponent implements OnInit {
     }
 
     try {
-      const bookings = await firstValueFrom(this.bookingsApi.getByVehicleId(this.selectedVehicle.id));
-
-      // Filtrar bookings activos (pending, confirmed)
-      const activeBookings = bookings.filter(b =>
-        b.status === 'pending' || b.status === 'confirmed'
-      );
-
-      // Verificar solapamiento de fechas
-      for (const booking of activeBookings) {
-        const bookingStart = new Date(booking.startDate);
-        const bookingEnd = booking.endDate ? new Date(booking.endDate) : null;
-
-        // Verificar si hay solapamiento
-        if (bookingEnd) {
-          // Hay solapamiento si:
-          // - La nueva reserva empieza antes de que termine la existente Y
-          // - La nueva reserva termina después de que empiece la existente
-          if (startDate < bookingEnd && endDate > bookingStart) {
-            const conflictStart = bookingStart.toLocaleString('es-ES', {
-              day: 'numeric',
-              month: 'short',
-              hour: '2-digit',
-              minute: '2-digit'
-            });
-            const conflictEnd = bookingEnd.toLocaleString('es-ES', {
-              day: 'numeric',
-              month: 'short',
-              hour: '2-digit',
-              minute: '2-digit'
-            });
-
-            return {
-              available: false,
-              message: `El vehículo no está disponible del ${conflictStart} al ${conflictEnd}. Por favor, selecciona otro horario.`
-            };
-          }
-        } else {
-          // Si no hay endDate, verificar solapamiento con startDate
-          if (startDate < bookingStart && endDate > bookingStart) {
-            return {
-              available: false,
-              message: `El vehículo tiene una reserva activa que comienza el ${bookingStart.toLocaleString('es-ES')}.`
-            };
-          }
-        }
-      }
-
-      return { available: true };
+      const result = await firstValueFrom(this.bookingsApi.availability(this.selectedVehicle.id, startDate, endDate));
+      if (result.available) return { available: true };
+      // Sugerencia: la primera hora libre posterior al inicio pedido (US22 esc. 2).
+      const nextFree = result.busySlots.map(s => new Date(s.endDate)).filter(d => d > startDate).sort((x, y) => x.getTime() - y.getTime())[0];
+      const hint = nextFree ? ` Prueba a partir de las ${nextFree.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}.` : ' Prueba con otro vehículo.';
+      return { available: false, message: `El vehículo no está disponible en ese horario.${hint}` };
     } catch (error) {
       console.error('Error checking vehicle availability:', error);
-      // En caso de error, permitir continuar pero mostrar advertencia
+      // En caso de error se permite continuar: el backend vuelve a validar al crear la reserva (409).
       return { available: true };
     }
   }
@@ -485,7 +447,7 @@ export class ScheduleUnlockComponent implements OnInit {
 
     // Combine date and time into startDate
     const [hours, minutes] = this.unlockTime.split(':');
-    const startDate = new Date(this.selectedDate);
+    const startDate = this.localDate();
     startDate.setHours(parseInt(hours), parseInt(minutes), 0, 0);
 
     // Calculate endDate based on duration
@@ -515,8 +477,8 @@ export class ScheduleUnlockComponent implements OnInit {
     const bookingData = {
       userId: userId,
       vehicleId: this.selectedVehicle.id,
-      startLocationId: '1', // TODO: Get current location
-      endLocationId: '1', // TODO: Will be updated on trip end
+      startLocationId: this.selectedVehicle.location, // ubicación real del vehículo
+      endLocationId: this.selectedVehicle.location, // se actualiza al terminar el viaje
       reservedAt: new Date().toISOString(),
       startDate: startDate.toISOString(),
       endDate: endDate.toISOString(),

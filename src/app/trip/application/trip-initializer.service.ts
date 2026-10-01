@@ -31,6 +31,10 @@ export class TripInitializerService {
       throw new Error('Ya tienes una reserva. Continúa desde tus reservas.');
     }
     if (!booking) {
+      // Sin ubicación válida no se crea la reserva: evita dejar una reserva iniciada huérfana.
+      await firstValueFrom(this.locationsApi.getById(startLocationId)).catch(() => {
+        throw new Error('Este vehículo no tiene una ubicación válida y no se puede reservar ahora.');
+      });
       booking = toDomainBooking(await firstValueFrom(this.bookingsApi.create({
         userId: this.auth.userId, vehicleId, startLocationId, endLocationId
       })));

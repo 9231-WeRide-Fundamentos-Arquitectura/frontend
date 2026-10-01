@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, QueryList, ViewChildren, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -6,7 +6,6 @@ import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTabsModule } from '@angular/material/tabs';
 import { ActiveBookingService } from '../../../../booking/application/active-booking.service';
-import { BookingConfirmationModal } from '../../../../booking/presentation/views/booking-confirmation-modal/booking-confirmation-modal';
 import { GarageFilter } from '../garage-filter/garage-filter';
 import { VehicleCard } from '../vehicle-card/vehicle-card';
 import { VehicleDetailsModal } from '../vehicle-details-modal/vehicle-details-modal';
@@ -41,6 +40,8 @@ export class GarageLayout implements OnInit {
   isLoading = false;
   error: string | null = null;
   currentView: 'all' | 'favorites' = 'all';
+
+  @ViewChildren(VehicleCard) private cards!: QueryList<VehicleCard>;
 
   private router = inject(Router);
   private snackBar = inject(MatSnackBar);
@@ -125,6 +126,9 @@ export class GarageLayout implements OnInit {
       panelClass: 'vehicle-details-dialog',
       autoFocus: false,
       restoreFocus: false
+    }).afterClosed().subscribe(result => {
+      // "Reservar Vehículo" del modal: mismo flujo que el botón de la tarjeta.
+      if (result === 'reserve') this.cards.find(c => c.vehicle.id === vehicle.id)?.onReserve();
     });
   }
 
@@ -180,22 +184,7 @@ export class GarageLayout implements OnInit {
       return;
     }
 
-    // Open confirmation modal
-    const dialogRef = this.dialog.open(BookingConfirmationModal, {
-      data: { vehicle },
-      width: '500px',
-      maxWidth: '95vw',
-      panelClass: 'booking-confirmation-dialog',
-      autoFocus: false
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        const immediate = result.action === 'book_now';
-        this.router.navigate(['/schedule-unlock'], {
-          state: { vehicle, immediate }
-        });
-      }
-    });
+    // La tarjeta ya mostró el diálogo "¿Cómo deseas reservar?" y solo emite aquí al elegir programar.
+    this.router.navigate(['/schedule-unlock'], { state: { vehicle, immediate: false } });
   }
 }

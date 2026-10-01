@@ -49,11 +49,18 @@ export class TripMap implements OnInit, OnDestroy {
   private completedBookingId: string | null = null;
 
   userLocation = signal<[number, number] | null>(null);
+  // ponytail: disponibilidad simulada en el cliente (cada vehículo se oculta al azar); cambiar por telemetría real del backend cuando exista.
+  private hiddenVehicleIds = signal(new Set<string>());
+  private availabilityInterval = window.setInterval(() => this.hiddenVehicleIds.set(
+    new Set(this.tripStore.vehicles().filter(() => Math.random() < this.HIDDEN_PROBABILITY).map(v => v.id))
+  ), 25000);
+  private readonly HIDDEN_PROBABILITY = 0.35;
   markers: Array<{lng: number, lat: number}> = [];
   vehicleMarkers = computed(() => {
     const vehicles = this.tripStore.vehicles();
     const locations = this.tripStore.locations();
-    return vehicles.filter(v => v.status === 'available').map(vehicle => {
+    const hidden = this.hiddenVehicleIds();
+    return vehicles.filter(v => v.status === 'available' && !hidden.has(v.id)).map(vehicle => {
       const location = locations.find(loc => loc.id === vehicle.location);
       return {
         vehicle,
@@ -172,7 +179,7 @@ export class TripMap implements OnInit, OnDestroy {
     const locations = this.tripStore.locations();
 
     const nearbyVehicles = vehicles.filter(vehicle => {
-      if (vehicle.status !== 'available') return false;
+      if (vehicle.status !== 'available' || this.hiddenVehicleIds().has(vehicle.id)) return false;
 
       const vehicleLocation = locations.find(loc => loc.id === vehicle.location);
       if (!vehicleLocation) return false;
@@ -516,6 +523,7 @@ export class TripMap implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    clearInterval(this.availabilityInterval);
     if(this.watchId) {
       navigator.geolocation.clearWatch(this.watchId);
     }
