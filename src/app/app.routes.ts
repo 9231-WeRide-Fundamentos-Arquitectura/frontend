@@ -8,7 +8,8 @@ import { USER_ROUTES } from './user/user.routes';
 import { authGuard } from './core/services/auth.service';
 
 export const routes: Routes = [
-  { path: 'auth/login', loadComponent: () => import('./public/components/auth/auth').then(m => m.AuthComponent) },
+  { path: 'auth/login', loadComponent: () => import('./public/components/auth/login').then(m => m.LoginComponent) },
+  { path: 'auth/email-login', loadComponent: () => import('./public/components/auth/auth').then(m => m.AuthComponent) },
   { path: 'auth/register', data: { register: true }, loadComponent: () => import('./public/components/auth/auth').then(m => m.AuthComponent) },
   {
     path: '',

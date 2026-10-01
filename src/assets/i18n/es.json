@@ -20,7 +20,9 @@
     "viewDetails": "Ver Detalles",
     "book": "Reservar",
     "notAvailable": "No Disponible",
-    "and": "y"
+    "and": "y",
+    "showPassword": "Mostrar contraseña",
+    "hidePassword": "Ocultar contraseña"
   },
   "navigation": {
     "home": "Inicio",
@@ -45,7 +47,7 @@
   "auth": {
     "login": {
       "title": "Iniciar Sesión",
-      "subtitle": "Entra y conduce tu salud",
+      "subtitle": "Tu movilidad urbana, cuando la necesites",
       "continueWithGoogle": "Continuar con Google",
       "loginWithPhone": "Entrar con número de celular",
       "loginWithEmail": "Entrar con mi email de empresa",
@@ -54,7 +56,8 @@
       "privacyPolicy": "Política de privacidad",
       "termsOfUse": "Términos de uso",
       "ofWeRide": "de WeRide",
-      "loadingMessage": "Cargando datos de WeRide..."
+      "loadingMessage": "Cargando datos de WeRide...",
+      "termsLine": "Al continuar, aceptas la Política de privacidad y los Términos de uso de WeRide."
     },
     "phoneLogin": {
       "title": "Introduce Número de Celular",
@@ -75,11 +78,13 @@
       "forgotPassword": "¿Olvidaste tu contraseña?",
       "rememberMe": "Recordarme",
       "signIn": "Iniciar Sesión",
-      "errorTitle": "Ocurrio un Error"
+      "errorTitle": "Ocurrio un Error",
+      "invalidCredentials": "Email o contraseña incorrectos.",
+      "connectionError": "No pudimos conectar con el servidor. Revisa tu conexión e inténtalo de nuevo."
     },
     "register": {
       "title": "Introduce tus datos",
-      "subtitle": "Recibirás un código de verificación por WhatsApp",
+      "subtitle": "Crea tu cuenta con tu email de empresa",
       "firstName": "Nombres",
       "lastName": "Apellidos",
       "name": "Nombre",
@@ -92,7 +97,8 @@
       "login": "Iniciar Sesión",
       "errorTitle": "Ocurrio un Error",
       "successTitle": "Verificado Correctamente",
-      "successMessage": "Otp ingresado Correctamente"
+      "successMessage": "Otp ingresado Correctamente",
+      "failed": "No pudimos crear la cuenta. Es posible que el email ya esté registrado."
     },
     "verification": {
       "title": "Introduce código de verificación",
@@ -420,7 +426,7 @@
   "trip": {
     "title": "Viajes",
     "activeTrip": "Viaje Activo",
-    "tripHistory": "Historial de Viajes",
+    "tripHistory": "Historial de viajes",
     "startTrip": "Iniciar Viaje",
     "endTrip": "Finalizar Viaje",
     "tripDetails": "Detalles del Viaje",
@@ -431,7 +437,6 @@
     "loadingTrip": "Cargando datos del viaje...",
     "electricScooter": "Scooter Eléctrico",
     "leaveRating": "Déjanos tu puntuación",
-    "tripHistory": "Historial de viajes",
     "settings": "Configuración",
     "trip": "Viaje",
     "dateAndTime": "Fecha y hora",
@@ -601,4 +606,3 @@
     "max": "El valor máximo es {{max}}"
   }
 }
-

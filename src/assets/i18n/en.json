@@ -20,7 +20,9 @@
     "viewDetails": "View Details",
     "book": "Book",
     "notAvailable": "Not Available",
-    "and": "and"
+    "and": "and",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password"
   },
   "navigation": {
     "home": "Home",
@@ -45,7 +47,7 @@
   "auth": {
     "login": {
       "title": "Sign In",
-      "subtitle": "Enter and drive your health",
+      "subtitle": "Your urban mobility, on demand",
       "continueWithGoogle": "Continue with Google",
       "loginWithPhone": "Sign in with phone number",
       "loginWithEmail": "Sign in with company email",
@@ -54,7 +56,8 @@
       "privacyPolicy": "Privacy Policy",
       "termsOfUse": "Terms of Use",
       "ofWeRide": "of WeRide",
-      "loadingMessage": "Loading WeRide data..."
+      "loadingMessage": "Loading WeRide data...",
+      "termsLine": "By continuing, you accept the Privacy Policy and Terms of Use of WeRide."
     },
     "phoneLogin": {
       "title": "Enter Phone Number",
@@ -75,11 +78,13 @@
       "forgotPassword": "Forgot your password?",
       "rememberMe": "Remember me",
       "signIn": "Sign In",
-      "errorTitle": "An Error Occurred"
+      "errorTitle": "An Error Occurred",
+      "invalidCredentials": "Incorrect email or password.",
+      "connectionError": "We could not reach the server. Check your connection and try again."
     },
     "register": {
       "title": "Enter your information",
-      "subtitle": "You will receive a verification code via WhatsApp",
+      "subtitle": "Create your account with your company email",
       "firstName": "First Name",
       "lastName": "Last Name",
       "name": "Name",
@@ -92,7 +97,8 @@
       "login": "Sign In",
       "errorTitle": "An Error Occurred",
       "successTitle": "Verified Successfully",
-      "successMessage": "OTP entered correctly"
+      "successMessage": "OTP entered correctly",
+      "failed": "We could not create the account. The email may already be registered."
     },
     "verification": {
       "title": "Enter verification code",
@@ -599,4 +605,3 @@
     "max": "Maximum value is {{max}}"
   }
 }
-
