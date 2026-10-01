@@ -24,6 +24,7 @@ export class TripInitializerService {
   private activeBooking = inject(ActiveBookingService);
   private bookingStore = inject(BookingStore);
 
+  // ponytail: vuelve al origen por defecto; usar un destino elegido cuando haya selector.
   async reserveAndStart(vehicleId: string, startLocationId: string, endLocationId = startLocationId): Promise<void> {
     let booking = await this.activeBooking.checkAndStoreActiveBooking(this.auth.userId);
     if (booking && (booking.vehicleId !== vehicleId || booking.status === 'active')) {

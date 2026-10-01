@@ -237,6 +237,7 @@ export class BookingListComponent implements OnInit {
       // Validate booking can be activated
       if (bookingView.status !== 'pending' && bookingView.status !== 'confirmed') {
         this.showErrorMessage('booking.cannotActivate');
+        this.isActivating = false;
         return;
       }
 
@@ -244,6 +245,7 @@ export class BookingListComponent implements OnInit {
       const activeBooking = this.activeBookingService.getActiveBooking();
       if (activeBooking?.status === 'active') {
         this.showErrorMessage('booking.alreadyHasActive');
+        this.isActivating = false;
         return;
       }
 
@@ -251,6 +253,7 @@ export class BookingListComponent implements OnInit {
       const booking = this.bookingStorage.getBookingById(bookingView.id);
       if (!booking) {
         this.showErrorMessage('booking.notFound');
+        this.isActivating = false;
         return;
       }
 
@@ -275,10 +278,10 @@ export class BookingListComponent implements OnInit {
           dialogRef.afterClosed().subscribe(result => {
             this.isActivating = false;
             
-            if (result === 'now') {
+            if (result?.action === 'book_now') {
               // Activate booking immediately
               this.activateBookingNow(booking, vehicle);
-            } else if (result === 'schedule') {
+            } else if (result?.action === 'schedule') {
               // Navigate to schedule page
               this.router.navigate(['/booking/schedule-unlock'], {
                 queryParams: { bookingId: booking.id }
@@ -320,7 +323,7 @@ export class BookingListComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if (result === 'manual') {
+      if (result?.method === 'manual') {
         // Navigate to manual unlock
         this.router.navigate(['/garage'], {
           queryParams: { 
@@ -329,7 +332,7 @@ export class BookingListComponent implements OnInit {
             bookingId: booking.id 
           }
         });
-      } else if (result === 'qr_code') {
+      } else if (result?.method === 'qr_code') {
         // Navigate to QR scanner
         this.router.navigate(['/garage'], {
           queryParams: { 

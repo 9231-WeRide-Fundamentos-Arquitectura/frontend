@@ -33,7 +33,7 @@ export class ActiveBookingService {
       const activeBookings = bookings
         .filter(b => b.status === 'pending' || b.status === 'confirmed' || b.status === 'active')
         .map(b => toDomainBooking(b))
-        .sort((a, b) => b.reservedAt.getTime() - a.reservedAt.getTime());
+        .sort((a, b) => Number(b.status === 'active') - Number(a.status === 'active') || b.reservedAt.getTime() - a.reservedAt.getTime());
 
       if (activeBookings.length > 0) {
         const mostRecent = activeBookings[0];
