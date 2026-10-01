@@ -163,6 +163,7 @@
 .trip-details,
 .booking-details {
   display: flex;
+  flex-wrap: wrap;
   gap: 1rem;
   font-size: 0.85rem;
   color: #6b7280;
