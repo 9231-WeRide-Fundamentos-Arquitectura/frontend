@@ -1,0 +1,201 @@
+<div class="content">
+  <h2 class="page-title">{{ 'booking.scheduleUnlock' | translate }}</h2>
+
+  <div
+    class="drafts-section"
+    *ngIf="(drafts$ | async) as drafts"
+    [hidden]="drafts.length === 0"
+  >
+    <h3 class="drafts-title">
+      <mat-icon>drafts</mat-icon>
+      <span>Borradores Guardados</span>
+    </h3>
+    <div class="drafts-list">
+      <div
+        *ngFor="let draft of drafts"
+        class="draft-card"
+        (click)="loadDraft(draft)"
+      >
+        <div class="draft-info">
+          <p class="draft-vehicle">{{ draft.vehicleId }}</p>
+          <p class="draft-date">
+            {{ draft.selectedDate }} {{ draft.unlockTime }}
+          </p>
+          <p class="draft-duration">{{ draft.duration }}h</p>
+        </div>
+        <button
+          mat-icon-button
+          (click)="deleteDraft(draft.id); $event.stopPropagation()"
+          class="draft-delete-btn"
+        >
+          <mat-icon>delete</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="schedule-card">
+    <div class="vehicle-info">
+      <div class="vehicle-preview" [class.loading]="!selectedVehicle">
+        <img
+          *ngIf="selectedVehicle?.image && !showIconFallback; else iconFallback"
+          [src]="selectedVehicle!.image"
+          [alt]="(selectedVehicle!.brand || '') + ' ' + (selectedVehicle!.model || '')"
+          [title]="(selectedVehicle!.brand || '') + ' ' + (selectedVehicle!.model || '')"
+          (error)="handleImageError($event)"
+          class="vehicle-image"
+        />
+
+        <ng-template #iconFallback>
+          <mat-icon class="vehicle-icon-fallback">
+            {{ getVehicleIcon(selectedVehicle?.type) }}
+          </mat-icon>
+        </ng-template>
+
+        <div class="vehicle-type-badge" *ngIf="selectedVehicle">
+          {{ selectedVehicle.type }}
+        </div>
+      </div>
+
+      <div class="vehicle-details">
+        <h3>{{ selectedVehicle?.brand }} {{ selectedVehicle?.model }}</h3>
+        <p class="vehicle-location">
+          <mat-icon>location_on</mat-icon>
+          {{ selectedVehicle?.location }}
+        </p>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-group">
+        <label for="date-input">{{ 'booking.selectDate' | translate }}</label>
+        <input
+          id="date-input"
+          type="date"
+          [(ngModel)]="selectedDate"
+          name="date"
+          required
+          [class.error]="dateError"
+          title="Seleccionar fecha"
+        />
+        <span class="error-text" *ngIf="dateError">{{ dateError }}</span>
+      </div>
+
+      <div class="form-group">
+        <label for="time-input">{{ 'booking.unlockTime' | translate }}</label>
+        <input
+          id="time-input"
+          type="time"
+          [(ngModel)]="unlockTime"
+          name="time"
+          required
+          title="Seleccionar hora"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="duration-select"
+          >{{ 'booking.durationHours' | translate }}</label
+        >
+        <select
+          id="duration-select"
+          [(ngModel)]="duration"
+          name="duration"
+          required
+          title="Seleccionar duración"
+        >
+          <option *ngFor="let d of [1,2,3,4,5,6]" [value]="d">
+            {{ d }} {{ d > 1 ? ('booking.hours' | translate) : ('booking.hour' |
+            translate) }}
+          </option>
+        </select>
+      </div>
+    </div>
+
+    <div *ngIf="availabilityError" class="availability-alert error">
+      <mat-icon>error_outline</mat-icon>
+      <div class="alert-content">
+        <p class="alert-title">Vehículo no disponible</p>
+        <p class="alert-message">{{ availabilityError }}</p>
+      </div>
+    </div>
+
+    <div
+      *ngIf="vehicleAvailable && selectedVehicle"
+      class="availability-alert success"
+    >
+      <mat-icon>check_circle</mat-icon>
+      <p>Vehículo disponible para la fecha seleccionada</p>
+    </div>
+
+    <div class="booking-summary-card" *ngIf="selectedVehicle">
+      <div class="summary-header">
+        <mat-icon>event_note</mat-icon>
+        <h3>{{ 'booking.summary.title' | translate }}</h3>
+      </div>
+
+      <div class="summary-items">
+        <div class="summary-item">
+          <span class="label"
+            >{{ 'booking.summary.vehicle' | translate }}:</span
+          >
+          <span class="value"
+            >{{ selectedVehicle.brand }} {{ selectedVehicle.model }}</span
+          >
+        </div>
+
+        <div class="summary-item">
+          <span class="label"
+            >{{ 'booking.summary.dateTime' | translate }}:</span
+          >
+          <span class="value">{{ formatDateTime() }}</span>
+        </div>
+
+        <div class="summary-item">
+          <span class="label"
+            >{{ 'booking.summary.duration' | translate }}:</span
+          >
+          <span class="value"
+            >{{ duration }} {{ duration > 1 ? ('booking.hours' | translate) :
+            ('booking.hour' | translate) }}</span
+          >
+        </div>
+
+        <div class="summary-item">
+          <span class="label">{{ 'booking.summary.rate' | translate }}:</span>
+          <span class="value"
+            >${{ selectedVehicle.pricePerMinute }}/minuto</span
+          >
+        </div>
+
+        <div class="summary-item highlight">
+          <span class="label">{{ 'booking.summary.total' | translate }}:</span>
+          <span class="value total">${{ calculateTotal() }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button
+        mat-raised-button
+        color="primary"
+        class="schedule-btn"
+        (click)="scheduleUnlock()"
+        [disabled]="!isFormValid"
+      >
+        <mat-icon>schedule</mat-icon>
+        {{ 'booking.scheduleUnlockButton' | translate }}
+      </button>
+
+      <button
+        mat-stroked-button
+        class="draft-btn"
+        (click)="saveDraft()"
+        [disabled]="isSavingDraft"
+      >
+        <mat-icon>save</mat-icon>
+        {{ isSavingDraft ? 'Guardando...' : ('booking.saveDraft' | translate) }}
+      </button>
+    </div>
+  </div>
+</div>

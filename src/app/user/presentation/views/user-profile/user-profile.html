@@ -1,0 +1,88 @@
+<ng-container *ngIf="user as currentUser; else emptyProfile">
+  <section class="profile-shell">
+    <div class="profile-header">
+      <div class="header-left">
+        <div class="avatar" [class.has-image]="hasProfilePicture">
+          <img
+            *ngIf="hasProfilePicture"
+            [src]="currentUser.profilePicture"
+            [alt]="currentUser.name || ('user.profile.avatarAlt' | translate)"
+            [title]="currentUser.name || ('user.profile.avatarAlt' | translate)"
+          />
+          <span *ngIf="!hasProfilePicture"
+            >{{ getInitials(currentUser.name) }}</span
+          >
+        </div>
+        <div class="header-info">
+          <p class="label">{{ 'user.profile.user' | translate }}</p>
+          <h2>{{ currentUser.name }}</h2>
+        </div>
+      </div>
+
+      <div class="header-stats">
+        <div class="stat-card" *ngFor="let stat of stats">
+          <p class="stat-value">{{ stat.value }}</p>
+          <span class="stat-label">{{ stat.label }}</span>
+        </div>
+      </div>
+
+      <button class="icon-button" type="button" [attr.aria-label]="'user.profile.configureProfile' | translate">
+        <span class="material-symbols-rounded">settings</span>
+      </button>
+    </div>
+
+    <div class="profile-content">
+      <div class="options-column">
+        <div class="column-title">{{ 'user.profile.quickMenu' | translate }}</div>
+        <div class="options-list">
+          <button
+            class="menu-item"
+            type="button"
+            *ngFor="let option of mainOptions"
+          >
+            <div class="menu-info">
+              <span class="material-symbols-rounded">{{ option.icon }}</span>
+              <span>{{ option.label }}</span>
+            </div>
+            <mat-icon class="arrow-icon">keyboard_arrow_right</mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <div class="actions-column">
+        <div class="summary-card">
+          <div class="summary-avatar">
+            <div class="avatar small" [class.has-image]="hasProfilePicture">
+              <img
+                *ngIf="hasProfilePicture"
+                [src]="currentUser.profilePicture"
+                [alt]="currentUser.name || ('user.profile.avatarAlt' | translate)"
+                [title]="currentUser.name || ('user.profile.avatarAlt' | translate)"
+              />
+              <span *ngIf="!hasProfilePicture"
+                >{{ getInitials(currentUser.name) }}</span
+              >
+            </div>
+            <div class="summary-info">
+              <p class="summary-name">{{ currentUser.name }}</p>
+              <span>{{ currentUser.email }}</span>
+            </div>
+          </div>
+
+          <div class="quick-actions">
+            <button type="button" *ngFor="let action of quickActions">
+              <span>{{ action.label }}</span>
+              <mat-icon class="arrow-icon">keyboard_arrow_right</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</ng-container>
+
+<ng-template #emptyProfile>
+  <section class="profile-shell">
+    <p>{{ 'user.profile.noProfileInfo' | translate }}</p>
+  </section>
+</ng-template>

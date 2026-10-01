@@ -1,0 +1,47 @@
+<ng-container *ngIf="user$ | async as user; else loadingState">
+  <div class="user-stats">
+    <div class="user-info">
+      <div class="avatar" [class.has-image]="!!user.profilePicture">
+        <img
+          *ngIf="user.profilePicture"
+          [src]="user.profilePicture"
+          [alt]="user.name || 'Avatar de usuario'"
+        />
+        <span *ngIf="!user.profilePicture">{{ getInitials(user.name) }}</span>
+      </div>
+      <div class="user-details">
+        <h2 class="user-name">{{ user.name }}</h2>
+      </div>
+      <div class="user-pd">
+        <p>PD: Laura Perez es nuestro user de pruebas para modo invitado</p>
+      </div>
+    </div>
+    <div class="stats-container">
+      <div class="stat-item">
+        <p class="stat-value">{{ user.statistics.totalTrips }}</p>
+        <span class="stat-label">{{ 'user.stats.trips' | translate }}</span>
+      </div>
+
+      <div class="stat-item">
+        <p class="stat-value">{{ user.statistics.totalDistance | number: '1.0-0' }}</p>
+        <span class="stat-label">{{ 'user.stats.meters' | translate }}</span>
+      </div>
+
+      <div class="stat-item">
+        <p class="stat-value">{{ user.statistics.totalSpent | currency: '$' }}</p>
+        <span class="stat-label">{{ 'user.stats.totalSpent' | translate }}</span>
+      </div>
+
+      <div class="stat-item">
+        <p class="stat-value">{{ user.statistics.averageRating | number: '1.0-0' }}</p>
+        <span class="stat-label">{{ 'user.stats.rating' | translate }}</span>
+      </div>
+    </div>
+  </div>
+</ng-container>
+
+<ng-template #loadingState>
+  <div class="user-stats">
+    <p>{{ 'user.loadingStats' | translate }}</p>
+  </div>
+</ng-template>

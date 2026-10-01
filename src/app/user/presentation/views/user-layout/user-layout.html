@@ -1,0 +1,24 @@
+<div class="user-layout">
+  <div class="stats-section">
+    <app-user-stats></app-user-stats>
+  </div>
+
+  <div class="content-section">
+    <div class="settings-column">
+      <app-user-settings></app-user-settings>
+    </div>
+    <div class="section-column">
+      <div class="section-content">
+        
+        <app-user-wallet-card *ngIf="activeSection === 'wallet'"></app-user-wallet-card>
+        <app-user-history-card *ngIf="activeSection === 'history'"></app-user-history-card>
+        <app-user-security-card *ngIf="activeSection === 'security'"></app-user-security-card>
+        <app-user-help-card *ngIf="activeSection === 'help'"></app-user-help-card>
+        <app-user-settings-card *ngIf="activeSection === 'settings'"></app-user-settings-card>
+      </div>
+    </div>
+  </div>
+  
+  <app-user-personal-info-card *ngIf="activeSection === 'account'"></app-user-personal-info-card>
+</div>
+

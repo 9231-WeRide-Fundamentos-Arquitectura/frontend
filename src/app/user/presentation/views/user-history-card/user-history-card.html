@@ -1,0 +1,67 @@
+<div class="history-card">
+  <div class="card-header">
+    <h2>{{ 'user.history.title' | translate }}</h2>
+    <button class="close-button" (click)="closeCard()" type="button" [attr.aria-label]="'common.close' | translate">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div class="card-content">
+    <ng-container *ngIf="user$ | async as user">
+      <div class="tabs">
+        <button class="tab-button active" type="button">{{ 'user.history.trips' | translate }}</button>
+        <button class="tab-button" type="button">{{ 'user.history.bookings' | translate }}</button>
+      </div>
+
+      <div class="trips-section">
+        <h3>{{ 'user.history.completedTrips' | translate }}</h3>
+        <div class="trips-list" *ngIf="trips$ | async as trips">
+          <div *ngIf="trips.length === 0" class="empty-state">
+            <p>{{ 'user.history.noTrips' | translate }}</p>
+          </div>
+          <div *ngFor="let trip of trips" class="trip-item">
+            <div class="trip-icon">
+              <mat-icon>directions_bike</mat-icon>
+            </div>
+            <div class="trip-info">
+              <div class="trip-route">{{ trip.route || ('user.history.trip' | translate) }}</div>
+              <div class="trip-details">
+                <span>{{ formatDate(trip.startDate) }}</span>
+                <span>{{ formatDuration(trip.duration) }}</span>
+                <span>{{ trip.distance }} km</span>
+              </div>
+            </div>
+            <div class="trip-status" [style.color]="getStatusColor(trip.status)">
+              {{ trip.status === 'completed' ? ('user.history.completed' | translate) : trip.status }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bookings-section">
+        <h3>{{ 'user.history.bookings' | translate }}</h3>
+        <div class="bookings-list" *ngIf="bookings$ | async as bookings">
+          <div *ngIf="bookings.length === 0" class="empty-state">
+            <p>{{ 'user.history.noBookings' | translate }}</p>
+          </div>
+          <div *ngFor="let booking of bookings" class="booking-item">
+            <div class="booking-info">
+              <div class="booking-id">{{ 'user.history.bookingId' | translate }}{{ booking.id.split('-')[1] }}</div>
+              <div class="booking-details">
+                <span>{{ formatDate(booking.reservedAt) }}</span>
+                <span *ngIf="booking.status === 'completed' && booking.finalCost">
+                  {{ booking.finalCost | currency: 'USD' }}
+                </span>
+              </div>
+            </div>
+            <div class="booking-status" [style.color]="getStatusColor(booking.status)">
+              {{ booking.status === 'completed' ? ('user.history.completed' | translate) : 
+                 booking.status === 'pending' ? ('user.history.pending' | translate) : booking.status }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</div>
+

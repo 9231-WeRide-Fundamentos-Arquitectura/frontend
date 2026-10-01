@@ -1,0 +1,43 @@
+<div class="wallet-card">
+  <div class="card-header">
+    <h2>{{ 'user.wallet.title' | translate }}</h2>
+    <button class="close-button" (click)="closeCard()" type="button" [attr.aria-label]="'common.close' | translate">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div class="card-content">
+    <ng-container *ngIf="user$ | async as user">
+      <div class="total-section">
+        <h3>{{ 'user.wallet.totalSpent' | translate }}</h3>
+        <p class="total-amount">{{ (totalSpent$ | async) || 0 | currency: 'USD' }}</p>
+      </div>
+
+      <div class="payments-section">
+        <h3>{{ 'user.wallet.recentPayments' | translate }}</h3>
+        <div class="payments-list" *ngIf="payments$ | async as payments">
+          <div *ngIf="payments.length === 0" class="empty-state">
+            <p>{{ 'user.wallet.noPayments' | translate }}</p>
+          </div>
+          <div *ngFor="let payment of payments" class="payment-item">
+            <div class="payment-info">
+              <div class="payment-method">
+                <mat-icon>{{ payment.method === 'credit_card' ? 'credit_card' : 'account_balance_wallet' }}</mat-icon>
+                <span>{{ payment.method === 'credit_card' ? ('user.wallet.paymentMethods.credit_card' | translate) : ('user.wallet.paymentMethods.digital_wallet' | translate) }}</span>
+                <span *ngIf="payment.cardLast4" class="card-number">****{{ payment.cardLast4 }}</span>
+              </div>
+              <div class="payment-details">
+                <span class="payment-description">{{ payment.description }}</span>
+                <span class="payment-date">{{ formatDate(payment.processedAt) }}</span>
+              </div>
+            </div>
+            <div class="payment-amount" [class.completed]="payment.status === 'completed'">
+              {{ formatCurrency(payment.amount, payment.currency) }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</div>
+

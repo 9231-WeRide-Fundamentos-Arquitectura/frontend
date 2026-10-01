@@ -1,0 +1,117 @@
+<header class="header">
+  <div class="left-section">
+    <button mat-icon-button (click)="toggleSidebar()" class="menu-btn">
+      <mat-icon>menu</mat-icon>
+    </button>
+    <div class="logo-container">
+      <img src="/WeRideLogo.png" alt="WeRide Logo" class="logo" />
+    </div>
+  </div>
+
+  <div class="right-section">
+    <app-language-switcher></app-language-switcher>
+
+    <button
+      mat-icon-button
+      class="notification-btn"
+      [matMenuTriggerFor]="notificationMenu"
+      (menuOpened)="onNotificationMenuOpened()"
+      [matBadge]="unreadCount()"
+      [matBadgeHidden]="unreadCount() === 0"
+      matBadgeColor="warn"
+      matBadgeSize="small"
+    >
+      <mat-icon>notifications</mat-icon>
+    </button>
+
+    <div class="user-profile">
+      <span class="user-name-nav"
+        >{{ ('navigation.user' | translate) }}</span
+      >
+      <button mat-icon-button [matMenuTriggerFor]="userMenu">
+        <mat-icon>account_circle</mat-icon>
+      </button>
+    </div>
+  </div>
+</header>
+
+<mat-menu
+  #notificationMenu="matMenu"
+  class="notification-menu"
+  xPosition="before"
+>
+  <div class="notification-header" (click)="$event.stopPropagation()">
+    <h3>{{ 'navbar.notifications.title' | translate }}</h3>
+  </div>
+
+  @if (notifications().length > 0) {
+  <div class="notification-list-container">
+    @for (notification of notifications(); track notification.id) {
+    <button
+      mat-menu-item
+      class="notification-item"
+      [class.unread]="!notification.isRead"
+      (click)="markAsRead(notification, $event)"
+    >
+      <div class="notification-content">
+        <div class="notification-icon">
+          <img
+            src="/vehicles/scooter.png"
+            alt="notification icon"
+            class="notification-vehicle-icon"
+          />
+        </div>
+        <div class="notification-text">
+          <div class="notification-title">{{ notification.title }}</div>
+          <div class="notification-message">{{ notification.message }}</div>
+          <div class="notification-time">
+            {{ getNotificationTime(notification) }}
+          </div>
+        </div>
+        @if (!notification.isRead) {
+        <div class="notification-badge"></div>
+        }
+      </div>
+    </button>
+    }
+  </div>
+  } @else {
+  <div class="notification-empty" (click)="$event.stopPropagation()">
+    <img
+      src="/assets/auth/notification.png"
+      alt="No notifications"
+      class="empty-notification-image"
+    />
+  </div>
+  }
+</mat-menu>
+
+<mat-menu #userMenu="matMenu" class="user-menu" xPosition="before">
+  <div class="user-menu-header" (click)="$event.stopPropagation()">
+    <div class="user-avatar">
+      <span class="user-initials">{{ getUserInitials() }}</span>
+    </div>
+    <div class="user-info">
+      <div class="user-name">
+        {{ ('navigation.user' | translate) }}
+      </div>
+      <div class="user-subtitle">
+        {{ 'navbar.userMenu.subtitle' | translate }}
+      </div>
+    </div>
+  </div>
+
+  <mat-divider></mat-divider>
+
+  <button mat-menu-item (click)="navigateToProfile()">
+    <mat-icon>person</mat-icon>
+    <span>{{ 'navbar.userMenu.profile' | translate }}</span>
+  </button>
+
+  <mat-divider></mat-divider>
+
+  <button mat-menu-item (click)="logout()" class="logout-item">
+    <mat-icon>logout</mat-icon>
+    <span>{{ 'navbar.userMenu.logout' | translate }}</span>
+  </button>
+</mat-menu>

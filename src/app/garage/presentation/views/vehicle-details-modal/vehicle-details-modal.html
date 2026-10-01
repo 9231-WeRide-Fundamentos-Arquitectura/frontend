@@ -1,0 +1,159 @@
+<div class="vehicle-details-modal">
+  <div class="modal-header">
+    <h2 mat-dialog-title>{{ vehicle.brand }} {{ vehicle.model }}</h2>
+    <button mat-icon-button (click)="onClose()" class="close-button">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div mat-dialog-content class="modal-content">
+    <div class="vehicle-image-section">
+      <img
+        [src]="vehicle.image"
+        [alt]="('garage.details.vehicleImageAlt' | translate) + ' ' + vehicle.brand + ' ' + vehicle.model"
+        [title]="vehicle.brand + ' ' + vehicle.model"
+        class="vehicle-image"
+      />
+      <div class="image-overlay">
+        <div class="status-badge" [ngClass]="'status-' + vehicle.status">
+          {{ getStatusText(vehicle.status) }}
+        </div>
+      </div>
+    </div>
+
+    <div class="vehicle-info-grid">
+      <div class="info-section">
+        <h3>{{ 'garage.details.basicInfo' | translate }}</h3>
+        <div class="info-row">
+          <span class="label">{{ 'garage.details.brand' | translate }}:</span>
+          <span class="value">{{ vehicle.brand }}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">{{ 'garage.details.model' | translate }}:</span>
+          <span class="value">{{ vehicle.model }}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">{{ 'garage.details.year' | translate }}:</span>
+          <span class="value">{{ vehicle.year }}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">{{ 'garage.details.color' | translate }}:</span>
+          <span class="value">{{ vehicle.color }}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">{{ 'garage.details.licensePlate' | translate }}:</span>
+          <span class="value">{{ vehicle.licensePlate }}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">{{ 'garage.details.type' | translate }}:</span>
+          <span class="value">{{ vehicle.type }}</span>
+        </div>
+      </div>
+
+      <div class="info-section">
+        <h3>{{ 'garage.details.performance' | translate }}</h3>
+        <div class="info-row">
+          <span class="label">{{ 'garage.vehicle.battery' | translate }}:</span>
+          <span
+            class="value battery-value"
+            [style.color]="getBatteryColor(vehicle.battery)"
+          >
+            {{ vehicle.battery }}%
+          </span>
+        </div>
+        <div class="info-row">
+          <span class="label">{{ 'garage.details.maxSpeed' | translate }}:</span>
+          <span class="value">{{ vehicle.maxSpeed }} km/h</span>
+        </div>
+        <div class="info-row">
+          <span class="label">{{ 'garage.vehicle.range' | translate }}:</span>
+          <span class="value">{{ vehicle.range }} km</span>
+        </div>
+        <div class="info-row">
+          <span class="label">{{ 'garage.details.weight' | translate }}:</span>
+          <span class="value">{{ vehicle.weight }} kg</span>
+        </div>
+        <div class="info-row">
+          <span class="label">{{ 'garage.details.totalKilometers' | translate }}:</span>
+          <span class="value"
+            >{{ vehicle.totalKilometers | number:'1.1-1' }} km</span
+          >
+        </div>
+      </div>
+
+      <div class="info-section">
+        <h3>{{ 'garage.priceAndRating' | translate }}</h3>
+        <div class="info-row">
+          <span class="label">{{ 'garage.pricePerMinute' | translate }}:</span>
+          <span class="value price-value"
+            >${{ vehicle.pricePerMinute }}/min</span
+          >
+        </div>
+        <div class="info-row">
+          <span class="label">{{ 'garage.details.rating' | translate }}:</span>
+          <span class="value rating-value">
+            <mat-icon class="star-icon">star</mat-icon>
+            {{ vehicle.rating }}
+          </span>
+        </div>
+      </div>
+
+      <div class="info-section">
+        <h3>{{ 'garage.details.maintenance' | translate }}</h3>
+        <div class="info-row">
+          <span class="label">{{ 'garage.details.maintenanceStatus' | translate }}:</span>
+          <span
+            class="value maintenance-status"
+            [style.color]="getMaintenanceStatusColor(vehicle.maintenanceStatus)"
+          >
+            {{ getMaintenanceStatusText(vehicle.maintenanceStatus) }}
+          </span>
+        </div>
+        <div class="info-row">
+          <span class="label">{{ 'garage.details.lastMaintenance' | translate }}:</span>
+          <span class="value">{{ formatDate(vehicle.lastMaintenance) }}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">{{ 'garage.details.nextMaintenance' | translate }}:</span>
+          <span class="value">{{ formatDate(vehicle.nextMaintenance) }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="features-section">
+      <h3>{{ 'garage.details.features' | translate }}</h3>
+      <div class="features-grid">
+        <mat-chip-set>
+          <mat-chip
+            *ngFor="let feature of vehicle.features"
+            class="feature-chip"
+          >
+            <mat-icon matChipAvatar>
+              <ng-container [ngSwitch]="feature">
+                <span *ngSwitchCase="'GPS'">location_on</span>
+                <span *ngSwitchCase="'Bluetooth'">bluetooth</span>
+                <span *ngSwitchCase="'Mobile App'">smartphone</span>
+                <span *ngSwitchCase="'LED Lights'">lightbulb</span>
+                <span *ngSwitchCase="'Anti-theft'">security</span>
+                <span *ngSwitchCase="'Fast Charging'"
+                  >battery_charging_full</span
+                >
+                <span *ngSwitchCase="'Waterproof'">water_drop</span>
+                <span *ngSwitchDefault>check_circle</span>
+              </ng-container>
+            </mat-icon>
+            {{ feature }}
+          </mat-chip>
+        </mat-chip-set>
+      </div>
+    </div>
+  </div>
+
+  <div mat-dialog-actions class="modal-actions">
+    <button mat-button (click)="onClose()" class="cancel-button">{{ 'common.close' | translate }}</button>
+    <button mat-raised-button color="primary" class="reserve-button" (click)="onReserve()">
+      <mat-icon>bookmark</mat-icon>
+      {{ 'garage.details.reserveVehicle' | translate }}
+    </button>
+  </div>
+</div>

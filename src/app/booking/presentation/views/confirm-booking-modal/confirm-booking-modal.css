@@ -1,0 +1,100 @@
+.confirm-booking-modal {
+  max-width: 600px;
+  width: 100%;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+}
+
+.close-button {
+  color: #666;
+}
+
+.modal-content {
+  padding: 24px;
+}
+
+.vehicle-image-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.vehicle-image {
+  max-height: 300px;
+  max-width: 100%;
+  object-fit: contain;
+  border-radius: 12px;
+}
+
+.modal-actions {
+  padding: 16px 24px;
+  border-top: 1px solid #e0e0e0;
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.reserve-qr-button,
+.reserve-code-button {
+  flex: 1;
+  padding: 12px 24px;
+  font-weight: 600;
+  border-radius: 8px;
+}
+
+.reserve-qr-button {
+  background-color: #9c7ce8 !important;
+  color: white !important;
+}
+
+.reserve-code-button {
+  background-color: #7145d8 !important;
+  color: white !important;
+}
+
+.reserve-qr-button:hover {
+  background-color: #8b6dd1 !important;
+}
+
+.reserve-code-button:hover {
+  background-color: #5a36b3 !important;
+}
+
+@media (max-width: 768px) {
+  .confirm-booking-modal {
+    max-width: 95vw;
+  }
+
+  .modal-header {
+    padding: 16px;
+  }
+
+  .modal-content {
+    padding: 16px;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+    padding: 12px 16px;
+  }
+
+  .reserve-qr-button,
+  .reserve-code-button {
+    width: 100%;
+  }
+}
+

@@ -1,0 +1,113 @@
+<nav class="navbar">
+  <button class="nav-button menu-button" (click)="onToggle()">
+    <span class="icon">☰</span>
+  </button>
+
+  <img src="/WeRideLogo.png" alt="WeRide Logo" class="logo" />
+
+  <span class="spacer"></span>
+
+  <app-language-switcher></app-language-switcher>
+
+  <div class="dropdown-container">
+    <button
+      class="nav-button notification-button"
+      (click)="toggleNotificationMenu()"
+    >
+      <span class="icon">🔔</span>
+      @if (unreadCount() > 0) {
+      <span class="badge">{{ unreadCount() }}</span>
+      }
+    </button>
+
+    @if (isNotificationMenuOpen()) {
+    <div class="dropdown notification-dropdown">
+      <div class="dropdown-header">
+        <h3>{{ 'navbar.notifications.title' | translate }}</h3>
+      </div>
+
+      @if (notifications().length > 0) {
+      <ul class="notification-list">
+        <li
+          *ngFor="let notification of notifications(); trackBy: trackByNotificationId"
+          class="notification-item"
+          [class.unread]="!notification.isRead"
+          (click)="markAsRead(notification)"
+        >
+          <div class="notification-content">
+            <div class="notification-icon">
+              <img
+                src="/vehicles/scooter.png"
+                alt="notification icon"
+                class="notification-vehicle-icon"
+              />
+            </div>
+            <div class="notification-text">
+              <div class="notification-title">{{ notification.title }}</div>
+              <div class="notification-message">{{ notification.message }}</div>
+              <div class="notification-time">
+                {{ getNotificationTime(notification) }}
+              </div>
+            </div>
+            @if (!notification.isRead) {
+            <span class="notification-badge"></span>
+            }
+          </div>
+        </li>
+      </ul>
+      } @else {
+      <div class="notification-empty">
+        <img
+          src="/assets/auth/notification.png"
+          alt="No notifications"
+          class="empty-notification-image"
+        />
+        <p class="empty-text">{{ 'navbar.notifications.empty' | translate }}</p>
+        <p class="empty-subtext">
+          {{ 'navbar.notifications.emptySubtext' | translate }}
+        </p>
+      </div>
+      }
+    </div>
+    }
+  </div>
+
+  <div class="dropdown-container">
+    <button class="nav-button user-button" (click)="toggleUserMenu()">
+      <span class="user-name-nav"
+        >{{ ('navigation.user' | translate) }}</span
+      >
+      <span class="icon">👤</span>
+    </button>
+
+    @if (isUserMenuOpen()) {
+    <div class="dropdown user-dropdown">
+      <div class="user-menu-header">
+        <div class="user-avatar">
+          <span class="user-initials">{{ getUserInitials() }}</span>
+        </div>
+        <div class="user-info">
+          <div class="user-name">
+            {{ ('navigation.user' | translate) }}
+          </div>
+          <div class="user-subtitle">
+            {{ 'navbar.userMenu.subtitle' | translate }}
+          </div>
+        </div>
+      </div>
+
+      <ul class="user-menu-list">
+        <li class="user-menu-item" (click)="navigateToProfile()">
+          <span class="menu-icon">👤</span>
+          <span>{{ 'navbar.userMenu.profile' | translate }}</span>
+        </li>
+        <li class="menu-divider"></li>
+        <li class="user-menu-item logout-item" (click)="logout()">
+          <span class="menu-icon">🚪</span>
+          <span>{{ 'navbar.userMenu.logout' | translate }}</span>
+        </li>
+      </ul>
+    </div>
+    }
+  </div>
+</nav>

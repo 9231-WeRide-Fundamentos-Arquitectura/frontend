@@ -1,0 +1,125 @@
+.booking-ending-modal {
+  max-width: 500px;
+  width: 100%;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+}
+
+.close-button {
+  color: #666;
+}
+
+.modal-content {
+  padding: 24px;
+  text-align: center;
+}
+
+.icon-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  position: relative;
+}
+
+.clock-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+  color: #7145d8;
+}
+
+.warning-icon {
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+  color: #ff9800;
+  position: absolute;
+  top: -8px;
+  right: calc(50% - 40px);
+}
+
+.message {
+  margin: 0;
+  font-size: 16px;
+  color: #666;
+  line-height: 1.5;
+}
+
+.message strong {
+  color: #7145d8;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.modal-actions {
+  padding: 16px 24px 24px;
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.extend-button,
+.end-button {
+  flex: 1;
+  padding: 12px 24px;
+  font-weight: 600;
+  border-radius: 8px;
+}
+
+.extend-button {
+  background-color: #9c7ce8 !important;
+  color: white !important;
+}
+
+.end-button {
+  background-color: #7145d8 !important;
+  color: white !important;
+}
+
+.extend-button:hover {
+  background-color: #8b6dd1 !important;
+}
+
+.end-button:hover {
+  background-color: #5a36b3 !important;
+}
+
+@media (max-width: 768px) {
+  .booking-ending-modal {
+    max-width: 95vw;
+  }
+
+  .modal-header {
+    padding: 16px;
+  }
+
+  .modal-content {
+    padding: 20px 16px;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+    padding: 12px 16px;
+  }
+
+  .extend-button,
+  .end-button {
+    width: 100%;
+  }
+}
+

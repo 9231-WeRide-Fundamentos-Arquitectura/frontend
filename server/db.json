@@ -1,0 +1,1124 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "name": "Laura Pérez",
+      "email": "laura.perez@example.com",
+      "password": "12345",
+      "phone": "+51987654321",
+      "membershipPlanId": "premium-plan-002",
+      "isActive": true,
+      "profilePicture": "assets/users/laura.jpg",
+      "dateOfBirth": "1995-03-15",
+      "address": "Av. Larco 1234, Miraflores",
+      "emergencyContact": "+51987654322",
+      "verificationStatus": "verified",
+      "registrationDate": "2024-01-15T10:00:00Z",
+      "preferences": {  
+        "language": "es",
+        "notifications": true,
+        "theme": "light"
+      },
+      "statistics": {
+        "totalTrips": 45,
+        "totalDistance": 234.5,
+        "totalSpent": 156.80,
+        "averageRating": 4.8
+      }
+    },
+    {
+      "id": "2",
+      "name": "Carlos Ramírez",
+      "email": "carlos.ramirez@example.com",
+      "password": "abcdef",
+      "phone": "+51987456123",
+      "membershipPlanId": "basic-plan-001",
+      "isActive": true,
+      "profilePicture": "assets/users/carlos.jpg",
+      "dateOfBirth": "1990-07-22",
+      "address": "Jr. de la Unión 567, Lima Centro",
+      "emergencyContact": "+51987456124",
+      "drivingLicense": "L87654321",
+      "verificationStatus": "verified",
+      "registrationDate": "2024-02-20T14:30:00Z",
+      "preferences": {
+        "language": "es",
+        "notifications": false,
+        "theme": "dark"
+      },
+      "statistics": {
+        "totalTrips": 23,
+        "totalDistance": 127.3,
+        "totalSpent": 89.45,
+        "averageRating": 4.6
+      }
+    },
+    {
+      "id": "3",
+      "name": "María González",
+      "email": "maria.gonzalez@example.com",
+      "password": "qwerty",
+      "phone": "+51987321654",
+      "membershipPlanId": "business-plan-003",
+      "isActive": true,
+      "profilePicture": "assets/users/maria.jpg",
+      "dateOfBirth": "1988-11-30",
+      "address": "Av. Javier Prado 2890, San Isidro",
+      "emergencyContact": "+51987321655",
+      "drivingLicense": "L11223344",
+      "verificationStatus": "verified",
+      "registrationDate": "2024-01-05T09:15:00Z",
+      "preferences": {
+        "language": "en",
+        "notifications": true,
+        "theme": "light"
+      },
+      "statistics": {
+        "totalTrips": 78,
+        "totalDistance": 456.7,
+        "totalSpent": 234.90,
+        "averageRating": 4.9
+      }
+    }
+  ],
+
+  "companies": [
+    {
+      "id": "1",
+      "name": "EcoMove",
+      "email": "contact@ecomove.pe",
+      "phone": "+5112456789",
+      "address": "Av. El Sol 123, Miraflores, Lima",
+      "logo": "assets/companies/ecomove-logo.png",
+      "website": "https://ecomove.pe",
+      "description": "Líder en movilidad sostenible en Lima",
+      "vehicles": ["1", "2", "3", "7", "8"],
+      "serviceAreas": ["1", "2", "3", "8"],
+      "rating": 4.7,
+      "isActive": true,
+      "establishedYear": 2020
+    },
+    {
+      "id": "2",
+      "name": "UrbanRide",
+      "email": "info@urbanride.pe",
+      "phone": "+5113567890",
+      "address": "Jr. Lampa 456, Lima Centro",
+      "logo": "assets/companies/urbanride-logo.png",
+      "website": "https://urbanride.pe",
+      "description": "Conectando la ciudad con tecnología",
+      "vehicles": ["4", "5", "6"],
+      "serviceAreas": ["4", "5", "6", "7"],
+      "rating": 4.5,
+      "isActive": true,
+      "establishedYear": 2019
+    },
+    {
+      "id": "3",
+      "name": "LimaScooters",
+      "email": "support@limascooters.pe",
+      "phone": "+5114567891",
+      "address": "Av. Brasil 789, Pueblo Libre",
+      "logo": "assets/companies/limascooters-logo.png",
+      "website": "https://limascooters.pe",
+      "description": "Tu mejor opción para moverte por Lima",
+      "vehicles": ["9", "10"],
+      "serviceAreas": ["9", "10"],
+      "rating": 4.3,
+      "isActive": true,
+      "establishedYear": 2021
+    }
+  ],
+
+  "vehicles": [
+    {
+      "id": "1",
+      "brand": "Xiaomi",
+      "model": "M365",
+      "year": 2023,
+      "battery": 82,
+      "maxSpeed": 25,
+      "range": 30,
+      "weight": 12.5,
+      "color": "black",
+      "licensePlate": "XM001",
+      "location": "1",
+      "status": "available",
+      "type": "electric_scooter",
+      "companyId": "1",
+      "pricePerMinute": 0.5,
+      "image": "assets/vehicles/xiaomi-m365.jpg",
+      "features": ["GPS", "Bluetooth", "Mobile App", "LED Lights"],
+      "maintenanceStatus": "good",
+      "lastMaintenance": "2024-09-15T10:00:00Z",
+      "nextMaintenance": "2024-11-15T10:00:00Z",
+      "totalKilometers": 1250.5,
+      "rating": 4.6
+    },
+    {
+      "id": "2",
+      "brand": "Trek",
+      "model": "FX 3",
+      "year": 2022,
+      "battery": 0,
+      "maxSpeed": 0,
+      "range": 0,
+      "weight": 11.8,
+      "color": "blue",
+      "licensePlate": "TK002",
+      "location": "2",
+      "status": "reserved",
+      "type": "bike",
+      "companyId": "1",
+      "pricePerMinute": 0.3,
+      "image": "assets/vehicles/trek-fx3.jpg",
+      "features": ["Lightweight", "21 Gears", "Quick Release"],
+      "maintenanceStatus": "excellent",
+      "lastMaintenance": "2024-09-20T14:00:00Z",
+      "nextMaintenance": "2024-12-20T14:00:00Z",
+      "totalKilometers": 456.2,
+      "rating": 4.8
+    },
+    {
+      "id": "3",
+      "brand": "Segway",
+      "model": "Ninebot Max",
+      "year": 2023,
+      "battery": 65,
+      "maxSpeed": 30,
+      "range": 40,
+      "weight": 18.7,
+      "color": "gray",
+      "licensePlate": "SG003",
+      "location": "3",
+      "status": "maintenance",
+      "type": "electric_scooter",
+      "companyId": "1",
+      "pricePerMinute": 0.6,
+      "image": "assets/vehicles/segway-max.jpg",
+      "features": ["GPS", "Bluetooth", "Anti-theft", "Cruise Control"],
+      "maintenanceStatus": "under_repair",
+      "lastMaintenance": "2025-10-05T08:00:00Z",
+      "nextMaintenance": "2025-12-05T08:00:00Z",
+      "totalKilometers": 892.3,
+      "rating": 4.7
+    },
+    {
+      "id": "4",
+      "brand": "Giant",
+      "model": "Escape 3",
+      "year": 2023,
+      "battery": 0,
+      "maxSpeed": 0,
+      "range": 0,
+      "weight": 12.9,
+      "color": "red",
+      "licensePlate": "GT004",
+      "location": "4",
+      "status": "available",
+      "type": "bike",
+      "companyId": "2",
+      "pricePerMinute": 0.35,
+      "image": "assets/vehicles/giant-escape3.jpg",
+      "features": ["Aluminum Frame", "24 Gears", "Disc Brakes"],
+      "maintenanceStatus": "good",
+      "lastMaintenance": "2025-09-10T10:00:00Z",
+      "nextMaintenance": "2025-12-10T10:00:00Z",
+      "totalKilometers": 678.5,
+      "rating": 4.5
+    },
+    {
+      "id": "5",
+      "brand": "Ninebot",
+      "model": "ES2",
+      "year": 2022,
+      "battery": 90,
+      "maxSpeed": 25,
+      "range": 25,
+      "weight": 12.5,
+      "color": "black",
+      "licensePlate": "NB005",
+      "location": "5",
+      "status": "available",
+      "type": "electric_scooter",
+      "companyId": "2",
+      "pricePerMinute": 0.45,
+      "image": "assets/vehicles/ninebot-es2.jpg",
+      "features": ["LED Display", "App Control", "Shock Absorption"],
+      "maintenanceStatus": "excellent",
+      "lastMaintenance": "2025-09-25T14:00:00Z",
+      "nextMaintenance": "2025-11-25T14:00:00Z",
+      "totalKilometers": 523.8,
+      "rating": 4.9
+    },
+    {
+      "id": "6",
+      "brand": "Specialized",
+      "model": "Sirrus X",
+      "year": 2023,
+      "battery": 0,
+      "maxSpeed": 0,
+      "range": 0,
+      "weight": 11.5,
+      "color": "green",
+      "licensePlate": "SP006",
+      "location": "6",
+      "status": "reserved",
+      "type": "bike",
+      "companyId": "2",
+      "pricePerMinute": 0.4,
+      "image": "assets/vehicles/specialized-sirrus.jpg",
+      "features": ["Carbon Fork", "Hydraulic Brakes", "Tubeless Ready"],
+      "maintenanceStatus": "good",
+      "lastMaintenance": "2025-09-18T11:00:00Z",
+      "nextMaintenance": "2025-12-18T11:00:00Z",
+      "totalKilometers": 345.2,
+      "rating": 4.8
+    },
+    {
+      "id": "7",
+      "brand": "Xiaomi",
+      "model": "Pro 2",
+      "year": 2023,
+      "battery": 75,
+      "maxSpeed": 25,
+      "range": 45,
+      "weight": 14.2,
+      "color": "black",
+      "licensePlate": "XM007",
+      "location": "7",
+      "status": "available",
+      "type": "electric_scooter",
+      "companyId": "1",
+      "pricePerMinute": 0.55,
+      "image": "assets/vehicles/xiaomi-pro2.jpg",
+      "features": ["GPS", "E-ABS", "Dual Brakes", "IPX4 Waterproof"],
+      "maintenanceStatus": "good",
+      "lastMaintenance": "2025-09-22T09:00:00Z",
+      "nextMaintenance": "2025-11-22T09:00:00Z",
+      "totalKilometers": 1045.7,
+      "rating": 4.7
+    },
+    {
+      "id": "8",
+      "brand": "Segway",
+      "model": "E22",
+      "year": 2023,
+      "battery": 88,
+      "maxSpeed": 20,
+      "range": 22,
+      "weight": 13.5,
+      "color": "white",
+      "licensePlate": "SG008",
+      "location": "8",
+      "status": "available",
+      "type": "electric_scooter",
+      "companyId": "1",
+      "pricePerMinute": 0.5,
+      "image": "assets/vehicles/segway-e22.jpg",
+      "features": ["Folding Design", "LED Lights", "App Control"],
+      "maintenanceStatus": "excellent",
+      "lastMaintenance": "2025-09-28T10:00:00Z",
+      "nextMaintenance": "2025-11-28T10:00:00Z",
+      "totalKilometers": 234.9,
+      "rating": 4.6
+    },
+    {
+      "id": "9",
+      "brand": "Razor",
+      "model": "E300",
+      "year": 2022,
+      "battery": 70,
+      "maxSpeed": 24,
+      "range": 20,
+      "weight": 21.0,
+      "color": "blue",
+      "licensePlate": "RZ009",
+      "location": "9",
+      "status": "available",
+      "type": "electric_scooter",
+      "companyId": "3",
+      "pricePerMinute": 0.4,
+      "image": "assets/vehicles/razor-e300.jpg",
+      "features": ["Wide Deck", "Pneumatic Tires", "Rear Suspension"],
+      "maintenanceStatus": "good",
+      "lastMaintenance": "2025-09-15T13:00:00Z",
+      "nextMaintenance": "2025-11-15T13:00:00Z",
+      "totalKilometers": 567.3,
+      "rating": 4.4
+    },
+    {
+      "id": "10",
+      "brand": "Unagi",
+      "model": "Model One",
+      "year": 2023,
+      "battery": 95,
+      "maxSpeed": 32,
+      "range": 25,
+      "weight": 10.9,
+      "color": "orange",
+      "licensePlate": "UN010",
+      "location": "10",
+      "status": "available",
+      "type": "electric_scooter",
+      "companyId": "3",
+      "pricePerMinute": 0.65,
+      "image": "assets/vehicles/unagi-one.jpg",
+      "features": ["Dual Motor", "Lightweight", "Premium Design", "Smart Display"],
+      "maintenanceStatus": "excellent",
+      "lastMaintenance": "2025-10-01T08:00:00Z",
+      "nextMaintenance": "2025-12-01T08:00:00Z",
+      "totalKilometers": 123.4,
+      "rating": 4.9
+    }
+  ],
+
+  "plans": [
+    {
+      "id": "basic-plan-001",
+      "name": "Plan Normal",
+      "description": "Ideal para usuarios ocasionales que buscan una opción económica",
+      "price": 3.99,
+      "currency": "USD",
+      "pricePerMinute": 0.6,
+      "duration": "monthly",
+      "durationDays": 30,
+      "maxTripsPerDay": 5,
+      "maxMinutesPerTrip": 60,
+      "freeMinutesPerMonth": 30,
+      "discountPercentage": 10,
+      "benefits": [
+        "Acceso a scooters estándar",
+        "10% de descuento en cada viaje",
+        "Soporte al cliente básico",
+        "30 minutos gratis al mes"
+      ],
+      "color": "#3B82F6",
+      "isPopular": false,
+      "isActive": true
+    },
+    {
+      "id": "premium-plan-002",
+      "name": "Plan Estudiantil",
+      "description": "Perfecto para estudiantes que necesitan movilidad frecuente",
+      "price": 5.99,
+      "currency": "USD",
+      "pricePerMinute": 0.4,
+      "duration": "monthly",
+      "durationDays": 30,
+      "maxTripsPerDay": 10,
+      "maxMinutesPerTrip": 90,
+      "freeMinutesPerMonth": 60,
+      "discountPercentage": 20,
+      "benefits": [
+        "Acceso a scooters premium",
+        "20% de descuento en cada viaje",
+        "Soporte al cliente prioritario",
+        "Viajes ilimitados los fines de semana",
+        "60 minutos gratis al mes"
+      ],
+      "color": "#10B981",
+      "isPopular": true,
+      "isActive": true,
+      "studentVerificationRequired": true
+    },
+    {
+      "id": "business-plan-003",
+      "name": "Plan Empresarial",
+      "description": "Solución completa para profesionales y empresas",
+      "price": 9.99,
+      "currency": "USD",
+      "pricePerMinute": 0.3,
+      "duration": "monthly",
+      "durationDays": 30,
+      "maxTripsPerDay": 20,
+      "maxMinutesPerTrip": 120,
+      "freeMinutesPerMonth": 120,
+      "discountPercentage": 30,
+      "benefits": [
+        "Acceso a todos los vehículos",
+        "30% de descuento en cada viaje",
+        "Soporte prioritario 24/7",
+        "Viajes ilimitados",
+        "120 minutos gratis al mes",
+        "Reportes mensuales",
+        "Facturación centralizada"
+      ],
+      "color": "#8B5CF6",
+      "isPopular": false,
+      "isActive": true,
+      "corporateVerificationRequired": true
+    }
+  ],
+
+  "locations": [
+    {
+      "id": "1",
+      "name": "Plaza Mayor",
+      "address": "Plaza Mayor, Lima Centro",
+      "coordinates": {
+        "lat": -12.046374,
+        "lng": -77.042793
+      },
+      "type": "station",
+      "capacity": 15,
+      "availableSpots": 8,
+      "isActive": true,
+      "operatingHours": {
+        "open": "05:00",
+        "close": "23:00"
+      },
+      "amenities": ["WiFi", "Security", "Shelter"],
+      "district": "Lima",
+      "description": "Estación principal en el corazón histórico de Lima",
+      "image": "assets/locations/plaza-mayor.jpg"
+    },
+    {
+      "id": "2",
+      "name": "Parque Kennedy",
+      "address": "Av. Larco, Miraflores",
+      "coordinates": {
+        "lat": -12.120500,
+        "lng": -77.029833
+      },
+      "type": "station",
+      "capacity": 20,
+      "availableSpots": 12,
+      "isActive": true,
+      "operatingHours": {
+        "open": "06:00",
+        "close": "22:00"
+      },
+      "amenities": ["WiFi", "Security", "Charging", "Shelter"],
+      "district": "Miraflores",
+      "description": "Estación en el corazón de Miraflores",
+      "image": "assets/locations/parque-kennedy.jpg"
+    },
+    {
+      "id": "3",
+      "name": "Larcomar",
+      "address": "Malecón de la Reserva, Miraflores",
+      "coordinates": {
+        "lat": -12.131944,
+        "lng": -77.030278
+      },
+      "type": "station",
+      "capacity": 18,
+      "availableSpots": 10,
+      "isActive": true,
+      "operatingHours": {
+        "open": "07:00",
+        "close": "23:00"
+      },
+      "amenities": ["WiFi", "Security", "Charging"],
+      "district": "Miraflores",
+      "description": "Estación con vista al mar",
+      "image": "assets/locations/larcomar.jpg"
+    },
+    {
+      "id": "4",
+      "name": "Jockey Plaza",
+      "address": "Av. Javier Prado Este, Surco",
+      "coordinates": {
+        "lat": -12.084334,
+        "lng": -76.977074
+      },
+      "type": "station",
+      "capacity": 25,
+      "availableSpots": 15,
+      "isActive": true,
+      "operatingHours": {
+        "open": "06:00",
+        "close": "23:30"
+      },
+      "amenities": ["WiFi", "Security", "Charging", "Shelter", "Lockers"],
+      "district": "Surco",
+      "description": "Estación en centro comercial principal",
+      "image": "assets/locations/jockey-plaza.jpg"
+    },
+    {
+      "id": "5",
+      "name": "San Isidro Golf",
+      "address": "Av. Camino Real, San Isidro",
+      "coordinates": {
+        "lat": -12.097778,
+        "lng": -77.037222
+      },
+      "type": "station",
+      "capacity": 16,
+      "availableSpots": 9,
+      "isActive": true,
+      "operatingHours": {
+        "open": "06:00",
+        "close": "22:00"
+      },
+      "amenities": ["WiFi", "Security", "Shelter"],
+      "district": "San Isidro",
+      "description": "Estación en zona empresarial",
+      "image": "assets/locations/san-isidro-golf.jpg"
+    },
+    {
+      "id": "6",
+      "name": "Real Plaza Salaverry",
+      "address": "Av. Salaverry, Jesús María",
+      "coordinates": {
+        "lat": -12.081111,
+        "lng": -77.047222
+      },
+      "type": "station",
+      "capacity": 22,
+      "availableSpots": 14,
+      "isActive": true,
+      "operatingHours": {
+        "open": "06:30",
+        "close": "23:00"
+      },
+      "amenities": ["WiFi", "Security", "Charging", "Shelter"],
+      "district": "Jesús María",
+      "description": "Estación en centro comercial",
+      "image": "assets/locations/real-plaza-salaverry.jpg"
+    },
+    {
+      "id": "7",
+      "name": "Barranco Central",
+      "address": "Av. Grau, Barranco",
+      "coordinates": {
+        "lat": -12.146667,
+        "lng": -77.016944
+      },
+      "type": "station",
+      "capacity": 14,
+      "availableSpots": 7,
+      "isActive": true,
+      "operatingHours": {
+        "open": "07:00",
+        "close": "00:00"
+      },
+      "amenities": ["WiFi", "Security"],
+      "district": "Barranco",
+      "description": "Estación en distrito bohemio",
+      "image": "assets/locations/barranco-central.jpg"
+    },
+    {
+      "id": "8",
+      "name": "Óvalo Gutiérrez",
+      "address": "Av. Santa Cruz, Miraflores",
+      "coordinates": {
+        "lat": -12.119444,
+        "lng": -77.027778
+      },
+      "type": "station",
+      "capacity": 20,
+      "availableSpots": 11,
+      "isActive": true,
+      "operatingHours": {
+        "open": "06:00",
+        "close": "22:30"
+      },
+      "amenities": ["WiFi", "Security", "Charging", "Shelter"],
+      "district": "Miraflores",
+      "description": "Estación en zona comercial",
+      "image": "assets/locations/ovalo-gutierrez.jpg"
+    },
+    {
+      "id": "9",
+      "name": "Pueblo Libre Centro",
+      "address": "Av. Brasil, Pueblo Libre",
+      "coordinates": {
+        "lat": -12.075278,
+        "lng": -77.063889
+      },
+      "type": "station",
+      "capacity": 12,
+      "availableSpots": 6,
+      "isActive": true,
+      "operatingHours": {
+        "open": "06:30",
+        "close": "22:00"
+      },
+      "amenities": ["WiFi", "Security", "Shelter"],
+      "district": "Pueblo Libre",
+      "description": "Estación en zona residencial",
+      "image": "assets/locations/pueblo-libre.jpg"
+    },
+    {
+      "id": "10",
+      "name": "Universidad del Pacífico",
+      "address": "Av. Salaverry, Jesús María",
+      "coordinates": {
+        "lat": -12.082222,
+        "lng": -77.045278
+      },
+      "type": "station",
+      "capacity": 18,
+      "availableSpots": 13,
+      "isActive": true,
+      "operatingHours": {
+        "open": "05:30",
+        "close": "22:30"
+      },
+      "amenities": ["WiFi", "Security", "Charging", "Shelter", "Student Discount"],
+      "district": "Jesús María",
+      "description": "Estación universitaria",
+      "image": "assets/locations/universidad-pacifico.jpg"
+    }
+  ],
+
+  "bookings": [
+    {
+      "id": "booking-001",
+      "userId": "1",
+      "vehicleId": "1",
+      "startLocationId": "1",
+      "endLocationId": "4",
+      "reservedAt": "2025-10-07T09:45:00Z",
+      "startDate": "2025-10-07T10:00:00Z",
+      "endDate": "2025-10-07T11:30:00Z",
+      "actualStartDate": "2025-10-07T10:02:00Z",
+      "actualEndDate": "2025-10-07T11:28:00Z",
+      "status": "completed",
+      "totalCost": 27.50,
+      "discount": 2.75,
+      "finalCost": 24.75,
+      "paymentMethod": "credit_card",
+      "paymentStatus": "paid",
+      "distance": 12.5,
+      "duration": 86,
+      "averageSpeed": 8.7,
+      "rating": {
+        "score": 5,
+        "comment": "Excelente servicio, vehículo en perfectas condiciones"
+      },
+      "issues": []
+    },
+    {
+      "id": "booking-002",
+      "userId": "2",
+      "vehicleId": "5",
+      "startLocationId": "2",
+      "endLocationId": "3",
+      "reservedAt": "2025-10-07T14:20:00Z",
+      "startDate": "2025-10-07T14:30:00Z",
+      "endDate": "2025-10-07T15:15:00Z",
+      "actualStartDate": "2025-10-07T14:32:00Z",
+      "actualEndDate": "2025-10-07T15:12:00Z",
+      "status": "completed",
+      "totalCost": 18.00,
+      "discount": 1.80,
+      "finalCost": 16.20,
+      "paymentMethod": "digital_wallet",
+      "paymentStatus": "paid",
+      "distance": 3.8,
+      "duration": 40,
+      "averageSpeed": 5.7,
+      "rating": {
+        "score": 4,
+        "comment": "Buen servicio, pero el vehículo estaba un poco sucio"
+      },
+      "issues": []
+    },
+    {
+      "id": "booking-003",
+      "userId": "3",
+      "vehicleId": "7",
+      "startLocationId": "5",
+      "endLocationId": "6",
+      "reservedAt": "2025-10-08T08:00:00Z",
+      "startDate": "2025-10-08T08:15:00Z",
+      "endDate": "2025-10-08T09:00:00Z",
+      "actualStartDate": "2025-10-08T08:16:00Z",
+      "actualEndDate": "2025-10-08T08:58:00Z",
+      "status": "completed",
+      "totalCost": 23.10,
+      "discount": 6.93,
+      "finalCost": 16.17,
+      "paymentMethod": "credit_card",
+      "paymentStatus": "paid",
+      "distance": 8.2,
+      "duration": 42,
+      "averageSpeed": 11.7,
+      "rating": {
+        "score": 5,
+        "comment": "Perfecto para ir al trabajo"
+      },
+      "issues": []
+    },
+    {
+      "id": "booking-004",
+      "userId": "1",
+      "vehicleId": "9",
+      "startLocationId": "9",
+      "endLocationId": "10",
+      "reservedAt": "2025-10-08T11:30:00Z",
+      "startDate": "2025-10-08T12:00:00Z",
+      "endDate": null,
+      "actualStartDate": null,
+      "actualEndDate": null,
+      "status": "pending",
+      "totalCost": null,
+      "discount": null,
+      "finalCost": null,
+      "paymentMethod": "credit_card",
+      "paymentStatus": "pending",
+      "distance": null,
+      "duration": null,
+      "averageSpeed": null,
+      "rating": null,
+      "issues": []
+    }
+  ],
+
+  "trips": [
+    {
+      "id": "trip-001",
+      "bookingId": "booking-001",
+      "userId": "1",
+      "vehicleId": "1",
+      "startLocationId": "1",
+      "endLocationId": "4",
+      "route": "Plaza Mayor → Av. Abancay → Av. Garcilaso → Jockey Plaza",
+      "routeCoordinates": [
+        {"lat": -12.046374, "lng": -77.042793},
+        {"lat": -12.052891, "lng": -77.041234},
+        {"lat": -12.068745, "lng": -77.045123},
+        {"lat": -12.084334, "lng": -76.977074}
+      ],
+      "startDate": "2025-10-07T10:02:00Z",
+      "endDate": "2025-10-07T11:28:00Z",
+      "duration": 86,
+      "distance": 12.5,
+      "averageSpeed": 8.7,
+      "maxSpeed": 24.5,
+      "totalCost": 24.75,
+      "carbonSaved": 2.3,
+      "caloriesBurned": 45,
+      "weather": "sunny",
+      "temperature": 22,
+      "status": "completed",
+      "incidentReports": [],
+      "photos": ["assets/trips/trip-001-start.jpg", "assets/trips/trip-001-end.jpg"]
+    },
+    {
+      "id": "trip-002",
+      "bookingId": "booking-002",
+      "userId": "2",
+      "vehicleId": "5",
+      "startLocationId": "2",
+      "endLocationId": "3",
+      "route": "Parque Kennedy → Malecón Cisneros → Larcomar",
+      "routeCoordinates": [
+        {"lat": -12.120500, "lng": -77.029833},
+        {"lat": -12.125000, "lng": -77.030000},
+        {"lat": -12.131944, "lng": -77.030278}
+      ],
+      "startDate": "2025-10-07T14:32:00Z",
+      "endDate": "2025-10-07T15:12:00Z",
+      "duration": 40,
+      "distance": 3.8,
+      "averageSpeed": 5.7,
+      "maxSpeed": 18.2,
+      "totalCost": 16.20,
+      "carbonSaved": 0.7,
+      "caloriesBurned": 25,
+      "weather": "cloudy",
+      "temperature": 19,
+      "status": "completed",
+      "incidentReports": [],
+      "photos": ["assets/trips/trip-002-start.jpg"]
+    },
+    {
+      "id": "trip-003",
+      "bookingId": "booking-003",
+      "userId": "3",
+      "vehicleId": "7",
+      "startLocationId": "5",
+      "endLocationId": "6",
+      "route": "San Isidro Golf → Av. Arequipa → Real Plaza Salaverry",
+      "routeCoordinates": [
+        {"lat": -12.097778, "lng": -77.037222},
+        {"lat": -12.090000, "lng": -77.043000},
+        {"lat": -12.081111, "lng": -77.047222}
+      ],
+      "startDate": "2025-10-08T08:16:00Z",
+      "endDate": "2025-10-08T08:58:00Z",
+      "duration": 42,
+      "distance": 8.2,
+      "averageSpeed": 11.7,
+      "maxSpeed": 24.8,
+      "totalCost": 16.17,
+      "carbonSaved": 1.5,
+      "caloriesBurned": 35,
+      "weather": "sunny",
+      "temperature": 20,
+      "status": "completed",
+      "incidentReports": [],
+      "photos": []
+    }
+  ],
+
+  "payments": [
+    {
+      "id": "payment-001",
+      "userId": "1",
+      "bookingId": "booking-001",
+      "amount": 24.75,
+      "currency": "USD",
+      "method": "credit_card",
+      "cardLast4": "1234",
+      "status": "completed",
+      "transactionId": "txn_1234567890",
+      "processedAt": "2025-10-07T11:30:00Z",
+      "description": "Pago por viaje - Plaza Mayor a Jockey Plaza",
+      "invoice": {
+        "subtotal": 27.50,
+        "discount": 2.75,
+        "tax": 0.00,
+        "total": 24.75
+      }
+    },
+    {
+      "id": "payment-002",
+      "userId": "2",
+      "bookingId": "booking-002",
+      "amount": 16.20,
+      "currency": "USD",
+      "method": "digital_wallet",
+      "cardLast4": "5678",
+      "status": "completed",
+      "transactionId": "txn_0987654321",
+      "processedAt": "2025-10-07T15:15:00Z",
+      "description": "Pago por viaje - Parque Kennedy a Larcomar",
+      "invoice": {
+        "subtotal": 18.00,
+        "discount": 1.80,
+        "tax": 0.00,
+        "total": 16.20
+      }
+    },
+    {
+      "id": "payment-003",
+      "userId": "3",
+      "bookingId": "booking-003",
+      "amount": 16.17,
+      "currency": "USD",
+      "method": "credit_card",
+      "cardLast4": "9012",
+      "status": "completed",
+      "transactionId": "txn_1122334455",
+      "processedAt": "2025-10-08T09:00:00Z",
+      "description": "Pago por viaje - San Isidro a Real Plaza",
+      "invoice": {
+        "subtotal": 23.10,
+        "discount": 6.93,
+        "tax": 0.00,
+        "total": 16.17
+      }
+    }
+  ],
+
+  "unlockRequests": [
+    {
+      "id": "unlock-001",
+      "userId": "1",
+      "vehicleId": "1",
+      "bookingId": "booking-001",
+      "requestedAt": "2025-10-07T10:00:00Z",
+      "scheduledUnlockTime": "2025-10-07T10:02:00Z",
+      "actualUnlockTime": "2025-10-07T10:02:15Z",
+      "status": "unlocked",
+      "method": "qr_code",
+      "location": {
+        "lat": -12.046374,
+        "lng": -77.042793
+      },
+      "unlockCode": "UNLOCK789",
+      "attempts": 1,
+      "errorMessage": null
+    },
+    {
+      "id": "unlock-002",
+      "userId": "2",
+      "vehicleId": "5",
+      "bookingId": "booking-002",
+      "requestedAt": "2025-10-07T14:30:00Z",
+      "scheduledUnlockTime": "2025-10-07T14:32:00Z",
+      "actualUnlockTime": "2025-10-07T14:32:08Z",
+      "status": "unlocked",
+      "method": "qr_code",
+      "location": {
+        "lat": -12.120500,
+        "lng": -77.029833
+      },
+      "unlockCode": "UNLOCK456",
+      "attempts": 1,
+      "errorMessage": null
+    },
+    {
+      "id": "unlock-003",
+      "userId": "3",
+      "vehicleId": "7",
+      "bookingId": "booking-003",
+      "requestedAt": "2025-10-08T08:15:00Z",
+      "scheduledUnlockTime": "2025-10-08T08:16:00Z",
+      "actualUnlockTime": "2025-10-08T08:16:12Z",
+      "status": "unlocked",
+      "method": "app_unlock",
+      "location": {
+        "lat": -12.097778,
+        "lng": -77.037222
+      },
+      "unlockCode": "UNLOCK123",
+      "attempts": 1,
+      "errorMessage": null
+    }
+  ],
+
+  "notifications": [
+    {
+      "id": "notif-001",
+      "userId": "1",
+      "title": "¡Viaje completado exitosamente!",
+      "message": "Tu viaje de 86 minutos desde Plaza Mayor ha terminado. Costo total: $24.75",
+      "type": "trip_completed",
+      "category": "trip",
+      "priority": "normal",
+      "createdAt": "2025-10-07T11:30:00Z",
+      "readAt": null,
+      "isRead": false,
+      "actionRequired": false,
+      "relatedEntityId": "booking-001",
+      "relatedEntityType": "booking",
+      "icon": "check-circle",
+      "color": "#10B981"
+    },
+    {
+      "id": "notif-002",
+      "userId": "1",
+      "title": "Promoción especial disponible",
+      "message": "¡Obtén 20% de descuento en tu próximo viaje! Código: SAVE20",
+      "type": "promotion",
+      "category": "marketing",
+      "priority": "low",
+      "createdAt": "2025-10-07T12:00:00Z",
+      "readAt": null,
+      "isRead": false,
+      "actionRequired": false,
+      "expiresAt": "2025-10-14T23:59:59Z",
+      "promoCode": "SAVE20",
+      "discount": 20,
+      "icon": "gift",
+      "color": "#F59E0B"
+    },
+    {
+      "id": "notif-003",
+      "userId": "2",
+      "title": "Viaje completado",
+      "message": "Tu viaje de 40 minutos desde Parque Kennedy ha terminado. Costo: $16.20",
+      "type": "trip_completed",
+      "category": "trip",
+      "priority": "normal",
+      "createdAt": "2025-10-07T15:15:00Z",
+      "readAt": "2025-10-07T16:00:00Z",
+      "isRead": true,
+      "actionRequired": false,
+      "relatedEntityId": "booking-002",
+      "relatedEntityType": "booking",
+      "icon": "check-circle",
+      "color": "#10B981"
+    },
+    {
+      "id": "notif-004",
+      "userId": "3",
+      "title": "Reserva confirmada",
+      "message": "Tu reserva para mañana a las 8:15 AM está confirmada",
+      "type": "booking_confirmed",
+      "category": "booking",
+      "priority": "normal",
+      "createdAt": "2025-10-08T08:00:00Z",
+      "readAt": "2025-10-08T08:05:00Z",
+      "isRead": true,
+      "actionRequired": false,
+      "relatedEntityId": "booking-003",
+      "relatedEntityType": "booking",
+      "icon": "calendar",
+      "color": "#3B82F6"
+    },
+    {
+      "id": "notif-005",
+      "userId": "1",
+      "title": "Reserva pendiente",
+      "message": "Tienes una reserva para hoy a las 12:00 PM. ¡No la olvides!",
+      "type": "booking_reminder",
+      "category": "booking",
+      "priority": "high",
+      "createdAt": "2025-10-08T11:30:00Z",
+      "readAt": null,
+      "isRead": false,
+      "actionRequired": true,
+      "relatedEntityId": "booking-004",
+      "relatedEntityType": "booking",
+      "icon": "bell",
+      "color": "#EF4444"
+    }
+  ],
+
+  "favorites": [
+    {
+      "id": "fav-001",
+      "userId": "1",
+      "vehicleId": "1",
+      "addedAt": "2025-09-15T10:00:00Z",
+      "notes": "Mi scooter favorito, siempre tiene buena batería"
+    },
+    {
+      "id": "fav-002",
+      "userId": "1",
+      "vehicleId": "7",
+      "addedAt": "2025-09-22T14:30:00Z",
+      "notes": "Muy rápido y cómodo"
+    },
+    {
+      "id": "fav-003",
+      "userId": "3",
+      "vehicleId": "10",
+      "addedAt": "2025-09-10T09:00:00Z",
+      "notes": "El mejor diseño"
+    },
+    {
+      "id": "fav-004",
+      "userId": "2",
+      "vehicleId": "5",
+      "addedAt": "2025-10-01T11:00:00Z",
+      "notes": "Buena relación calidad-precio"
+    }
+  ],
+
+  "bookingDrafts": [
+    {
+      "id": "draft-001",
+      "userId": "1",
+      "vehicleId": "1",
+      "selectedDate": "2025-12-05",
+      "unlockTime": "14:30",
+      "duration": 2,
+      "smsReminder": true,
+      "emailConfirmation": true,
+      "pushNotification": false,
+      "savedAt": "2025-12-03T10:00:00Z",
+      "expiresAt": "2025-12-04T10:00:00Z"
+    },
+    {
+      "id": "draft-002",
+      "userId": "1",
+      "vehicleId": "3",
+      "selectedDate": "2025-12-06",
+      "unlockTime": "09:00",
+      "duration": 4,
+      "smsReminder": false,
+      "emailConfirmation": true,
+      "pushNotification": true,
+      "savedAt": "2025-12-03T15:30:00Z",
+      "expiresAt": "2025-12-04T15:30:00Z"
+    }
+  ]
+}

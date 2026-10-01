@@ -1,0 +1,83 @@
+<div class="manual-unlock-modal">
+  <div class="modal-header">
+    <h2 mat-dialog-title>Desbloqueo Manual</h2>
+    <button mat-icon-button (click)="onClose()" class="close-button">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div mat-dialog-content class="modal-content">
+    <div class="instructions">
+      <mat-icon>info_outline</mat-icon>
+      <p>
+        Ingresa el número de teléfono del vehículo y el código de desbloqueo
+      </p>
+    </div>
+
+    <form [formGroup]="unlockForm" (ngSubmit)="onSubmit()">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Teléfono del Vehículo</mat-label>
+        <input
+          matInput
+          formControlName="vehiclePhone"
+          type="tel"
+          placeholder="987654321"
+          [disabled]="isUnlocking"
+        />
+        <mat-icon matPrefix>phone</mat-icon>
+        <mat-error *ngIf="vehiclePhoneControl?.hasError('required')">
+          El teléfono es requerido
+        </mat-error>
+        <mat-error *ngIf="vehiclePhoneControl?.hasError('pattern')">
+          Formato de teléfono inválido
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Código de Desbloqueo</mat-label>
+        <input
+          matInput
+          formControlName="unlockCode"
+          type="text"
+          placeholder="1234"
+          [disabled]="isUnlocking"
+        />
+        <mat-icon matPrefix>lock_open</mat-icon>
+        <mat-error *ngIf="unlockCodeControl?.hasError('required')">
+          El código es requerido
+        </mat-error>
+        <mat-error
+          *ngIf="unlockCodeControl?.hasError('minlength') || unlockCodeControl?.hasError('maxlength')"
+        >
+          El código debe tener entre 4 y 8 caracteres
+        </mat-error>
+      </mat-form-field>
+
+      <div class="error-message" *ngIf="errorMessage">
+        <mat-icon>error</mat-icon>
+        <p>{{ errorMessage }}</p>
+      </div>
+    </form>
+  </div>
+
+  <div mat-dialog-actions class="modal-actions">
+    <button mat-stroked-button (click)="onClose()" [disabled]="isUnlocking">
+      Cancelar
+    </button>
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="onSubmit()"
+      [disabled]="unlockForm.invalid || isUnlocking"
+      class="unlock-button"
+    >
+      <mat-spinner
+        *ngIf="isUnlocking"
+        diameter="20"
+        class="button-spinner"
+      ></mat-spinner>
+      <span *ngIf="!isUnlocking">Desbloquear</span>
+      <span *ngIf="isUnlocking">Desbloqueando...</span>
+    </button>
+  </div>
+</div>

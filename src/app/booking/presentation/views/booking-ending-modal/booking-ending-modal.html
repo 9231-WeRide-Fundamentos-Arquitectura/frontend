@@ -1,0 +1,26 @@
+<div class="booking-ending-modal">
+  <div class="modal-header">
+    <h2 mat-dialog-title>{{ 'booking.bookingEnding.title' | translate }}</h2>
+    <button mat-icon-button (click)="onClose()" class="close-button">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div mat-dialog-content class="modal-content">
+    <div class="icon-container">
+      <mat-icon class="clock-icon">schedule</mat-icon>
+      <mat-icon class="warning-icon">error_outline</mat-icon>
+    </div>
+    <p class="message" [innerHTML]="getMessage()"></p>
+  </div>
+
+  <div mat-dialog-actions class="modal-actions">
+    <button mat-raised-button (click)="extendTime()" class="extend-button">
+      {{ getExtendButtonText() }}
+    </button>
+    <button mat-raised-button (click)="endReservation()" class="end-button">
+      {{ 'booking.bookingEnding.endReservation' | translate }}
+    </button>
+  </div>
+</div>
+

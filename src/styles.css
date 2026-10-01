@@ -1,0 +1,113 @@
+@import "mapbox-gl/dist/mapbox-gl.css";
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+.vehicle-details-dialog .mat-mdc-dialog-container {
+  padding: 0 !important;
+  border-radius: 16px !important;
+  overflow: hidden;
+}
+
+.vehicle-details-dialog .mat-mdc-dialog-surface {
+  border-radius: 16px !important;
+}
+
+.vehicle-details-dialog .mat-mdc-dialog-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.vehicle-details-dialog .mat-mdc-dialog-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.vehicle-details-dialog .mat-mdc-dialog-container::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.vehicle-details-dialog
+  .mat-mdc-dialog-container::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+.confirm-booking-dialog .mat-mdc-dialog-container,
+.active-booking-dialog .mat-mdc-dialog-container,
+.booking-ending-dialog .mat-mdc-dialog-container,
+.qr-scanner-dialog .mat-mdc-dialog-container,
+.manual-unlock-dialog .mat-mdc-dialog-container,
+.report-problem-dialog .mat-mdc-dialog-container,
+.rate-trip-dialog .mat-mdc-dialog-container {
+  padding: 0 !important;
+  border-radius: 16px !important;
+  overflow: hidden;
+}
+
+.confirm-booking-dialog .mat-mdc-dialog-surface,
+.active-booking-dialog .mat-mdc-dialog-surface,
+.booking-ending-dialog .mat-mdc-dialog-surface,
+.qr-scanner-dialog .mat-mdc-dialog-surface,
+.manual-unlock-dialog .mat-mdc-dialog-surface,
+.report-problem-dialog .mat-mdc-dialog-surface,
+.rate-trip-dialog .mat-mdc-dialog-surface,
+.booking-confirmation-dialog .mat-mdc-dialog-surface {
+  border-radius: 16px !important;
+}
+
+.info-snackbar {
+  background-color: #7c3aed !important;
+  color: white !important;
+}
+
+.info-snackbar .mat-mdc-snack-bar-label {
+  color: white !important;
+}
+
+.info-snackbar .mat-mdc-button {
+  color: white !important;
+}
+
+.success-snackbar {
+  background-color: #10b981 !important;
+  color: white !important;
+}
+
+.success-snackbar .mat-mdc-snack-bar-label {
+  color: white !important;
+}
+
+.success-snackbar .mat-mdc-button {
+  color: white !important;
+}
+
+.error-snackbar {
+  background-color: #ef4444 !important;
+  color: white !important;
+}
+
+.error-snackbar .mat-mdc-snack-bar-label {
+  color: white !important;
+}
+
+.error-snackbar .mat-mdc-button {
+  color: white !important;
+}
+
+.custom-snackbar {
+  background-color: #ff9800 !important;
+  color: white !important;
+}
+
+.custom-snackbar .mat-mdc-snack-bar-label {
+  color: white !important;
+}
+
+.custom-snackbar .mat-mdc-button {
+  color: white !important;
+}

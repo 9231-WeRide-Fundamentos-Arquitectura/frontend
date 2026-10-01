@@ -1,0 +1,110 @@
+<button class="back-button" (click)="goBack()">
+  <mat-icon>arrow_back</mat-icon>
+  {{ 'common.back' | translate }}
+</button>
+<div class="payment-container">
+  <div class="payment-form">
+    <div class="form-group">
+      <label>{{ 'plans.payment.cardNumber' | translate }}</label>
+      <div class="input-wrapper">
+        <input
+          type="text"
+          [placeholder]="'plans.payment.cardNumberPlaceholder' | translate"
+          [(ngModel)]="cardNumber"
+          (input)="onCardNumberInput($event)"
+          maxlength="19"
+          class="card-input"
+        />
+        <mat-icon class="input-icon success" *ngIf="isCardNumberValid()">
+          check_circle
+        </mat-icon>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>{{ 'plans.payment.expiryDate' | translate }}</label>
+        <input
+          type="text"
+          [placeholder]="'plans.payment.expiryDatePlaceholder' | translate"
+          [(ngModel)]="expiryDate"
+          (input)="onExpiryDateInput($event)"
+          maxlength="5"
+          class="date-input"
+        />
+      </div>
+
+      <div class="form-group">
+        <label>{{ 'plans.payment.cvv' | translate }}</label>
+        <div class="input-wrapper">
+          <input
+            type="password"
+            [placeholder]="'plans.payment.cvvPlaceholder' | translate"
+            [(ngModel)]="cvv"
+            maxlength="4"
+            class="cvv-input"
+          />
+          <mat-icon class="input-icon lock">lock</mat-icon>
+        </div>
+      </div>
+    </div>
+
+    <div class="save-card-row">
+      <span>{{ 'plans.payment.saveCard' | translate }}</span>
+      <mat-slide-toggle [(ngModel)]="saveCard" color="primary"></mat-slide-toggle>
+    </div>
+
+    <div class="billing-section">
+      <div class="billing-header">
+        <label>{{ 'plans.payment.billingAddress' | translate }}:</label>
+        <button class="edit-btn" (click)="verifyAddress()"></button>
+        <div class="form-group">
+          <input
+            type="text"
+            [placeholder]="'plans.payment.billingAddressPlaceholder' | translate"
+            [(ngModel)]="billingAddress"
+            class="address-input"
+          />
+        </div>
+      </div>
+    </div>
+
+    <div class="price-summary">
+      <div class="price-row">
+        <span>{{ 'plans.payment.total' | translate }} :</span>
+        <span class="price">$/ {{ subtotal.toFixed(2) }}</span>
+      </div>
+      <div class="price-row discount-row">
+        <span>{{ 'plans.payment.discounts' | translate }}:</span>
+        <span class="price">$/ {{ discount.toFixed(2) }}</span>
+      </div>
+      <div class="price-row total-row">
+        <span>{{ 'plans.payment.total' | translate }}:</span>
+        <span class="price total">$/ {{ total.toFixed(2) }}</span>
+      </div>
+    </div>
+
+    <div class="reminder">
+      <p class="reminder-title">{{ 'plans.payment.reminder' | translate }}</p>
+      <p class="reminder-text">{{ 'plans.payment.reminderText' | translate }}</p>
+    </div>
+
+    <div class="payment-total">
+      <p class="payment-total-label">{{ 'plans.payment.paymentTotal' | translate }}</p>
+      <p class="payment-total-amount">$/ {{ total.toFixed(2) }}</p>
+      <p class="payment-terms">
+        {{ 'plans.payment.termsText' | translate }}
+        <a href="/terms">{{ 'plans.payment.termsOfUse' | translate }}</a> {{ 'common.and' | translate }}
+        <a href="/privacy">{{ 'plans.payment.privacyPolicy' | translate }}</a>.
+      </p>
+    </div>
+
+    <button
+      class="finalize-btn"
+      [disabled]="!isFormValid()"
+      (click)="endPayment()"
+    >
+      {{ 'plans.payment.finalizePayment' | translate }} $/ {{ total.toFixed(2) }}
+    </button>
+  </div>
+</div>

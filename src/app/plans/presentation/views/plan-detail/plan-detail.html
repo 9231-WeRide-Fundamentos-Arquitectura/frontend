@@ -1,0 +1,56 @@
+<div class="plan-detail-container">
+  <ng-container *ngIf="loading$ | async; else contentTemplate">
+    <div class="loading">{{ 'plans.loadingPlan' | translate }}</div>
+  </ng-container>
+
+  <ng-template #contentTemplate>
+    <ng-container *ngIf="plan$ | async as plan; else notFoundTemplate">
+      <mat-card class="plan-detail-card">
+        <mat-card-header>
+          <mat-card-title [style.color]="plan.color"
+            >{{ plan.name }}</mat-card-title
+          >
+        </mat-card-header>
+        <mat-card-content>
+          <p class="plan-description">{{ plan.description }}</p>
+          <div class="plan-info">
+            <p><strong>{{ 'plans.duration' | translate }}:</strong> {{ getFormattedDuration(plan) }}</p>
+            <p><strong>{{ 'plans.price' | translate }}:</strong> {{ getFormattedPrice(plan) }}</p>
+            <p>
+              <strong>{{ 'plans.pricePerMinute' | translate }}:</strong> ${{ plan.pricePerMinute }}
+            </p>
+            <p><strong>{{ 'plans.discount' | translate }}:</strong> {{ plan.discountPercentage }}%</p>
+            <p>
+              <strong>{{ 'plans.maxTripsPerDay' | translate }}:</strong> {{ plan.maxTripsPerDay }}
+            </p>
+            <p>
+              <strong>{{ 'plans.maxMinutesPerTrip' | translate }}:</strong> {{
+              plan.maxMinutesPerTrip }}
+            </p>
+            <p>
+              <strong>{{ 'plans.freeMinutesPerMonth' | translate }}:</strong> {{
+              plan.freeMinutesPerMonth }}
+            </p>
+          </div>
+          <div class="plan-benefits">
+            <h4>{{ 'plans.benefits' | translate }}:</h4>
+            <ul>
+              <li *ngFor="let benefit of plan.benefits">{{ benefit }}</li>
+            </ul>
+          </div>
+        </mat-card-content>
+        <mat-card-actions>
+          <button mat-raised-button color="primary" (click)="onPayment(plan)">
+            {{ 'plans.pay' | translate }}
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </ng-container>
+
+    <ng-template #notFoundTemplate>
+      <div>
+        <p>{{ 'plans.notFound' | translate }}</p>
+      </div>
+    </ng-template>
+  </ng-template>
+</div>

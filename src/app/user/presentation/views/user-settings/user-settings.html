@@ -1,0 +1,14 @@
+<div class="user-settings">
+  <div class="user-settings-card">
+    <button 
+      *ngFor="let setting of settings"
+      class="us-card-item" 
+      [class.active]="isActive(setting.key)"
+      type="button"
+      (click)="onSettingClick(setting.key)">
+      <mat-icon>{{ setting.icon }}</mat-icon>
+      <span class="us-item">{{ setting.label }}</span>
+      <mat-icon class="arrow-icon">keyboard_arrow_right</mat-icon>
+    </button>
+  </div>
+</div>

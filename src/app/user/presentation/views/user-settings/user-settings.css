@@ -1,0 +1,89 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.user-settings {
+  width: 100%;
+}
+
+.user-settings-card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 1.5rem;
+  box-shadow: 1px 1px 1px #d7d8db;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.us-card-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid #eff1f5;
+  background: #ffffff;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+  text-align: left;
+}
+
+.us-card-item:hover {
+  border-color: #6f4dff;
+}
+
+.us-card-item.active {
+  background: #f2f0ff;
+  border-color: #6f4dff;
+}
+
+.us-card-item.active .us-item {
+  color: #6f4dff;
+  font-weight: 600;
+}
+
+.us-card-item.active mat-icon:first-child {
+  color: #6f4dff;
+}
+
+.us-card-item mat-icon:first-child {
+  color: #6f4dff;
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+}
+
+.us-item {
+  flex: 1;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #1f2937;
+  margin: 0;
+}
+
+.arrow-icon {
+  color: #c0c6d2;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  transition: transform 0.2s ease;
+}
+
+.us-card-item:hover .arrow-icon {
+  transform: translateX(4px);
+  color: #6f4dff;
+}
+
+@media (max-width: 768px) {
+  .user-settings-card {
+    padding: 1rem;
+  }
+
+  .us-card-item {
+    padding: 0.875rem 1rem;
+  }
+}
+

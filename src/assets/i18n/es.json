@@ -1,0 +1,604 @@
+{
+  "common": {
+    "close": "Cerrar",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "back": "Volver",
+    "next": "Siguiente",
+    "continue": "Continuar",
+    "retry": "Reintentar",
+    "loading": "Cargando...",
+    "error": "Error",
+    "success": "Éxito",
+    "confirm": "Confirmar",
+    "yes": "Sí",
+    "no": "No",
+    "search": "Buscar",
+    "filter": "Filtrar",
+    "viewDetails": "Ver Detalles",
+    "book": "Reservar",
+    "notAvailable": "No Disponible",
+    "and": "y"
+  },
+  "navigation": {
+    "home": "Inicio",
+    "garage": "Garaje",
+    "profile": "Perfil",
+    "plans": "Planes",
+    "trip": "Viaje",
+    "bookings": "Reservas",
+    "user": "User"
+  },
+  "navbar": {
+    "notifications": {
+      "title": "Notificaciones",
+      "markAllRead": "Marcar todas como leídas"
+    },
+    "userMenu": {
+      "subtitle": "¡Bienvenido!",
+      "profile": "Perfil",
+      "logout": "Cerrar Sesión"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Iniciar Sesión",
+      "subtitle": "Entra y conduce tu salud",
+      "continueWithGoogle": "Continuar con Google",
+      "loginWithPhone": "Entrar con número de celular",
+      "loginWithEmail": "Entrar con mi email de empresa",
+      "continueAsGuest": "Continuar como invitado",
+      "terms": "Al continuar, aceptas la",
+      "privacyPolicy": "Política de privacidad",
+      "termsOfUse": "Términos de uso",
+      "ofWeRide": "de WeRide",
+      "loadingMessage": "Cargando datos de WeRide..."
+    },
+    "phoneLogin": {
+      "title": "Introduce Número de Celular",
+      "subtitle": "En necesario que ingrese su numero de celular para continuar",
+      "prefix": "Prefijo",
+      "phone": "Celular",
+      "phonePlaceholder": "912345678",
+      "verificationCode": "Código de Verificación",
+      "codeSent": "Hemos enviado un código de 4 dígitos al número",
+      "copy": "Copiar",
+      "copied": "✓ Copiado"
+    },
+    "emailLogin": {
+      "title": "Iniciar Sesión",
+      "subtitle": "Ingresa con tu email corporativo",
+      "email": "Email",
+      "password": "Contraseña",
+      "forgotPassword": "¿Olvidaste tu contraseña?",
+      "rememberMe": "Recordarme",
+      "signIn": "Iniciar Sesión",
+      "errorTitle": "Ocurrio un Error"
+    },
+    "register": {
+      "title": "Introduce tus datos",
+      "subtitle": "Recibirás un código de verificación por WhatsApp",
+      "firstName": "Nombres",
+      "lastName": "Apellidos",
+      "name": "Nombre",
+      "email": "Email",
+      "phone": "Teléfono",
+      "password": "Contraseña",
+      "confirmPassword": "Confirmar Contraseña",
+      "createAccount": "Crear Cuenta",
+      "alreadyHaveAccount": "¿Ya tienes una cuenta?",
+      "login": "Iniciar Sesión",
+      "errorTitle": "Ocurrio un Error",
+      "successTitle": "Verificado Correctamente",
+      "successMessage": "Otp ingresado Correctamente"
+    },
+    "verification": {
+      "title": "Introduce código de verificación",
+      "subtitle": "Recibirás un código de verificación por WhatsApp",
+      "enterCode": "Ingresa el código de verificación",
+      "codeSentTo": "Código enviado a",
+      "resendCode": "Reenviar código",
+      "verify": "Verificar",
+      "errorTitle": "Ocurrio un Error"
+    }
+  },
+  "garage": {
+    "title": "Garaje de Vehículos",
+    "loading": "Cargando vehículos...",
+    "error": "Error al cargar los vehículos. Por favor, intente nuevamente.",
+    "filterError": "Error al aplicar filtros.",
+    "noResults": "No se encontraron vehículos con los filtros aplicados.",
+    "priceAndRating": "Precio y Valoración",
+    "pricePerMinute": "Precio por Minuto",
+    "minPrice": "Precio Min ($/min)",
+    "maxPrice": "Precio Max ($/min)",
+    "loadingFavorites": "Cargando favoritos...",
+    "filters": "Filtros",
+    "vehicleType": "Tipo de Vehículo",
+    "status": "Estado",
+    "brand": "Marca",
+    "brandPlaceholder": "Ej: Xiaomi",
+    "minRating": "Rating Mínimo",
+    "minBattery": "Batería Mínima (%)",
+    "applyFilters": "Aplicar Filtros",
+    "clear": "Limpiar",
+    "all": "Todos",
+    "tabs": {
+      "allVehicles": "Todos los Vehículos",
+      "favorites": "Favoritos"
+    },
+    "favorites": {
+      "title": "Mis Vehículos Favoritos",
+      "noFavorites": "No tienes vehículos favoritos aún.",
+      "addMessage": "Marca tus vehículos preferidos para encontrarlos fácilmente aquí.",
+      "exploreVehicles": "Explorar Vehículos",
+      "loading": "Cargando favoritos...",
+      "addedToFavorites": "Agregado a favoritos",
+      "removedFromFavorites": "Eliminado de favoritos",
+      "error": "Error al actualizar favoritos"
+    },
+    "details": {
+      "basicInfo": "Información Básica",
+      "brand": "Marca",
+      "model": "Modelo",
+      "year": "Año",
+      "color": "Color",
+      "licensePlate": "Placa",
+      "type": "Tipo",
+      "performance": "Rendimiento",
+      "maxSpeed": "Velocidad Máx",
+      "weight": "Peso",
+      "totalKilometers": "Kilómetros Totales",
+      "rating": "Valoración",
+      "maintenance": "Mantenimiento",
+      "maintenanceStatus": "Estado",
+      "lastMaintenance": "Último Mantenimiento",
+      "nextMaintenance": "Próximo Mantenimiento",
+      "features": "Características",
+      "reserveVehicle": "Reservar Vehículo",
+      "vehicleImageAlt": "Imagen del vehículo"
+    },
+    "vehicle": {
+      "status": "Estado",
+      "price": "Precio",
+      "rating": "Rating",
+      "battery": "Batería",
+      "maxSpeed": "Velocidad Máx",
+      "range": "Alcance",
+      "reserve": "Reservar",
+      "viewDetails": "Ver Detalles",
+      "statuses": {
+        "available": "Disponible",
+        "reserved": "Reservado",
+        "maintenance": "En mantenimiento",
+        "in_use": "En uso"
+      },
+      "types": {
+        "electric_scooter": "Scooter Eléctrico",
+        "bike": "Bicicleta",
+        "electric_bike": "Bicicleta Eléctrica"
+      },
+      "id": "ID vehículo"
+    },
+    "qrScanner": {
+      "title": "Escanea el código QR del vehículo",
+      "ok": "Todo OK.",
+      "scanHere": "Escanea aquí"
+    },
+    "manualUnlock": {
+      "title": "Reserva de vehiculo",
+      "phoneNumber": "Ingresa tu numero de celular:",
+      "password": "Ingresa tu contrasena:",
+      "responsibility": "Soy responsable del uso del siguiente vehiculo y me hago cargo de posibles danos",
+      "unlock": "Desbloquear"
+    },
+    "reportProblem": {
+      "title": "Reportar un problema",
+      "category": "Señala la categoría del problema:",
+      "categories": {
+        "mechanical": "Falla mecánica",
+        "tires": "Neumáticos",
+        "gps": "GPS",
+        "battery": "Batería",
+        "lock": "Bloqueo",
+        "other": "Otro (señalar)"
+      },
+      "description": "Descríbenos tu problema:",
+      "descriptionPlaceholder": "Descripción opcional...",
+      "submit": "Enviar reporte"
+    }
+  },
+  "user": {
+    "loadingStats": "Cargando estadísticas...",
+    "loadingUserInfo": "Cargando información del usuario...",
+    "stats": {
+      "trips": "Trayectos",
+      "meters": "Metros",
+      "totalSpent": "Gasto total",
+      "rating": "Puntuación"
+    },
+    "wallet": {
+      "title": "Cartera",
+      "totalSpent": "Total Gastado",
+      "recentPayments": "Últimos Pagos",
+      "noPayments": "No hay pagos registrados",
+      "paymentMethods": {
+        "credit_card": "Tarjeta de Crédito",
+        "digital_wallet": "Billetera Digital"
+      }
+    },
+    "settings": {
+      "title": "Ajustes",
+      "preferences": "Preferencias",
+      "account": "Cuenta",
+      "language": "Idioma",
+      "languageDescription": "Selecciona tu idioma preferido",
+      "languages": {
+        "es": "Español",
+        "en": "English",
+        "pt": "Português"
+      },
+      "notifications": "Notificaciones",
+      "notificationsDescription": "Recibe notificaciones sobre tus viajes",
+      "theme": "Tema",
+      "themeDescription": "Elige el tema de la aplicación",
+      "themes": {
+        "light": "Claro",
+        "dark": "Oscuro",
+        "auto": "Automático"
+      },
+      "personalInfo": "Información Personal",
+      "deleteAccount": "Eliminar Cuenta",
+      "deleteAccountDescription": "Elimina permanentemente tu cuenta y todos tus datos",
+      "saveChanges": "Guardar Cambios"
+    },
+    "profile": {
+      "user": "Usuario",
+      "quickMenu": "Menú rápido",
+      "noProfileInfo": "No se encontró información del perfil.",
+      "avatarAlt": "Avatar de usuario",
+      "configureProfile": "Configurar perfil",
+      "manageAccount": "Administrar tu cuenta",
+      "customizeProfile": "Personalizar tu perfil"
+    },
+    "security": {
+      "title": "Centro de Seguridad",
+      "verificationStatus": "Estado de Verificación",
+      "securityInfo": "Información de Seguridad",
+      "password": "Contraseña",
+      "change": "Cambiar",
+      "phone": "Teléfono",
+      "email": "Email",
+      "emergencyContact": "Contacto de Emergencia",
+      "notConfigured": "No configurado",
+      "configure": "Configurar",
+      "privacyPreferences": "Preferencias de Privacidad",
+      "notifications": "Notificaciones",
+      "enabled": "Activadas",
+      "disabled": "Desactivadas"
+    },
+    "history": {
+      "title": "Historial",
+      "trips": "Viajes",
+      "bookings": "Reservas",
+      "completedTrips": "Viajes Completados",
+      "noTrips": "No hay viajes registrados",
+      "trip": "Viaje",
+      "completed": "Completado",
+      "pending": "Pendiente",
+      "noBookings": "No hay reservas registradas",
+      "bookingId": "Reserva #"
+    },
+    "help": {
+      "title": "Ayuda",
+      "faqs": "Preguntas Frecuentes",
+      "contact": "Contacto",
+      "contactEmail": "Email",
+      "contactPhone": "Teléfono",
+      "contactHours": "Horario de Atención",
+      "resources": "Recursos",
+      "userGuide": "Guía de Usuario",
+      "videoTutorials": "Tutoriales en Video",
+      "termsAndConditions": "Términos y Condiciones",
+      "faq1": {
+        "question": "¿Cómo reservo un vehículo?",
+        "answer": "Puedes reservar un vehículo desde la sección de Garage. Selecciona el vehículo que deseas y haz clic en \"Reservar\"."
+      },
+      "faq2": {
+        "question": "¿Cómo cancelo una reserva?",
+        "answer": "Ve a la sección de Reservas, encuentra tu reserva activa y haz clic en \"Cancelar\"."
+      },
+      "faq3": {
+        "question": "¿Qué métodos de pago aceptan?",
+        "answer": "Aceptamos tarjetas de crédito y billeteras digitales. Puedes configurar tus métodos de pago en la sección de Cartera."
+      },
+      "faq4": {
+        "question": "¿Cómo contacto con soporte?",
+        "answer": "Puedes contactarnos a través del email de soporte o usando el chat en vivo disponible en la aplicación."
+      },
+      "hours": "Lunes a Viernes: 9:00 AM - 6:00 PM"
+    }
+  },
+  "booking": {
+    "title": "Reservar Vehículo",
+    "electricVehicle": "Vehículo de Micromovilidad Eléctrica",
+    "date": "Fecha",
+    "unlockTime": "Hora de Desbloqueo",
+    "duration": "Duración (minutos)",
+    "bookNow": "Reservar Ahora",
+    "saveDraft": "Guardar como Borrador",
+    "scheduleUnlock": "Programar Desbloqueo",
+    "selectDate": "Seleccionar Fecha",
+    "durationHours": "Duración (horas)",
+    "hour": "hora",
+    "hours": "horas",
+    "scheduleUnlockButton": "Programar Desbloqueo",
+    "loadingBookings": "Cargando reservas...",
+    "myBookings": "Mis Reservas",
+    "newBooking": "Nueva Reserva",
+    "edit": "Editar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "activate": "Activar",
+    "noBookings": "No hay reservas aún",
+    "createFirstBooking": "Crea tu primera reserva para comenzar a usar WeRide",
+    "createBooking": "Crear Reserva",
+    "minutes": "minutos",
+    "notAvailable": "N/A",
+    "confirmCancelMessage": "¿Estás seguro de que deseas cancelar esta reserva?",
+    "confirmDeleteMessage": "¿Estás seguro de que deseas eliminar esta reserva permanentemente?",
+    "cancelSuccess": "Reserva cancelada exitosamente",
+    "cancelError": "Error al cancelar la reserva",
+    "deleteSuccess": "Reserva eliminada exitosamente",
+    "deleteError": "Error al eliminar la reserva",
+    "createSuccess": "Reserva creada exitosamente",
+    "updateSuccess": "Reserva actualizada exitosamente",
+    "updateError": "Error al actualizar la reserva",
+    "notFound": "Reserva no encontrada",
+    "activatedSuccessfully": "Reserva activada exitosamente",
+    "activateError": "Error al activar la reserva",
+    "cannotActivate": "Esta reserva no puede ser activada",
+    "alreadyHasActive": "Ya tienes una reserva activa en curso",
+    "vehicleNotAvailable": "El vehículo no está disponible",
+    "status": {
+      "pending": "Pendiente",
+      "confirmed": "Confirmada",
+      "active": "En curso",
+      "completed": "Completada",
+      "cancelled": "Cancelada"
+    },
+    "summary": {
+      "title": "Resumen de Reserva",
+      "vehicle": "Vehículo",
+      "type": "Tipo",
+      "batteryLevel": "Nivel de Batería",
+      "range": "Alcance",
+      "dateTime": "Fecha y hora",
+      "duration": "Duración",
+      "rate": "Tarifa",
+      "total": "Total",
+      "minutes": "minutos",
+      "notifications": {
+        "smsReminder": "Recordatorio SMS 30 min antes",
+        "emailConfirmation": "Confirmación por email",
+        "pushNotification": "Notificación push al desbloquear"
+      }
+    },
+    "confirmBooking": {
+      "title": "¿Confirmar reserva de este vehículo?",
+      "reserveWithQR": "Reservar con QR",
+      "reserveWithCode": "Reservar con codigo"
+    },
+    "activeBooking": {
+      "title": "Reserva activa",
+      "message": "Tu reserva ha comenzado. Tienes **{minutes} min** para iniciar tu viaje",
+      "understand": "Entiendo."
+    },
+    "bookingEnding": {
+      "title": "¡Tu reserva está por finalizar!",
+      "message": "Te quedan **{minutes} minutos** antes de que termine tu tiempo",
+      "extendTime": "Extender tiempo (s/.{cost})",
+      "endReservation": "Finalizar reserva"
+    },
+    "notifications": {
+      "started": {
+        "title": "Reserva Iniciada",
+        "message": "Tu reserva #{bookingId} ha comenzado. Ahora puedes desbloquear tu vehículo e iniciar tu viaje."
+      },
+      "expiring": {
+        "title": "Reserva Por Expirar",
+        "message": "Tu reserva expirará en {minutes} minutos. Inicia tu viaje ahora o extiende tu tiempo."
+      },
+      "expired": {
+        "title": "Reserva Expirada",
+        "message": "Tu reserva ha expirado sin iniciar un viaje. El vehículo ha sido liberado automáticamente."
+      }
+    }
+  },
+  "trip": {
+    "title": "Viajes",
+    "activeTrip": "Viaje Activo",
+    "tripHistory": "Historial de Viajes",
+    "startTrip": "Iniciar Viaje",
+    "endTrip": "Finalizar Viaje",
+    "tripDetails": "Detalles del Viaje",
+    "tripDuration": "Duración del viaje",
+    "location": "Ubicación",
+    "remainingTime": "Tiempo restante",
+    "extraTime": "Tiempo Extra",
+    "loadingTrip": "Cargando datos del viaje...",
+    "electricScooter": "Scooter Eléctrico",
+    "leaveRating": "Déjanos tu puntuación",
+    "tripHistory": "Historial de viajes",
+    "settings": "Configuración",
+    "trip": "Viaje",
+    "dateAndTime": "Fecha y hora",
+    "vehicle": "Vehículo",
+    "distanceTraveled": "Distancia recorrida",
+    "tripId": "Id del Viaje",
+    "printReceipt": "Imprimir recibo",
+    "viewDetails": "Ver detalles",
+    "seeMore": "Ver más",
+    "rateTrip": {
+      "title": "Califica tu viaje!",
+      "subtitle": "Tu opinión nos ayuda a mejorar nuestro servicio",
+      "commentPlaceholder": "Escribe un comentario aquí....",
+      "thankYou": "¡Gracias por tu calificación!",
+      "savedOffline": "Tu calificación se guardó localmente y se enviará cuando haya conexión"
+    },
+    "reportProblem": {
+      "title": "Reportar un problema",
+      "category": "Señala la categoría del problema:",
+      "categories": {
+        "mechanical": "Falla mecánica",
+        "tires": "Neumáticos",
+        "gps": "GPS",
+        "battery": "Batería",
+        "lock": "Bloqueo",
+        "other": "Otro (señalar)"
+      },
+      "description": "Descríbenos tu problema:",
+      "descriptionPlaceholder": "Descripción opcional...",
+      "submit": "Enviar reporte",
+      "reportButton": "Reportar Problema",
+      "success": "¡Reporte enviado con éxito!",
+      "savedOffline": "Tu reporte se guardó localmente y se enviará cuando haya conexión"
+    },
+    "vehicleInfo": {
+      "battery": "Batería",
+      "brand": "Marca"
+    }
+  },
+  "plans": {
+    "title": "Planes",
+    "selectPlan": "Seleccionar Plan",
+    "monthly": "Mensual",
+    "quarterly": "Trimestral",
+    "annual": "Anual",
+    "perMonth": "por mes",
+    "perYear": "por año",
+    "loading": "Cargando planes...",
+    "loadingPlan": "Cargando plan...",
+    "duration": "Duración",
+    "price": "Precio",
+    "pricePerMinute": "Precio por minuto",
+    "discount": "Descuento",
+    "freeMinutesPerMonth": "Minutos gratis al mes",
+    "benefits": "Beneficios",
+    "pay": "Pagar",
+    "maxTripsPerDay": "Viajes máximos por día",
+    "maxMinutesPerTrip": "Minutos máximos por viaje",
+    "notFound": "Plan no encontrado.",
+    "payment": {
+      "cardNumber": "Numero de tarjeta",
+      "cardNumberPlaceholder": "Numero de tarjeta",
+      "expiryDate": "Fecha de Expiración",
+      "expiryDatePlaceholder": "MM/AA",
+      "cvv": "CVV",
+      "cvvPlaceholder": "3-4 digitos",
+      "saveCard": "Recordar esta tarjeta para uso futuro",
+      "billingAddress": "Direccion de facturación",
+      "billingAddressPlaceholder": "Ejem: Av. Siempre Viva 742",
+      "total": "Total",
+      "discounts": "Descuento(s)",
+      "paymentTotal": "Total del Pago:",
+      "reminder": "Recuerda:",
+      "reminderText": "Los viajes de más de 30 minutos generán costos extra",
+      "finalizePayment": "Finalizar Pago",
+      "termsText": "Al finalizar la compra, acepta nuestros",
+      "termsOfUse": "términos de uso",
+      "privacyPolicy": "Política de privacidad"
+    }
+  },
+  "home": {
+    "welcome": "Bienvenido a WeRide",
+    "subtitle": "Tu plataforma de micromovilidad eléctrica",
+    "hero": {
+      "startRiding": "Comenzar a Viajar"
+    },
+    "features": {
+      "title": "Nuestros Servicios",
+      "scooters": {
+        "title": "Scooters Eléctricos",
+        "description": "Alquila scooters eléctricos para viajes cortos por la ciudad"
+      },
+      "bikes": {
+        "title": "Bicicletas Eléctricas",
+        "description": "Bicicletas eléctricas para distancias más largas y ejercicio"
+      },
+      "schedule": {
+        "title": "Programar Desbloqueo",
+        "description": "Programa el desbloqueo de tu vehículo con anticipación"
+      },
+      "status": {
+        "title": "Estado de Desbloqueo",
+        "description": "Monitorea el estado de desbloqueo de tu vehículo en tiempo real"
+      },
+      "garage": {
+        "title": "Garaje de Vehículos",
+        "description": "Explora y selecciona de nuestra flota de vehículos"
+      },
+      "trips": {
+        "title": "Mis Viajes",
+        "description": "Ve tu historial de viajes y viajes activos"
+      },
+      "plans": {
+        "title": "Planes de Membresía",
+        "description": "Elige el plan que se adapte a tus necesidades"
+      },
+      "profile": {
+        "title": "Mi Perfil",
+        "description": "Administra tu cuenta y preferencias"
+      }
+    },
+    "quickActions": "Acciones Rápidas",
+    "actions": {
+      "checkStatus": "Verificar Estado",
+      "schedule": "Programar Desbloqueo",
+      "viewBookings": "Ver Reservas"
+    },
+    "cta": {
+      "title": "¿Listo para viajar?",
+      "description": "Encuentra un vehículo cerca de ti y comienza tu viaje"
+    },
+    "activeBooking": {
+      "active": "Activo",
+      "bookingId": "Reserva",
+      "remaining": "Tiempo restante",
+      "viewDetails": "Ver detalles"
+    },
+    "theme": {
+      "toggle": "Cambiar tema",
+      "light": "Modo claro",
+      "dark": "Modo oscuro"
+    },
+    "errors": {
+      "network": "Error de conexión. Por favor verifica tu internet.",
+      "timeout": "La solicitud tardó demasiado. Intenta de nuevo.",
+      "unknown": "Ocurrió un error inesperado.",
+      "maxRetries": "Se alcanzó el máximo de reintentos.",
+      "retry": "Reintentar"
+    }
+  },
+  "errors": {
+    "generic": "Ha ocurrido un error. Por favor, intente nuevamente.",
+    "network": "Error de conexión. Verifica tu conexión a internet.",
+    "notFound": "No se encontró el recurso solicitado.",
+    "unauthorized": "No tienes autorización para realizar esta acción.",
+    "serverError": "Error del servidor. Por favor, intente más tarde.",
+    "invalidCode": "Código incorrecto",
+    "loginError": "Error al iniciar sesión"
+  },
+  "validation": {
+    "required": "Este campo es obligatorio",
+    "email": "Ingresa un email válido",
+    "minLength": "Debe tener al menos {{min}} caracteres",
+    "maxLength": "No puede tener más de {{max}} caracteres",
+    "pattern": "El formato no es válido",
+    "min": "El valor mínimo es {{min}}",
+    "max": "El valor máximo es {{max}}"
+  }
+}
+

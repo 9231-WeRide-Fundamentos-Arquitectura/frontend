@@ -1,0 +1,37 @@
+<div class="sidebar" [class.collapsed]="collapsed">
+  <div class="profile-section" *ngIf="!collapsed">
+    <button mat-icon-button>
+      <mat-icon>account_circle</mat-icon>
+    </button>
+    <h3>{{ 'navigation.user' | translate }}</h3>
+  </div>
+
+  <nav>
+    <ul>
+      <li routerLink="/home" routerLinkActive="active">
+        <mat-icon>dashboard</mat-icon>
+        <span *ngIf="!collapsed">{{ 'navigation.home' | translate }}</span>
+      </li>
+      <li routerLink="/garage" routerLinkActive="active">
+        <mat-icon>garage</mat-icon>
+        <span *ngIf="!collapsed">{{ 'navigation.garage' | translate }}</span>
+      </li>
+      <li routerLink="/plan" routerLinkActive="active">
+        <mat-icon>card_membership</mat-icon>
+        <span *ngIf="!collapsed">{{ 'navigation.plans' | translate }}</span>
+      </li>
+      <li routerLink="/trip" routerLinkActive="active">
+        <mat-icon>luggage</mat-icon>
+        <span *ngIf="!collapsed">{{ 'navigation.trip' | translate }}</span>
+      </li>
+      <li routerLink="/booking" routerLinkActive="active">
+        <mat-icon>book_online</mat-icon>
+        <span *ngIf="!collapsed">{{ 'navigation.bookings' | translate }}</span>
+      </li>
+      <li routerLink="/user" routerLinkActive="active">
+        <mat-icon>person</mat-icon>
+        <span *ngIf="!collapsed">{{ 'navigation.profile' | translate }}</span>
+      </li>
+    </ul>
+  </nav>
+</div>

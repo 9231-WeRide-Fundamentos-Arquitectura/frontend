@@ -1,0 +1,24 @@
+<div class="trip-history-container">
+  <div class="header">
+    <button mat-icon-button class="back-btn" (click)="goBack()" aria-label="Volver">
+      <span style="font-size: 24px;">←</span>
+    </button>
+    <h2>{{ 'trip.tripHistory' | translate }}</h2>
+  </div>
+  <div *ngFor="let trip of trips" class="trip-card">
+    <img [src]="trip.image" [alt]="'trip.electricScooter' | translate" class="vehicle-img" />
+    <div class="trip-info">
+      <h3>{{ 'trip.trip' | translate }} ({{ trip.route }})</h3>
+      <p>{{ 'trip.dateAndTime' | translate }}: {{ trip.date }}</p>
+      <p>{{ 'trip.vehicle' | translate }}: {{ trip.vehicle }}</p>
+      <p>{{ 'trip.tripDuration' | translate }}: {{ trip.duration }}</p>
+      <p>{{ 'trip.distanceTraveled' | translate }}: {{ trip.distance }}</p>
+      <p>{{ 'trip.tripId' | translate }}: {{ trip.id }}</p>
+    </div>
+    <div class="trip-actions">
+      <button (click)="printReceipt(trip)">{{ 'trip.printReceipt' | translate }}</button>
+      <button (click)="viewDetails(trip)">{{ 'trip.viewDetails' | translate }}</button>
+    </div>
+  </div>
+  <button class="see-more-btn" (click)="seeMore()">{{ 'trip.seeMore' | translate }}</button>
+</div>

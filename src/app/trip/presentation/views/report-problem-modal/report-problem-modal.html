@@ -1,0 +1,57 @@
+<div class="report-problem-modal">
+  <div class="modal-header">
+    <h2 mat-dialog-title>{{ 'trip.reportProblem.title' | translate }}</h2>
+    <button mat-icon-button (click)="onClose()" class="close-button">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div mat-dialog-content class="modal-content">
+    <div class="content-grid">
+      <div class="form-section">
+        <h3 class="section-title">{{ 'trip.reportProblem.category' | translate }}</h3>
+        <div class="categories-grid">
+          <div
+            *ngFor="let category of categories"
+            class="category-item"
+            (click)="toggleCategory(category.key)"
+          >
+            <mat-checkbox
+              [checked]="isCategorySelected(category.key)"
+              (change)="toggleCategory(category.key)"
+            >
+              {{ category.label | translate }}
+            </mat-checkbox>
+          </div>
+        </div>
+
+        <h3 class="section-title">{{ 'trip.reportProblem.description' | translate }}</h3>
+        <mat-form-field appearance="outline" class="full-width">
+          <textarea
+            matInput
+            [(ngModel)]="description"
+            [placeholder]="'trip.reportProblem.descriptionPlaceholder' | translate"
+            rows="4"
+            class="description-textarea"
+          ></textarea>
+        </mat-form-field>
+      </div>
+
+      <div class="vehicle-card">
+        <img [src]="vehicle.image" [alt]="vehicle.brand + ' ' + vehicle.model" class="vehicle-image" />
+        <div class="vehicle-info">
+          <p class="vehicle-type">{{ vehicle.type }}</p>
+          <p class="vehicle-id">ID: {{ vehicle.id }}</p>
+          <p class="vehicle-battery">{{ 'trip.vehicleInfo.battery' | translate }}: {{ vehicle.battery }}%</p>
+          <p class="vehicle-brand">{{ 'trip.vehicleInfo.brand' | translate }}: {{ vehicle.brand }} {{ vehicle.model }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div mat-dialog-actions class="modal-actions">
+    <button mat-raised-button (click)="onSubmit()" [disabled]="!canSubmit()" class="submit-button">
+      {{ 'trip.reportProblem.submit' | translate }}
+    </button>
+  </div>
+</div>

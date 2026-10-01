@@ -1,0 +1,9 @@
+<div class="skeleton-container">
+  @for (item of skeletonItems; track item) {
+  <div
+    class="skeleton skeleton-{{ type }}"
+    [style.width]="width"
+    [style.height]="height"
+  ></div>
+  }
+</div>

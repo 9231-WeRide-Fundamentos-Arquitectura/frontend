@@ -1,0 +1,95 @@
+.active-booking-modal {
+  max-width: 500px;
+  width: 100%;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 16px 20px 0;
+}
+
+.close-button {
+  color: #666;
+}
+
+.modal-content {
+  padding: 24px;
+  text-align: center;
+}
+
+.icon-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.check-icon {
+  font-size: 64px;
+  width: 64px;
+  height: 64px;
+  color: #4CAF50;
+}
+
+.title {
+  margin: 0 0 16px 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+}
+
+.message {
+  margin: 0;
+  font-size: 16px;
+  color: #666;
+  line-height: 1.5;
+}
+
+.message strong {
+  color: #7145d8;
+  font-weight: 600;
+}
+
+.modal-actions {
+  padding: 16px 24px 24px;
+  display: flex;
+  justify-content: center;
+}
+
+.understand-button {
+  background-color: #7145d8 !important;
+  color: white !important;
+  padding: 12px 48px;
+  font-weight: 600;
+  border-radius: 8px;
+}
+
+.understand-button:hover {
+  background-color: #5a36b3 !important;
+}
+
+@media (max-width: 768px) {
+  .active-booking-modal {
+    max-width: 95vw;
+  }
+
+  .modal-content {
+    padding: 20px 16px;
+  }
+
+  .check-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+  }
+
+  .title {
+    font-size: 20px;
+  }
+
+  .understand-button {
+    width: 100%;
+  }
+}
+

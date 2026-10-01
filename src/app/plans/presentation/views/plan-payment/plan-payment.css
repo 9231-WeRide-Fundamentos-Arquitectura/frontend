@@ -1,0 +1,250 @@
+.back-button {
+  margin-left: 4.5rem;
+  padding: 0.6rem;
+  background: #7c3aed;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.payment-container {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.payment-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #1a1a1a;
+}
+
+.form-group.required {
+  position: relative;
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.card-input,
+.date-input,
+.cvv-input {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.address-input {
+  padding: 0.875rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.card-input:focus,
+.date-input:focus,
+.cvv-input:focus {
+  border-color: #7c3aed;
+}
+
+.input-icon {
+  position: absolute;
+  right: 1rem;
+  font-size: 1.25rem;
+}
+
+.input-icon.success {
+  color: #10b981;
+}
+
+.input-icon.lock {
+  color: #9ca3af;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.save-card-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+}
+
+.save-card-row span {
+  font-size: 0.9rem;
+  color: #374151;
+}
+
+.billing-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.billing-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.billing-header label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #1a1a1a;
+}
+
+.edit-btn {
+  background: none;
+  border: none;
+  color: #7c3aed;
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 0;
+}
+
+.billing-address {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.price-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem 0;
+  border-top: 1px solid #e5e7eb;
+}
+
+.price-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.price-row span {
+  font-size: 0.9rem;
+  color: #374151;
+}
+
+.price-row .price {
+  color: #7c3aed;
+  font-weight: 500;
+}
+
+.discount-row .price {
+  color: #10b981;
+}
+
+.total-row {
+  font-weight: 600;
+}
+
+.total-row .price.total {
+  color: #7c3aed;
+  font-size: 1rem;
+}
+
+.reminder {
+  background: #fef3c7;
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.reminder-title {
+  font-weight: 600;
+  color: #92400e;
+  margin: 0 0 0.5rem 0;
+  font-size: 0.9rem;
+}
+
+.reminder-text {
+  color: #92400e;
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+.payment-total {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem 0;
+}
+
+.payment-total-label {
+  font-size: 0.9rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+.payment-total-amount {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #7c3aed;
+  margin: 0;
+}
+
+.payment-terms {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.payment-terms a {
+  color: #7c3aed;
+  text-decoration: none;
+}
+
+.finalize-btn {
+  width: 100%;
+  padding: 1rem;
+  background: #7c3aed;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.finalize-btn:hover:not(:disabled) {
+  background: #6d28d9;
+}
+
+.finalize-btn:disabled {
+  background: #d1d5db;
+  cursor: not-allowed;
+}

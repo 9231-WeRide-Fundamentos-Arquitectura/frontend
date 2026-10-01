@@ -1,0 +1,162 @@
+<div class="trip-container">
+  @if (isLoading()) {
+  <div class="loading-state">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Cargando detalles del viaje...</p>
+  </div>
+  } @if (!isLoading() && relatedBooking()) {
+  <mat-card class="booking-card">
+    <mat-card-header>
+      <mat-icon mat-card-avatar>confirmation_number</mat-icon>
+      <mat-card-title>Estado de Reserva</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <div
+        class="booking-status-badge"
+        [ngClass]="getBookingStatusClass(relatedBooking()?.activationStatus)"
+      >
+        <mat-icon
+          >{{ getBookingStatusIcon(relatedBooking()?.activationStatus)
+          }}</mat-icon
+        >
+        <span
+          >{{ getBookingStatusText(relatedBooking()?.activationStatus) }}</span
+        >
+      </div>
+
+      <div class="booking-info">
+        <div class="info-item">
+          <mat-icon>directions_bike</mat-icon>
+          <span
+            >{{ currentVehicle()?.brand }} {{ currentVehicle()?.model }}</span
+          >
+        </div>
+
+        <div class="info-item">
+          <mat-icon>calendar_today</mat-icon>
+          <span>{{ relatedBooking()?.startDate | date:'short' }}</span>
+        </div>
+
+        @if (relatedBooking()?.activatedAt) {
+        <div class="info-item">
+          <mat-icon>schedule</mat-icon>
+          <span
+            >Activada: {{ relatedBooking()?.activatedAt | date:'short' }}</span
+          >
+        </div>
+        }
+      </div>
+
+      @if (canActivateBooking()) {
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="activateBooking()"
+        class="activate-booking-button"
+      >
+        <mat-icon>play_arrow</mat-icon>
+        Activar Reserva Ahora
+      </button>
+      } @if (relatedBooking()?.activationStatus === 'active') {
+      <div class="activation-notice">
+        <mat-icon>check_circle</mat-icon>
+        <p>Tu reserva está activa y en uso</p>
+      </div>
+      }
+    </mat-card-content>
+  </mat-card>
+  } @if (!isLoading() && isActiveTrip() && currentVehicle() &&
+  currentLocation()) {
+  <mat-card class="trip-details-card">
+    <div class="card-content">
+      <div class="trip-info">
+        <h3>{{ getVehicleType() }}</h3>
+        <p>
+          <strong>{{ 'trip.location' | translate }}:</strong>
+          {{ currentLocation()?.address || 'Ubicación actual' }}
+        </p>
+        <p>
+          <strong>{{ 'garage.vehicle.battery' | translate }}:</strong>
+          {{ currentVehicle()?.battery }}%
+        </p>
+        <p>
+          <strong>{{ 'trip.remainingTime' | translate }}:</strong>
+          {{ remainingTime() }}
+        </p>
+        <p>
+          <strong>{{ 'trip.extraTime' | translate }}:</strong>
+          {{ extraTime() }}
+        </p>
+      </div>
+
+      <div class="trip-footer">
+        <div class="trip-rating">
+          <div class="stars">
+            @for (star of [1,2,3,4,5]; track star) {
+            <span
+              class="star"
+              [class.filled]="star <= rating()"
+              (click)="setRating(star)"
+            >
+              ★
+            </span>
+            }
+          </div>
+          <span class="rating-label">{{ 'trip.leaveRating' | translate }}</span>
+        </div>
+
+        <div class="trip-actions">
+          <button mat-stroked-button class="action-btn" (click)="goToHistory()">
+            {{ 'trip.tripHistory' | translate }}
+          </button>
+          <button
+            mat-stroked-button
+            class="action-btn"
+            (click)="goToSettings()"
+          >
+            {{ 'trip.settings' | translate }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </mat-card>
+  } @if (!isLoading() && !isActiveTrip() && !relatedBooking()) {
+  <mat-card class="no-trip-card">
+    <div class="no-trip-content">
+      <mat-icon class="empty-icon">event_busy</mat-icon>
+      <h2>Aún no tienes un viaje en curso en este momento, quizás deseas...</h2>
+
+      <div class="no-trip-actions">
+        <button
+          mat-raised-button
+          color="primary"
+          class="primary-action-btn"
+          (click)="goToGarage()"
+        >
+          <mat-icon>directions_bike</mat-icon>
+          Reservar un vehículo ahora
+        </button>
+
+        <button
+          mat-stroked-button
+          class="secondary-action-btn"
+          (click)="goToScheduleBooking()"
+        >
+          <mat-icon>schedule</mat-icon>
+          Programar una reserva
+        </button>
+
+        <button
+          mat-stroked-button
+          class="secondary-action-btn"
+          (click)="goToHistory()"
+        >
+          <mat-icon>history</mat-icon>
+          Historial de Viajes
+        </button>
+      </div>
+    </div>
+  </mat-card>
+  }
+</div>

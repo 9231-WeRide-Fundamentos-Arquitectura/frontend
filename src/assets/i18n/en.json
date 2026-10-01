@@ -1,0 +1,602 @@
+{
+  "common": {
+    "close": "Close",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "back": "Back",
+    "next": "Next",
+    "continue": "Continue",
+    "retry": "Retry",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "confirm": "Confirm",
+    "yes": "Yes",
+    "no": "No",
+    "search": "Search",
+    "filter": "Filter",
+    "viewDetails": "View Details",
+    "book": "Book",
+    "notAvailable": "Not Available",
+    "and": "and"
+  },
+  "navigation": {
+    "home": "Home",
+    "garage": "Garage",
+    "profile": "Profile",
+    "plans": "Plans",
+    "trip": "Trip",
+    "bookings": "Bookings",
+    "user": "User"
+  },
+  "navbar": {
+    "notifications": {
+      "title": "Notifications",
+      "markAllRead": "Mark all as read"
+    },
+    "userMenu": {
+      "subtitle": "Welcome!",
+      "profile": "Profile",
+      "logout": "Log Out"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Sign In",
+      "subtitle": "Enter and drive your health",
+      "continueWithGoogle": "Continue with Google",
+      "loginWithPhone": "Sign in with phone number",
+      "loginWithEmail": "Sign in with company email",
+      "continueAsGuest": "Continue as guest",
+      "terms": "By continuing, you accept the",
+      "privacyPolicy": "Privacy Policy",
+      "termsOfUse": "Terms of Use",
+      "ofWeRide": "of WeRide",
+      "loadingMessage": "Loading WeRide data..."
+    },
+    "phoneLogin": {
+      "title": "Enter Phone Number",
+      "subtitle": "It is necessary to enter your phone number to continue",
+      "prefix": "Prefix",
+      "phone": "Phone",
+      "phonePlaceholder": "912345678",
+      "verificationCode": "Verification Code",
+      "codeSent": "We have sent a 4-digit code to the number",
+      "copy": "Copy",
+      "copied": "✓ Copied"
+    },
+    "emailLogin": {
+      "title": "Sign In",
+      "subtitle": "Sign in with your corporate email",
+      "email": "Email",
+      "password": "Password",
+      "forgotPassword": "Forgot your password?",
+      "rememberMe": "Remember me",
+      "signIn": "Sign In",
+      "errorTitle": "An Error Occurred"
+    },
+    "register": {
+      "title": "Enter your information",
+      "subtitle": "You will receive a verification code via WhatsApp",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "name": "Name",
+      "email": "Email",
+      "phone": "Phone",
+      "password": "Password",
+      "confirmPassword": "Confirm Password",
+      "createAccount": "Create Account",
+      "alreadyHaveAccount": "Already have an account?",
+      "login": "Sign In",
+      "errorTitle": "An Error Occurred",
+      "successTitle": "Verified Successfully",
+      "successMessage": "OTP entered correctly"
+    },
+    "verification": {
+      "title": "Enter verification code",
+      "subtitle": "You will receive a verification code via WhatsApp",
+      "enterCode": "Enter verification code",
+      "codeSentTo": "Code sent to",
+      "resendCode": "Resend code",
+      "verify": "Verify",
+      "errorTitle": "An Error Occurred"
+    }
+  },
+  "garage": {
+    "title": "Vehicle Garage",
+    "loading": "Loading vehicles...",
+    "error": "Error loading vehicles. Please try again.",
+    "filterError": "Error applying filters.",
+    "noResults": "No vehicles found with the applied filters.",
+    "priceAndRating": "Price and Rating",
+    "pricePerMinute": "Price per Minute",
+    "minPrice": "Min Price ($/min)",
+    "maxPrice": "Max Price ($/min)",
+    "loadingFavorites": "Loading favorites...",
+    "filters": "Filters",
+    "vehicleType": "Vehicle Type",
+    "status": "Status",
+    "brand": "Brand",
+    "brandPlaceholder": "E.g: Xiaomi",
+    "minRating": "Min Rating",
+    "minBattery": "Min Battery (%)",
+    "applyFilters": "Apply Filters",
+    "clear": "Clear",
+    "all": "All",
+    "tabs": {
+      "allVehicles": "All Vehicles",
+      "favorites": "Favorites"
+    },
+    "favorites": {
+      "title": "My Favorite Vehicles",
+      "noFavorites": "You don't have favorite vehicles yet.",
+      "addMessage": "Mark your preferred vehicles to easily find them here.",
+      "exploreVehicles": "Explore Vehicles",
+      "loading": "Loading favorites...",
+      "addedToFavorites": "Added to favorites",
+      "removedFromFavorites": "Removed from favorites",
+      "error": "Error updating favorites"
+    },
+    "details": {
+      "basicInfo": "Basic Information",
+      "brand": "Brand",
+      "model": "Model",
+      "year": "Year",
+      "color": "Color",
+      "licensePlate": "License Plate",
+      "type": "Type",
+      "performance": "Performance",
+      "maxSpeed": "Max Speed",
+      "weight": "Weight",
+      "totalKilometers": "Total Kilometers",
+      "rating": "Rating",
+      "maintenance": "Maintenance",
+      "maintenanceStatus": "Status",
+      "lastMaintenance": "Last Maintenance",
+      "nextMaintenance": "Next Maintenance",
+      "features": "Features",
+      "reserveVehicle": "Reserve Vehicle",
+      "vehicleImageAlt": "Vehicle image"
+    },
+    "vehicle": {
+      "status": "Status",
+      "price": "Price",
+      "rating": "Rating",
+      "battery": "Battery",
+      "maxSpeed": "Max Speed",
+      "range": "Range",
+      "reserve": "Book",
+      "viewDetails": "View Details",
+      "statuses": {
+        "available": "Available",
+        "reserved": "Reserved",
+        "maintenance": "Under Maintenance",
+        "in_use": "In Use"
+      },
+      "types": {
+        "electric_scooter": "Electric Scooter",
+        "bike": "Bicycle",
+        "electric_bike": "Electric Bike"
+      },
+      "id": "Vehicle ID"
+    },
+    "qrScanner": {
+      "title": "Scan the vehicle's QR code",
+      "ok": "All OK.",
+      "scanHere": "Scan here"
+    },
+    "manualUnlock": {
+      "title": "Vehicle Reservation",
+      "phoneNumber": "Enter your cell phone number:",
+      "password": "Enter your password:",
+      "responsibility": "I am responsible for the use of the following vehicle and I take responsibility for possible damages",
+      "unlock": "Unlock"
+    },
+    "reportProblem": {
+      "title": "Report a problem",
+      "category": "Indicate the problem category:",
+      "categories": {
+        "mechanical": "Mechanical failure",
+        "tires": "Tires",
+        "gps": "GPS",
+        "battery": "Battery",
+        "lock": "Lock",
+        "other": "Other (specify)"
+      },
+      "description": "Describe your problem:",
+      "descriptionPlaceholder": "Optional description...",
+      "submit": "Send report"
+    }
+  },
+  "user": {
+    "loadingStats": "Loading stats...",
+    "loadingUserInfo": "Loading user information...",
+    "stats": {
+      "trips": "Trips",
+      "meters": "Meters",
+      "totalSpent": "Total Spent",
+      "rating": "Rating"
+    },
+    "wallet": {
+      "title": "Wallet",
+      "totalSpent": "Total Spent",
+      "recentPayments": "Recent Payments",
+      "noPayments": "No payments registered",
+      "paymentMethods": {
+        "credit_card": "Credit Card",
+        "digital_wallet": "Digital Wallet"
+      }
+    },
+    "settings": {
+      "title": "Settings",
+      "preferences": "Preferences",
+      "account": "Account",
+      "language": "Language",
+      "languageDescription": "Select your preferred language",
+      "languages": {
+        "es": "Spanish",
+        "en": "English",
+        "pt": "Portuguese"
+      },
+      "notifications": "Notifications",
+      "notificationsDescription": "Receive notifications about your trips",
+      "theme": "Theme",
+      "themeDescription": "Choose the application theme",
+      "themes": {
+        "light": "Light",
+        "dark": "Dark",
+        "auto": "Auto"
+      },
+      "personalInfo": "Personal Information",
+      "deleteAccount": "Delete Account",
+      "deleteAccountDescription": "Permanently delete your account and all your data",
+      "saveChanges": "Save Changes"
+    },
+    "profile": {
+      "user": "User",
+      "quickMenu": "Quick Menu",
+      "noProfileInfo": "No profile information found.",
+      "avatarAlt": "User avatar",
+      "configureProfile": "Configure profile",
+      "manageAccount": "Manage your account",
+      "customizeProfile": "Customize your profile"
+    },
+    "security": {
+      "title": "Security Center",
+      "verificationStatus": "Verification Status",
+      "securityInfo": "Security Information",
+      "password": "Password",
+      "change": "Change",
+      "phone": "Phone",
+      "email": "Email",
+      "emergencyContact": "Emergency Contact",
+      "notConfigured": "Not configured",
+      "configure": "Configure",
+      "privacyPreferences": "Privacy Preferences",
+      "notifications": "Notifications",
+      "enabled": "Enabled",
+      "disabled": "Disabled"
+    },
+    "history": {
+      "title": "History",
+      "trips": "Trips",
+      "bookings": "Bookings",
+      "completedTrips": "Completed Trips",
+      "noTrips": "No trips registered",
+      "trip": "Trip",
+      "completed": "Completed",
+      "pending": "Pending",
+      "noBookings": "No bookings registered",
+      "bookingId": "Booking #"
+    },
+    "help": {
+      "title": "Help",
+      "faqs": "Frequently Asked Questions",
+      "contact": "Contact",
+      "contactEmail": "Email",
+      "contactPhone": "Phone",
+      "contactHours": "Business Hours",
+      "resources": "Resources",
+      "userGuide": "User Guide",
+      "videoTutorials": "Video Tutorials",
+      "termsAndConditions": "Terms and Conditions",
+      "faq1": {
+        "question": "How do I book a vehicle?",
+        "answer": "You can book a vehicle from the Garage section. Select the vehicle you want and click \"Book\"."
+      },
+      "faq2": {
+        "question": "How do I cancel a booking?",
+        "answer": "Go to the Bookings section, find your active booking and click \"Cancel\"."
+      },
+      "faq3": {
+        "question": "What payment methods do you accept?",
+        "answer": "We accept credit cards and digital wallets. You can configure your payment methods in the Wallet section."
+      },
+      "faq4": {
+        "question": "How do I contact support?",
+        "answer": "You can contact us through the support email or using the live chat available in the application."
+      },
+      "hours": "Monday to Friday: 9:00 AM - 6:00 PM"
+    }
+  },
+  "booking": {
+    "title": "Book Vehicle",
+    "electricVehicle": "Electric Micromobility Vehicle",
+    "date": "Date",
+    "unlockTime": "Unlock Time",
+    "duration": "Duration (minutes)",
+    "bookNow": "Book Now",
+    "saveDraft": "Save as Draft",
+    "scheduleUnlock": "Schedule Unlock",
+    "selectDate": "Select Date",
+    "durationHours": "Duration (hours)",
+    "hour": "hour",
+    "hours": "hours",
+    "scheduleUnlockButton": "Schedule Unlock",
+    "loadingBookings": "Loading bookings...",
+    "myBookings": "My Bookings",
+    "newBooking": "New Booking",
+    "edit": "Edit",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "activate": "Activate",
+    "noBookings": "No bookings yet",
+    "createFirstBooking": "Create your first booking to start using WeRide",
+    "createBooking": "Create Booking",
+    "minutes": "minutes",
+    "notAvailable": "N/A",
+    "confirmCancelMessage": "Are you sure you want to cancel this booking?",
+    "confirmDeleteMessage": "Are you sure you want to permanently delete this booking?",
+    "cancelSuccess": "Booking cancelled successfully",
+    "cancelError": "Error cancelling booking",
+    "deleteSuccess": "Booking deleted successfully",
+    "deleteError": "Error deleting booking",
+    "createSuccess": "Booking created successfully",
+    "updateSuccess": "Booking updated successfully",
+    "updateError": "Error updating booking",
+    "notFound": "Booking not found",
+    "activatedSuccessfully": "Booking activated successfully",
+    "activateError": "Error activating booking",
+    "cannotActivate": "This booking cannot be activated",
+    "alreadyHasActive": "You already have an active booking in progress",
+    "vehicleNotAvailable": "Vehicle is not available",
+    "status": {
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "active": "In progress",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "summary": {
+      "title": "Booking Summary",
+      "vehicle": "Vehicle",
+      "type": "Type",
+      "batteryLevel": "Battery Level",
+      "range": "Range",
+      "dateTime": "Date and time",
+      "duration": "Duration",
+      "rate": "Rate",
+      "total": "Total",
+      "notifications": {
+        "smsReminder": "SMS reminder 30 min before",
+        "emailConfirmation": "Email confirmation",
+        "pushNotification": "Push notification when unlocking"
+      }
+    },
+    "confirmBooking": {
+      "title": "Confirm reservation of this vehicle?",
+      "reserveWithQR": "Reserve with QR",
+      "reserveWithCode": "Reserve with code"
+    },
+    "activeBooking": {
+      "title": "Active reservation",
+      "message": "Your reservation has started. You have **{minutes} min** to start your trip",
+      "understand": "Understood."
+    },
+    "bookingEnding": {
+      "title": "Your reservation is about to end!",
+      "message": "You have **{minutes} minutes** left before your time ends",
+      "extendTime": "Extend time (s/.{cost})",
+      "endReservation": "End reservation"
+    },
+    "notifications": {
+      "started": {
+        "title": "Reservation Started",
+        "message": "Your reservation #{bookingId} has started. You can now unlock your vehicle and begin your trip."
+      },
+      "expiring": {
+        "title": "Reservation About to Expire",
+        "message": "Your reservation will expire in {minutes} minutes. Start your trip now or extend your time."
+      },
+      "expired": {
+        "title": "Reservation Expired",
+        "message": "Your reservation has expired without starting a trip. The vehicle has been released automatically."
+      }
+    }
+  },
+  "trip": {
+    "title": "Trips",
+    "activeTrip": "Active Trip",
+    "tripHistory": "Trip History",
+    "startTrip": "Start Trip",
+    "endTrip": "End Trip",
+    "tripDetails": "Trip Details",
+    "tripDuration": "Trip Duration",
+    "location": "Location",
+    "remainingTime": "Remaining Time",
+    "extraTime": "Extra Time",
+    "loadingTrip": "Loading trip data...",
+    "electricScooter": "Electric Scooter",
+    "leaveRating": "Leave your rating",
+    "settings": "Settings",
+    "trip": "Trip",
+    "dateAndTime": "Date and time",
+    "vehicle": "Vehicle",
+    "distanceTraveled": "Distance traveled",
+    "tripId": "Trip ID",
+    "printReceipt": "Print receipt",
+    "viewDetails": "View details",
+    "seeMore": "See more",
+    "rateTrip": {
+      "title": "Rate your trip!",
+      "subtitle": "Your opinion helps us improve our service",
+      "commentPlaceholder": "Write a comment here....",
+      "thankYou": "Thank you for your rating!",
+      "savedOffline": "Your rating has been saved locally and will be sent when there is a connection"
+    },
+    "reportProblem": {
+      "title": "Report a problem",
+      "category": "Indicate the problem category:",
+      "categories": {
+        "mechanical": "Mechanical failure",
+        "tires": "Tires",
+        "gps": "GPS",
+        "battery": "Battery",
+        "lock": "Lock",
+        "other": "Other (specify)"
+      },
+      "description": "Describe your problem:",
+      "descriptionPlaceholder": "Optional description...",
+      "submit": "Send report",
+      "reportButton": "Report Problem",
+      "success": "Report sent successfully!",
+      "savedOffline": "Your report has been saved locally and will be sent when there is a connection"
+    },
+    "vehicleInfo": {
+      "battery": "Battery",
+      "brand": "Brand"
+    }
+  },
+  "plans": {
+    "title": "Plans",
+    "selectPlan": "Select Plan",
+    "monthly": "Monthly",
+    "quarterly": "Quarterly",
+    "annual": "Annual",
+    "perMonth": "per month",
+    "perYear": "per year",
+    "loading": "Loading plans...",
+    "loadingPlan": "Loading plan...",
+    "duration": "Duration",
+    "price": "Price",
+    "pricePerMinute": "Price per minute",
+    "discount": "Discount",
+    "freeMinutesPerMonth": "Free minutes per month",
+    "benefits": "Benefits",
+    "pay": "Pay",
+    "maxTripsPerDay": "Max trips per day",
+    "maxMinutesPerTrip": "Max minutes per trip",
+    "notFound": "Plan not found.",
+    "payment": {
+      "cardNumber": "Card Number",
+      "cardNumberPlaceholder": "Card Number",
+      "expiryDate": "Expiry Date",
+      "expiryDatePlaceholder": "MM/YY",
+      "cvv": "CVV",
+      "cvvPlaceholder": "3-4 digits",
+      "saveCard": "Remember this card for future use",
+      "billingAddress": "Billing Address",
+      "billingAddressPlaceholder": "E.g: 123 Main St",
+      "total": "Total",
+      "discounts": "Discount(s)",
+      "paymentTotal": "Payment Total:",
+      "reminder": "Remember:",
+      "reminderText": "Trips over 30 minutes will generate extra costs",
+      "finalizePayment": "Finalize Payment",
+      "termsText": "By completing the purchase, you accept our",
+      "termsOfUse": "terms of use",
+      "privacyPolicy": "Privacy Policy"
+    }
+  },
+  "home": {
+    "welcome": "Welcome to WeRide",
+    "subtitle": "Your electric micromobility platform",
+    "hero": {
+      "startRiding": "Start Riding"
+    },
+    "features": {
+      "title": "Our Services",
+      "scooters": {
+        "title": "Electric Scooters",
+        "description": "Rent electric scooters for short trips around the city"
+      },
+      "bikes": {
+        "title": "E-Bikes",
+        "description": "Electric bikes for longer distances and exercise"
+      },
+      "schedule": {
+        "title": "Schedule Unlock",
+        "description": "Schedule your vehicle unlock in advance"
+      },
+      "status": {
+        "title": "Unlock Status",
+        "description": "Monitor your vehicle's unlock status in real-time"
+      },
+      "garage": {
+        "title": "Vehicle Garage",
+        "description": "Browse and select from our fleet of vehicles"
+      },
+      "trips": {
+        "title": "My Trips",
+        "description": "View your trip history and active rides"
+      },
+      "plans": {
+        "title": "Membership Plans",
+        "description": "Choose the plan that fits your needs"
+      },
+      "profile": {
+        "title": "My Profile",
+        "description": "Manage your account and preferences"
+      }
+    },
+    "quickActions": "Quick Actions",
+    "actions": {
+      "checkStatus": "Check Unlock Status",
+      "schedule": "Schedule Unlock",
+      "viewBookings": "View Bookings"
+    },
+    "cta": {
+      "title": "Ready to ride?",
+      "description": "Find a vehicle near you and start your journey"
+    },
+    "activeBooking": {
+      "active": "Active",
+      "bookingId": "Booking",
+      "remaining": "Time remaining",
+      "viewDetails": "View details"
+    },
+    "theme": {
+      "toggle": "Toggle theme",
+      "light": "Light mode",
+      "dark": "Dark mode"
+    },
+    "errors": {
+      "network": "Connection error. Please check your internet.",
+      "timeout": "Request timed out. Please try again.",
+      "unknown": "An unexpected error occurred.",
+      "maxRetries": "Maximum retry attempts reached.",
+      "retry": "Retry"
+    }
+  },
+  "errors": {
+    "generic": "An error has occurred. Please try again.",
+    "network": "Connection error. Check your internet connection.",
+    "notFound": "The requested resource was not found.",
+    "unauthorized": "You are not authorized to perform this action.",
+    "serverError": "Server error. Please try again later.",
+    "invalidCode": "Incorrect code",
+    "loginError": "Login error"
+  },
+  "validation": {
+    "required": "This field is required",
+    "email": "Enter a valid email",
+    "minLength": "Must have at least {{min}} characters",
+    "maxLength": "Cannot have more than {{max}} characters",
+    "pattern": "The format is not valid",
+    "min": "Minimum value is {{min}}",
+    "max": "Maximum value is {{max}}"
+  }
+}
+

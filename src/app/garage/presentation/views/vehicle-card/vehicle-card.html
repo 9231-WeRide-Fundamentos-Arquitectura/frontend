@@ -1,0 +1,80 @@
+<mat-card class="vehicle-card">
+  <mat-card-header>
+    <mat-card-title>{{ vehicle.brand }} {{ vehicle.model }}</mat-card-title>
+    <mat-card-subtitle>{{ getTypeLabel() }}</mat-card-subtitle>
+    <button mat-icon-button class="favorite-btn" (click)="onToggleFavorite()">
+      <mat-icon [class.favorited]="vehicle.favorite">
+        {{ vehicle.favorite ? 'favorite' : 'favorite_border' }}
+      </mat-icon>
+    </button>
+  </mat-card-header>
+
+  <img
+    mat-card-image
+    [src]="vehicle.image"
+    [alt]="vehicle.brand + ' ' + vehicle.model"
+  />
+
+  <mat-card-content>
+    <div class="vehicle-info">
+      <div class="info-row">
+        <span class="label">{{ 'garage.vehicle.status' | translate }}:</span>
+        <span class="value" [ngClass]="getStatusClass()"
+          >{{ getStatusLabel() }}</span
+        >
+      </div>
+
+      <div class="info-row">
+        <span class="label">{{ 'garage.vehicle.price' | translate }}:</span>
+        <span class="value">${{ vehicle.pricePerMinute }}/min</span>
+      </div>
+
+      <div class="info-row">
+        <span class="label">{{ 'garage.vehicle.rating' | translate }}:</span>
+        <span class="value">⭐ {{ vehicle.rating }}</span>
+      </div>
+
+      @if (vehicle.battery > 0) {
+      <div class="info-row">
+        <span class="label">{{ 'garage.vehicle.battery' | translate }}:</span>
+        <span class="value">{{ vehicle.battery }}%</span>
+      </div>
+      }
+
+      <div class="info-row">
+        <span class="label">{{ 'garage.vehicle.maxSpeed' | translate }}:</span>
+        <span class="value">{{ vehicle.maxSpeed }} km/h</span>
+      </div>
+
+      @if (vehicle.range > 0) {
+      <div class="info-row">
+        <span class="label">{{ 'garage.vehicle.range' | translate }}:</span>
+        <span class="value">{{ vehicle.range }} km</span>
+      </div>
+      }
+
+      <div class="features">
+        <mat-chip-set>
+          @for (feature of vehicle.features.slice(0, 3); track feature) {
+          <mat-chip>{{ feature }}</mat-chip>
+          }
+        </mat-chip-set>
+      </div>
+    </div>
+  </mat-card-content>
+
+  <mat-card-actions>
+    <button
+      mat-raised-button
+      color="primary"
+      [disabled]="vehicle.status !== 'available'"
+      (click)="onReserve()"
+    >
+      @if (vehicle.status === 'available') { {{ 'garage.vehicle.reserve' |
+      translate }} } @else { {{ 'common.notAvailable' | translate }} }
+    </button>
+    <button mat-button (click)="onViewDetails()">
+      {{ 'garage.vehicle.viewDetails' | translate }}
+    </button>
+  </mat-card-actions>
+</mat-card>

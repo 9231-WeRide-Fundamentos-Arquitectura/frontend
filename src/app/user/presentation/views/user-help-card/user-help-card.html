@@ -1,0 +1,74 @@
+<div class="help-card">
+  <div class="card-header">
+    <h2>{{ 'user.help.title' | translate }}</h2>
+    <button class="close-button" (click)="closeCard()" type="button" [attr.aria-label]="'common.close' | translate">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div class="card-content">
+    <div class="help-section">
+      <h3>{{ 'user.help.faqs' | translate }}</h3>
+      <div class="faqs-list">
+        <div *ngFor="let faq of faqs" class="faq-item">
+          <div class="faq-question">
+            <mat-icon>help_outline</mat-icon>
+            <span>{{ faq.question }}</span>
+          </div>
+          <div class="faq-answer">
+            {{ faq.answer }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="help-section">
+      <h3>{{ 'user.help.contact' | translate }}</h3>
+      <div class="contact-info">
+        <div class="contact-item">
+          <mat-icon>email</mat-icon>
+          <div>
+            <span class="contact-label">{{ 'user.help.contactEmail' | translate }}</span>
+            <span class="contact-value">{{ contactInfo.email }}</span>
+          </div>
+        </div>
+        <div class="contact-item">
+          <mat-icon>phone</mat-icon>
+          <div>
+            <span class="contact-label">{{ 'user.help.contactPhone' | translate }}</span>
+            <span class="contact-value">{{ contactInfo.phone }}</span>
+          </div>
+        </div>
+        <div class="contact-item">
+          <mat-icon>schedule</mat-icon>
+          <div>
+            <span class="contact-label">{{ 'user.help.contactHours' | translate }}</span>
+            <span class="contact-value">{{ contactInfo.hours }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="help-section">
+      <h3>{{ 'user.help.resources' | translate }}</h3>
+      <div class="resources-list">
+        <button class="resource-item" type="button">
+          <mat-icon>menu_book</mat-icon>
+          <span>{{ 'user.help.userGuide' | translate }}</span>
+          <mat-icon>open_in_new</mat-icon>
+        </button>
+        <button class="resource-item" type="button">
+          <mat-icon>video_library</mat-icon>
+          <span>{{ 'user.help.videoTutorials' | translate }}</span>
+          <mat-icon>open_in_new</mat-icon>
+        </button>
+        <button class="resource-item" type="button">
+          <mat-icon>description</mat-icon>
+          <span>{{ 'user.help.termsAndConditions' | translate }}</span>
+          <mat-icon>open_in_new</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+

@@ -1,0 +1,47 @@
+<div class="qr-scanner-modal">
+  <div class="modal-header">
+    <h2 mat-dialog-title>
+      <mat-icon class="title-icon">qr_code_scanner</mat-icon>
+      {{ 'garage.qrScanner.title' | translate }}
+    </h2>
+    <button mat-icon-button (click)="onClose()" class="close-button">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div mat-dialog-content class="modal-content">
+    <div *ngIf="vehicle" class="vehicle-info">
+      <img
+        [src]="vehicle.image"
+        [alt]="vehicle.brand + ' ' + vehicle.model"
+        class="vehicle-image"
+      />
+      <div class="vehicle-details">
+        <p class="vehicle-name">{{ vehicle.brand }} {{ vehicle.model }}</p>
+        <p *ngIf="unlockRequest" class="unlock-code">
+          Código: {{ unlockRequest.unlockCode }}
+        </p>
+      </div>
+    </div>
+
+    <div class="qr-placeholder">
+      <mat-icon class="qr-icon">qr_code</mat-icon>
+      <p class="placeholder-text">
+        {{ 'garage.qrScanner.scanHere' | translate }}
+      </p>
+      <p *ngIf="isScanning" class="scanning-text">Escaneando...</p>
+    </div>
+  </div>
+
+  <div mat-dialog-actions class="modal-actions">
+    <button
+      mat-raised-button
+      (click)="onOK()"
+      [disabled]="isScanning"
+      class="ok-button"
+    >
+      <span *ngIf="!isScanning">{{ 'garage.qrScanner.ok' | translate }}</span>
+      <span *ngIf="isScanning">Escaneando...</span>
+    </button>
+  </div>
+</div>

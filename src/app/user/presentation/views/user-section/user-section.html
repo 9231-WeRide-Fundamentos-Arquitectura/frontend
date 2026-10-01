@@ -1,0 +1,44 @@
+<ng-container *ngIf="user$ | async as user; else loadingState">
+  <div class="user-section">
+    <div class="user-header">
+      <div class="user-basic-info">
+        <div class="avatar" [class.has-image]="user.profilePicture">
+          <img
+            *ngIf="user.profilePicture"
+            [src]="user.profilePicture"
+            [alt]="user.name"
+          />
+          <span *ngIf="!user.profilePicture">{{ getInitials(user.name) }}</span>
+        </div>
+        <h1 class="user-name">{{ user.name }}</h1>
+      </div>
+
+      <div class="user-stats">
+        <div class="stat-item">
+          <p class="stat-number">45</p>
+          <span class="stat-label">TRAYECTOS</span>
+        </div>
+        <div class="stat-item">
+          <p class="stat-number">235</p>
+          <span class="stat-label">METROS</span>
+        </div>
+        <div class="stat-item">
+          <p class="stat-number">$156.80</p>
+          <span class="stat-label">GASTO TOTAL</span>
+        </div>
+        <div class="stat-item">
+          <p class="stat-number">5</p>
+          <span class="stat-label">PUNTUACIÓN</span>
+        </div>
+      </div>
+    </div>
+
+    <app-user-profile [user]="user"></app-user-profile>
+  </div>
+</ng-container>
+
+<ng-template #loadingState>
+  <div class="user-section loading">
+    <p>{{ 'user.loadingUserInfo' | translate }}</p>
+  </div>
+</ng-template>

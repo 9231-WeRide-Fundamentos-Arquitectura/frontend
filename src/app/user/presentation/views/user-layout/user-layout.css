@@ -1,0 +1,52 @@
+:host {
+  display: block;
+  background: #f6f6fb;
+  min-height: 100vh;
+  padding: 1.5rem;
+}
+
+.user-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.stats-section {
+  width: 100%;
+}
+
+.content-section {
+  display: grid;
+  grid-template-columns: minmax(300px, 0.4fr) minmax(300px, 0.6fr);
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.settings-column,
+.section-column {
+  width: 100%;
+}
+
+.section-content {
+  width: 100%;
+  position: relative;
+}
+
+@media (max-width: 1024px) {
+  .content-section {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  :host {
+    padding: 1rem;
+  }
+
+  .user-layout {
+    gap: 1rem;
+  }
+}
+

@@ -1,0 +1,42 @@
+<div class="rate-trip-modal">
+  <div class="modal-header">
+    <button mat-icon-button (click)="onClose()" class="close-button">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div mat-dialog-content class="modal-content">
+    <h2 class="title">{{ 'trip.rateTrip.title' | translate }}</h2>
+    <p class="subtitle">{{ 'trip.rateTrip.subtitle' | translate }}</p>
+
+    <div class="stars-container">
+      <mat-icon
+        *ngFor="let star of getStars()"
+        [class.star-filled]="star <= rating"
+        [class.star-empty]="star > rating"
+        (click)="setRating(star)"
+        (mouseenter)="setRating(star)"
+        class="star-icon"
+      >
+        {{ star <= rating ? 'star' : 'star_border' }}
+      </mat-icon>
+    </div>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <textarea
+        matInput
+        [(ngModel)]="comment"
+        [placeholder]="'trip.rateTrip.commentPlaceholder' | translate"
+        rows="4"
+        class="comment-textarea"
+      ></textarea>
+    </mat-form-field>
+  </div>
+
+  <div mat-dialog-actions class="modal-actions">
+    <button mat-raised-button (click)="onSubmit()" [disabled]="rating === 0" class="submit-button">
+      {{ 'common.save' | translate }}
+    </button>
+  </div>
+</div>
+

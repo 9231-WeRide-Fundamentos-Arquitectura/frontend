@@ -1,0 +1,89 @@
+<div class="booking-success-modal">
+  <div class="modal-header">
+    <div class="success-icon">
+      <mat-icon>check_circle</mat-icon>
+    </div>
+    <h2 mat-dialog-title>Vehículo reservado satisfactoriamente</h2>
+    <button mat-icon-button (click)="onClose()" class="close-button">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-dialog-content class="modal-content">
+    <div class="vehicle-section">
+      <img
+        [src]="vehicle.image"
+        [alt]="vehicle.brand + ' ' + vehicle.model"
+        class="vehicle-image"
+      />
+      <div class="vehicle-info">
+        <h3 class="vehicle-name">{{ vehicle.brand }} {{ vehicle.model }}</h3>
+        <div class="vehicle-details">
+          <div class="detail-item">
+            <mat-icon class="detail-icon">label</mat-icon>
+            <span class="detail-label">ID:</span>
+            <span class="detail-value">{{ vehicle.id }}</span>
+          </div>
+          <div class="detail-item">
+            <mat-icon class="detail-icon">battery_charging_full</mat-icon>
+            <span class="detail-label">Batería:</span>
+            <span class="detail-value">{{ vehicle.battery }}%</span>
+          </div>
+          <div class="detail-item">
+            <mat-icon class="detail-icon">attach_money</mat-icon>
+            <span class="detail-label">Precio:</span>
+            <span class="detail-value">${{ vehicle.pricePerMinute }}/min</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="booking-info-section">
+      <h4 class="section-title">Detalles de la reserva</h4>
+      <div class="info-grid">
+        <div class="info-item">
+          <mat-icon class="info-icon">calendar_today</mat-icon>
+          <div class="info-content">
+            <span class="info-label">Fecha:</span>
+            <span class="info-value">{{ formatDate(booking.startDate) }}</span>
+          </div>
+        </div>
+        <div class="info-item">
+          <mat-icon class="info-icon">access_time</mat-icon>
+          <div class="info-content">
+            <span class="info-label">Hora de inicio:</span>
+            <span class="info-value">{{ formatTime(booking.startDate) }}</span>
+          </div>
+        </div>
+        <div class="info-item">
+          <mat-icon class="info-icon">schedule</mat-icon>
+          <div class="info-content">
+            <span class="info-label">Duración estimada:</span>
+            <span class="info-value"
+              >{{ formatDuration(booking.duration) }}</span
+            >
+          </div>
+        </div>
+        <div class="info-item" *ngIf="booking.endDate">
+          <mat-icon class="info-icon">event_available</mat-icon>
+          <div class="info-content">
+            <span class="info-label">Fecha de fin:</span>
+            <span class="info-value">{{ formatDate(booking.endDate) }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </mat-dialog-content>
+
+  <div mat-dialog-actions class="modal-actions">
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="onContinue()"
+      class="continue-button"
+    >
+      <mat-icon>arrow_forward</mat-icon>
+      Continuar al viaje
+    </button>
+  </div>
+</div>

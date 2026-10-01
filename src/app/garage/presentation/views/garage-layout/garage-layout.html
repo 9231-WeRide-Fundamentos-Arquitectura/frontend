@@ -1,0 +1,53 @@
+<div class="garage-container">
+  <h1>{{ 'garage.title' | translate }}</h1>
+
+  <mat-tab-group
+    [selectedIndex]="currentView === 'all' ? 0 : 1"
+    (selectedIndexChange)="switchView($event === 0 ? 'all' : 'favorites')"
+    class="garage-tabs"
+  >
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <span>{{ 'garage.tabs.allVehicles' | translate }}</span>
+      </ng-template>
+    </mat-tab>
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <span>{{ 'garage.tabs.favorites' | translate }}</span>
+        @if (favoritesCount > 0) {
+        <span class="favorites-badge">{{ favoritesCount }}</span>
+        }
+      </ng-template>
+    </mat-tab>
+  </mat-tab-group>
+
+  <app-garage-filter (filterChange)="applyFilter($event)"></app-garage-filter>
+
+  @if (isLoading) {
+  <div class="loading">
+    <p>{{ 'garage.loading' | translate }}</p>
+  </div>
+  } @if (error) {
+  <div class="error">
+    <p>{{ error }}</p>
+    <button mat-button color="primary" (click)="loadVehicles()">
+      {{ 'common.retry' | translate }}
+    </button>
+  </div>
+  } @if (!isLoading && !error) {
+  <div class="vehicle-grid">
+    @for (vehicle of filteredVehicles; track vehicle.id) {
+    <app-vehicle-card
+      [vehicle]="vehicle"
+      (viewDetails)="openVehicleDetails($event)"
+      (reserve)="navigateToScheduleUnlock($event)"
+    >
+    </app-vehicle-card>
+    } @if (filteredVehicles.length === 0) {
+    <div class="no-results">
+      <p>{{ 'garage.noResults' | translate }}</p>
+    </div>
+    }
+  </div>
+  }
+</div>

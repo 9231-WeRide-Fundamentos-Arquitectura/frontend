@@ -1,0 +1,44 @@
+<div class="booking-form-container">
+  <h2>{{ 'booking.title' | translate }}</h2>
+  <form (ngSubmit)="submitBooking()" #bookingForm="ngForm">
+    <div class="form-group">
+      <label for="vehicle">{{ 'booking.electricVehicle' | translate }}</label>
+      <select id="vehicle" [(ngModel)]="selectedVehicle" name="vehicle" required>
+        <option *ngFor="let vehicle of vehicles" [value]="vehicle.id">
+          {{ vehicle.brand }} {{ vehicle.model }} ({{ vehicle.type }}) - {{ vehicle.location }} - {{ 'garage.vehicle.battery' | translate }}: {{ vehicle.battery }} - {{ 'garage.vehicle.range' | translate }}: {{ vehicle.range }}
+        </option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="date">{{ 'booking.date' | translate }}</label>
+      <input type="date" id="date" [(ngModel)]="selectedDate" name="date" required />
+    </div>
+    <div class="form-group">
+      <label for="time">{{ 'booking.unlockTime' | translate }}</label>
+      <input type="time" id="time" [(ngModel)]="unlockTime" name="time" required />
+    </div>
+    <div class="form-group">
+      <label for="duration">{{ 'booking.duration' | translate }}</label>
+      <input type="number" id="duration" [(ngModel)]="duration" name="duration" min="1" required />
+    </div>
+    <button type="submit" class="btn-primary">{{ 'booking.bookNow' | translate }}</button>
+    <button type="button" class="btn-secondary" (click)="saveDraft()">{{ 'booking.saveDraft' | translate }}</button>
+  </form>
+
+  <div class="booking-summary" *ngIf="showSummary">
+    <h3>{{ 'booking.summary.title' | translate }}</h3>
+    <p><strong>{{ 'booking.summary.vehicle' | translate }}:</strong> {{ getVehicleName(selectedVehicle) }}</p>
+    <p><strong>{{ 'booking.summary.type' | translate }}:</strong> {{ getVehicleType(selectedVehicle) }}</p>
+    <p><strong>{{ 'booking.summary.batteryLevel' | translate }}:</strong> {{ getVehicleBattery(selectedVehicle) }}</p>
+    <p><strong>{{ 'booking.summary.range' | translate }}:</strong> {{ getVehicleRange(selectedVehicle) }}</p>
+    <p><strong>{{ 'booking.summary.dateTime' | translate }}:</strong> {{ selectedDate }} {{ unlockTime }}</p>
+    <p><strong>{{ 'booking.summary.duration' | translate }}:</strong> {{ duration }} {{ 'booking.summary.minutes' | translate }}</p>
+    <p><strong>{{ 'booking.summary.rate' | translate }}:</strong> ${{ rate }}/minute</p>
+    <p><strong>{{ 'booking.summary.total' | translate }}:</strong> ${{ (duration * rate).toFixed(2) }}</p>
+    <div class="notifications">
+      <label><input type="checkbox" [(ngModel)]="smsReminder" name="smsReminder" /> {{ 'booking.summary.notifications.smsReminder' | translate }}</label>
+      <label><input type="checkbox" [(ngModel)]="emailConfirmation" name="emailConfirmation" /> {{ 'booking.summary.notifications.emailConfirmation' | translate }}</label>
+      <label><input type="checkbox" [(ngModel)]="pushNotification" name="pushNotification" /> {{ 'booking.summary.notifications.pushNotification' | translate }}</label>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,34 @@
+@if (booking) {
+<mat-card class="active-booking-card" (click)="onClick()">
+  <mat-card-content>
+    <div class="booking-header">
+      <mat-icon class="status-icon">directions_bike</mat-icon>
+      <span class="status-badge"
+        >{{ 'home.activeBooking.active' | translate }}</span
+      >
+    </div>
+
+    <div class="booking-info">
+      <div class="info-row">
+        <mat-icon>confirmation_number</mat-icon>
+        <span
+          >{{ 'home.activeBooking.bookingId' | translate }}: {{ booking.id
+          }}</span
+        >
+      </div>
+      <div class="info-row">
+        <mat-icon>schedule</mat-icon>
+        <span
+          >{{ 'home.activeBooking.remaining' | translate }}: {{ remainingTime()
+          }}</span
+        >
+      </div>
+    </div>
+
+    <div class="booking-action">
+      <span>{{ 'home.activeBooking.viewDetails' | translate }}</span>
+      <mat-icon>arrow_forward</mat-icon>
+    </div>
+  </mat-card-content>
+</mat-card>
+}

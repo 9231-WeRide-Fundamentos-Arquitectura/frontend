@@ -1,0 +1,28 @@
+<div class="confirm-booking-modal">
+  <div class="modal-header">
+    <h2 mat-dialog-title>{{ 'booking.confirmBooking.title' | translate }}</h2>
+    <button mat-icon-button (click)="onClose()" class="close-button">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div mat-dialog-content class="modal-content">
+    <div class="vehicle-image-container">
+      <img
+        [src]="vehicle.image"
+        [alt]="vehicle.brand + ' ' + vehicle.model"
+        class="vehicle-image"
+      />
+    </div>
+  </div>
+
+  <div mat-dialog-actions class="modal-actions">
+    <button mat-raised-button (click)="reserveWithQR()" class="reserve-qr-button">
+      {{ 'booking.confirmBooking.reserveWithQR' | translate }}
+    </button>
+    <button mat-raised-button (click)="reserveWithCode()" class="reserve-code-button">
+      {{ 'booking.confirmBooking.reserveWithCode' | translate }}
+    </button>
+  </div>
+</div>
+

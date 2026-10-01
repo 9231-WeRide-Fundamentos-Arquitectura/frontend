@@ -1,0 +1,9 @@
+<div class="error-state">
+  <mat-icon class="error-icon">{{ icon }}</mat-icon>
+  <p class="error-message">{{ message | translate }}</p>
+  @if (showRetry) {
+  <button mat-raised-button color="primary" (click)="onRetry()">
+    {{ 'home.errors.retry' | translate }}
+  </button>
+  }
+</div>

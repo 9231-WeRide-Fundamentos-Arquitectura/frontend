@@ -1,0 +1,88 @@
+<div class="trip-info-panel">
+  <div class="trip-header">
+    <h3 class="trip-title">Viaje en Curso</h3>
+    <div class="header-actions">
+      <button class="report-problem-button" (click)="reportProblem()" title="{{ 'trip.reportProblem.reportButton' | translate }}">
+        <span class="button-icon">⚠️</span>
+      </button>
+      <button class="end-trip-button" (click)="endTrip()">Finalizar</button>
+    </div>
+  </div>
+  <div class="trip-status">
+    <div class="status-indicator"></div>
+    <span class="status-text">Viaje en progreso</span>
+  </div>
+
+  <div class="vehicle-trip-info">
+    <div class="vehicle-trip-header">
+      <img [src]="currentVehicle()!.image" [alt]="currentVehicle()!.brand" class="vehicle-trip-image">
+      <div class="vehicle-trip-details">
+        <h4 class="vehicle-trip-name">{{currentVehicle()!.brand}} {{currentVehicle()!.model}}</h4>
+        <p class="vehicle-trip-plate">{{currentVehicle()!.licensePlate}}</p>
+      </div>
+    </div>
+
+    <div class="trip-stats-grid">
+      <div class="trip-stat">
+        <div class="stat-icon">🔋</div>
+        <div class="stat-content">
+          <span class="stat-label">Batería</span>
+          <span class="stat-value" [style.color]="currentBattery() > 50 ? '#10b981' : currentBattery() > 20 ? '#f59e0b' : '#ef4444'">
+            {{currentBattery()}}%
+          </span>
+        </div>
+      </div>
+
+      <div class="trip-stat">
+        <div class="stat-icon">⏱️</div>
+        <div class="stat-content">
+          <span class="stat-label">Tiempo transcurrido</span>
+          <span class="stat-value">{{elapsedTime()}}</span>
+        </div>
+      </div>
+
+      <div class="trip-stat">
+        <div class="stat-icon">⏳</div>
+        <div class="stat-content">
+          <span class="stat-label">Tiempo restante</span>
+          <span class="stat-value">{{remainingTime()}}</span>
+        </div>
+      </div>
+
+      <div class="trip-stat">
+        <div class="stat-icon">📍</div>
+        <div class="stat-content">
+          <span class="stat-label">Distancia estimada</span>
+          <span class="stat-value">{{estimatedDistance() | number:'1.1-1'}} km</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="trip-route-info">
+      <div class="route-point">
+        <div class="route-dot start-dot"></div>
+        <div class="route-details">
+          <span class="route-label">Origen</span>
+          <span class="route-name">{{currentLocation()!.name}}</span>
+        </div>
+      </div>
+      <div class="route-line"></div>
+      <div class="route-point">
+        <div class="route-dot destination-dot"></div>
+        <div class="route-details">
+          <span class="route-label">Destino</span>
+          <span class="route-name">{{destinationLocation()!.name}}</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+@if (connectionError()) {
+  <div class="trip-error-banner">
+    <span class="error-banner-icon">⚠️</span>
+    <span class="error-banner-text">Error de conexión - La información puede no estar actualizada</span>
+    <button class="error-banner-button" (click)="retryUpdate()">Reintentar</button>
+  </div>
+}

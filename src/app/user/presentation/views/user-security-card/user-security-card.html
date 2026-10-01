@@ -1,0 +1,96 @@
+<div class="security-card">
+  <div class="card-header">
+    <h2>{{ 'user.security.title' | translate }}</h2>
+    <button class="close-button" (click)="closeCard()" type="button" [attr.aria-label]="'common.close' | translate">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div class="card-content">
+    <ng-container *ngIf="user$ | async as user">
+      <div class="security-section">
+        <h3>{{ 'user.security.verificationStatus' | translate }}</h3>
+        <div class="verification-status">
+          <div class="status-badge" [style.background-color]="getVerificationStatusColor(user.verificationStatus)">
+            <mat-icon>verified</mat-icon>
+            <span>{{ getVerificationStatusText(user.verificationStatus) }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="security-section">
+        <h3>{{ 'user.security.securityInfo' | translate }}</h3>
+        <div class="security-items">
+          <div class="security-item">
+            <div class="security-icon">
+              <mat-icon>lock</mat-icon>
+            </div>
+            <div class="security-info">
+              <span class="security-label">{{ 'user.security.password' | translate }}</span>
+              <span class="security-value">••••••••</span>
+            </div>
+            <button class="security-action" type="button">
+              <mat-icon>edit</mat-icon>
+              {{ 'user.security.change' | translate }}
+            </button>
+          </div>
+
+          <div class="security-item">
+            <div class="security-icon">
+              <mat-icon>phone</mat-icon>
+            </div>
+            <div class="security-info">
+              <span class="security-label">{{ 'user.security.phone' | translate }}</span>
+              <span class="security-value">{{ user.phone }}</span>
+            </div>
+            <button class="security-action" type="button">
+              <mat-icon>edit</mat-icon>
+              {{ 'common.edit' | translate }}
+            </button>
+          </div>
+
+          <div class="security-item">
+            <div class="security-icon">
+              <mat-icon>email</mat-icon>
+            </div>
+            <div class="security-info">
+              <span class="security-label">{{ 'user.security.email' | translate }}</span>
+              <span class="security-value">{{ user.email }}</span>
+            </div>
+            <button class="security-action" type="button">
+              <mat-icon>edit</mat-icon>
+              {{ 'common.edit' | translate }}
+            </button>
+          </div>
+
+          <div class="security-item">
+            <div class="security-icon">
+              <mat-icon>contact_emergency</mat-icon>
+            </div>
+            <div class="security-info">
+              <span class="security-label">{{ 'user.security.emergencyContact' | translate }}</span>
+              <span class="security-value">{{ user.emergencyContact || ('user.security.notConfigured' | translate) }}</span>
+            </div>
+            <button class="security-action" type="button">
+              <mat-icon>edit</mat-icon>
+              {{ 'user.security.configure' | translate }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="security-section">
+        <h3>{{ 'user.security.privacyPreferences' | translate }}</h3>
+        <div class="privacy-items">
+          <div class="privacy-item">
+            <span>{{ 'user.security.notifications' | translate }}</span>
+            <span class="privacy-status" [class.enabled]="user.preferences.notifications">
+              {{ user.preferences.notifications ? ('user.security.enabled' | translate) : ('user.security.disabled' | translate) }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</div>
+

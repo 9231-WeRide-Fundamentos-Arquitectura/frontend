@@ -1,0 +1,148 @@
+<div class="container-map">
+  <mgl-map
+    [style]="'mapbox://styles/mapbox/streets-v12'"
+    [zoom]="[12]"
+    [center]="[-77.0935755943619, -12.076630586486122]"
+    (mapClick)="onMapClick($event)"
+  >
+    @if (!isActiveTrip()) {
+      @for (marker of markers; track $index) {
+        <mgl-marker
+          [lngLat]="[marker.lng, marker.lat]"
+        >
+          <img
+            src="https://cdn-icons-png.flaticon.com/512/684/684908.png"
+            class="location-marker"
+            alt="marker"
+          />
+        </mgl-marker>
+      }
+
+      @for (item of vehicleMarkers(); track item.vehicle.id) {
+        <mgl-marker
+          [lngLat]="[item.location!.coordinates.lng, item.location!.coordinates.lat]"
+        >
+          <div class="vehicle-marker">
+            <img
+              [src]="item.vehicle.type === 'bike' 
+                ? 'https://cdn-icons-png.flaticon.com/512/2972/2972185.png' 
+                : 'https://cdn-icons-png.flaticon.com/512/3774/3774278.png'"
+              class="vehicle-icon"
+              [alt]="item.vehicle.brand"
+            />
+            <div class="battery-indicator">{{item.vehicle.battery}}%</div>
+          </div>
+        </mgl-marker>
+      }
+
+      @if (selectedLocation()) {
+        <mgl-marker
+          [lngLat]="[selectedLocation()!.lng, selectedLocation()!.lat]"
+        >
+          <div class="selected-marker"></div>
+        </mgl-marker>
+      }
+    }
+
+    @if (isActiveTrip() && currentLocation() && destinationLocation()) {
+      <mgl-marker
+        [lngLat]="[currentLocation()!.coordinates.lng, currentLocation()!.coordinates.lat]"
+      >
+        <div class="start-marker">
+          <div class="marker-label">Inicio</div>
+        </div>
+      </mgl-marker>
+
+      <mgl-marker
+        [lngLat]="[destinationLocation()!.coordinates.lng, destinationLocation()!.coordinates.lat]"
+      >
+        <div class="destination-marker">
+          <div class="marker-label">Destino</div>
+        </div>
+      </mgl-marker>
+    }
+
+    @if (userLocation()) {
+      <mgl-marker
+        [lngLat]="userLocation()!"
+      >
+        <div class="user-marker"></div>
+      </mgl-marker>
+    }
+
+  </mgl-map>
+
+  @if (isActiveTrip() && currentVehicle() && currentLocation() && destinationLocation()) {
+    <app-active-trip-panel
+      [elapsedTime]="elapsedTime()"
+      [remainingTime]="remainingTime()"
+      [currentBattery]="currentBattery()"
+      [estimatedDistance]="estimatedDistance()"
+      [connectionError]="connectionError()"
+      (onEndTrip)="endTrip()"
+      (onRetryUpdate)="retryTripUpdate()"
+      (onReportProblem)="openReportProblemModal()"
+    />
+  }
+
+  @if (connectionError() && !isActiveTrip()) {
+    <div class="error-overlay">
+      <div class="error-content">
+        <div class="error-icon">⚠️</div>
+        <h3 class="error-title">Error de Conexión</h3>
+        <p class="error-message">No se pudo cargar la información de los vehículos. Por favor, verifica tu conexión a internet.</p>
+        <button class="retry-button" (click)="retryLoadData()">Reintentar</button>
+      </div>
+    </div>
+  }
+
+  @if (selectedLocation() && !connectionError() && !isActiveTrip()) {
+    <div class="info-panel">
+      <div class="info-header">
+        <h3 class="info-title">Vehículos Cercanos</h3>
+        <button class="close-button" (click)="clearSelection()">✕</button>
+      </div>
+      
+      @if (nearbyVehicles().length > 0) {
+        <div class="vehicles-list">
+          @for (vehicle of nearbyVehicles(); track vehicle.id) {
+            <div class="vehicle-card">
+              <div class="vehicle-card-image">
+                <img [src]="vehicle.image" [alt]="vehicle.brand" class="vehicle-image">
+                <div class="battery-badge">{{vehicle.battery}}%</div>
+              </div>
+              <div class="vehicle-info">
+                <h4 class="vehicle-name">{{vehicle.brand}} {{vehicle.model}}</h4>
+                <div class="vehicle-details-row">
+                  <span class="vehicle-price">💰 ${{vehicle.pricePerMinute}}/min</span>
+                  <span class="vehicle-rating">⭐ {{vehicle.rating}}</span>
+                </div>
+              </div>
+              <button class="details-button" (click)="openVehicleDetails(vehicle)">
+                Ver Detalles
+              </button>
+            </div>
+          }
+        </div>
+      } @else {
+        <div class="no-vehicles">
+          <div class="no-vehicles-icon">🚫</div>
+          <p class="no-vehicles-message">No hay vehículos disponibles cerca de esta ubicación</p>
+          
+          @if (getAlternativeLocations().length > 0) {
+            <div class="alternative-locations">
+              <h4 class="alternative-title">Ubicaciones alternativas con vehículos:</h4>
+              <ul class="alternative-list">
+                @for (location of getAlternativeLocations(); track location.id) {
+                  <li class="alternative-item">
+                    <strong>{{location.name}}</strong> - {{location.district}}
+                  </li>
+                }
+              </ul>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>

@@ -1,0 +1,221 @@
+<div class="main-layout">
+  <div class="content expanded full-width">
+    @if (isActiveTrip()) {
+    <h2>Vehicle Unlock Status</h2>
+    <p>Monitor your vehicle's unlock status in real-time</p>
+
+    @if (connectionError()) {
+    <div class="error-card">
+      <div class="error-content">
+        <mat-icon class="error-icon">error_outline</mat-icon>
+        <h3>Error de conexión</h3>
+        <p>
+          {{ errorMessage() || 'Hubo un problema al obtener el estado del
+          vehículo' }}
+        </p>
+        <button mat-raised-button color="primary" (click)="retryConnection()">
+          <mat-icon>refresh</mat-icon>
+          Reintentar
+        </button>
+      </div>
+    </div>
+    } @if (!connectionError() && vehicleInfo().id) {
+    <div class="status-card">
+      <div class="status-header">
+        <h3>Current Status</h3>
+        <button
+          class="refresh-btn"
+          (click)="refreshStatus()"
+          [disabled]="isLoading()"
+        >
+          <mat-icon>refresh</mat-icon>
+          Refresh
+        </button>
+      </div>
+      <div class="status-section">
+        <div class="status-display">
+          <div
+            class="status-indicator"
+            [class.unlocked]="unlockStatus === 'Unlocked'"
+            [class.pending]="unlockStatus === 'Pending'"
+            [class.error]="unlockStatus === 'Error'"
+            [class.locked]="unlockStatus === 'Locked'"
+          >
+            <span>{{ getStatusLabel(unlockStatus) }}</span>
+            @if (unlockStatus === 'Unlocked') {
+            <span class="user-label">Tu</span>
+            }
+          </div>
+        </div>
+        <div class="vehicle-characteristics-row">
+          <span class="scooter-icon-bg">
+            <span class="iconify scooter-icon" data-icon="mdi:scooter"></span>
+          </span>
+          <div class="vehicle-characteristics">
+            <span class="characteristic-item"
+              ><strong>ID vehículo:</strong> {{ vehicleInfo().id }}</span
+            >
+            <span class="characteristic-item"
+              ><strong>Marca y Modelo:</strong> {{ vehicleInfo().brand }} {{
+              vehicleInfo().model }}</span
+            >
+            <span class="characteristic-item"
+              ><strong>Placa:</strong> {{ vehicleInfo().licensePlate }}</span
+            >
+            <span class="characteristic-item"
+              ><strong>Batería:</strong> {{ vehicleInfo().battery }}%</span
+            >
+          </div>
+        </div>
+
+        @if (vehicleInfo().bookingStartDate) {
+        <div class="booking-info-section">
+          <h4>Información de la Reserva</h4>
+          <div class="booking-info-grid">
+            <div class="booking-info-item">
+              <mat-icon class="info-icon">schedule</mat-icon>
+              <div class="info-content">
+                <span class="info-label">Hora de inicio</span>
+                <span class="info-value"
+                  >{{ formatDateTime(vehicleInfo().bookingStartDate!) }}</span
+                >
+              </div>
+            </div>
+            @if (vehicleInfo().bookingEndDate) {
+            <div class="booking-info-item">
+              <mat-icon class="info-icon">event</mat-icon>
+              <div class="info-content">
+                <span class="info-label">Hora de fin</span>
+                <span class="info-value"
+                  >{{ formatDateTime(vehicleInfo().bookingEndDate!) }}</span
+                >
+              </div>
+            </div>
+            }
+            <div class="booking-info-item">
+              <mat-icon class="info-icon">timer</mat-icon>
+              <div class="info-content">
+                <span class="info-label">Tiempo transcurrido</span>
+                <span class="info-value">{{ vehicleInfo().elapsedTime }}</span>
+              </div>
+            </div>
+            <div class="booking-info-item">
+              <mat-icon class="info-icon">hourglass_empty</mat-icon>
+              <div class="info-content">
+                <span class="info-label">Tiempo restante</span>
+                <span class="info-value"
+                  >{{ vehicleInfo().remainingTime }}</span
+                >
+              </div>
+            </div>
+            <div class="booking-info-item">
+              <mat-icon class="info-icon">info</mat-icon>
+              <div class="info-content">
+                <span class="info-label">Estado de reserva</span>
+                <span
+                  class="info-value status-badge"
+                  [class.confirmed]="vehicleInfo().bookingStatus === 'confirmed'"
+                  [class.pending]="vehicleInfo().bookingStatus === 'pending'"
+                  >{{ getBookingStatusLabel(vehicleInfo().bookingStatus)
+                  }}</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+        }
+      </div>
+      <div class="actions-section">
+        <div class="action-buttons">
+          <button
+            class="btn-lock"
+            (click)="lockVehicle()"
+            [disabled]="unlockStatus === 'Locked' || unlockStatus === 'Pending'"
+          >
+            <mat-icon>lock</mat-icon>
+            Lock Vehicle
+          </button>
+          <button
+            class="btn-unlock"
+            (click)="unlockVehicle()"
+            [disabled]="unlockStatus === 'Unlocked' || unlockStatus === 'Pending'"
+          >
+            <mat-icon>lock_open</mat-icon>
+            Unlock Vehicle
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="recent-activity">
+      <h3>Recent Activity</h3>
+      @if (recentActivity().length === 0) {
+      <ul>
+        <li><span>No hay actividad reciente</span></li>
+      </ul>
+      } @else {
+      <ul>
+        @for (activity of recentActivity(); track activity.time) {
+        <li
+          [class.success]="activity.type === 'success'"
+          [class.info]="activity.type === 'info'"
+          [class.error]="activity.type === 'error'"
+        >
+          <span>{{ activity.message }}</span>
+          <span class="timestamp">{{ activity.time }}</span>
+        </li>
+        }
+      </ul>
+      }
+    </div>
+    } @if (isLoading()) {
+    <div class="loading-message">
+      <mat-icon>hourglass_empty</mat-icon>
+      <p>Cargando estado del vehículo...</p>
+    </div>
+    } } @if (!isActiveTrip()) {
+    <mat-card class="no-trip-card">
+      <div class="no-trip-content">
+        <h2>
+          Aún no tienes un viaje en curso en este momento, quizás deseas...
+        </h2>
+
+        <div class="no-trip-actions">
+          <button
+            mat-raised-button
+            color="primary"
+            class="primary-action-btn"
+            (click)="goToGarage()"
+          >
+            Reservar un vehículo ahora
+          </button>
+
+          <button
+            mat-stroked-button
+            class="secondary-action-btn"
+            (click)="goToScheduleBooking()"
+          >
+            Programar una reserva
+          </button>
+
+          <button
+            mat-stroked-button
+            class="secondary-action-btn"
+            (click)="goToHistory()"
+          >
+            Historial de Viajes
+          </button>
+        </div>
+      </div>
+    </mat-card>
+    }
+
+    <div class="footer">
+      <p>© 2025 Vehicle Control System. All rights reserved.</p>
+      <div class="footer-links">
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+        <a href="#">Support</a>
+      </div>
+    </div>
+  </div>
+</div>

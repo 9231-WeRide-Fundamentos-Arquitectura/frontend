@@ -1,0 +1,85 @@
+<div class="home-page">
+
+  <section class="hero-section">
+    <div class="hero-content">
+      <h1 class="hero-title">{{ 'home.welcome' | translate }}</h1>
+      <p class="hero-subtitle">{{ 'home.subtitle' | translate }}</p>
+      <div class="hero-cta">
+        <button mat-raised-button color="primary" routerLink="/garage">
+          <mat-icon>directions_bike</mat-icon>
+          {{ 'home.hero.startRiding' | translate }}
+        </button>
+      </div>
+    </div>
+    <div class="hero-banner"></div>
+  </section>
+
+  @if (activeBooking()) {
+  <section class="active-booking-section">
+    <app-active-booking-card
+      [booking]="activeBooking()"
+      (click)="navigateToTripDetails()"
+    >
+    </app-active-booking-card>
+  </section>
+  } @else {
+  <section class="cta-section">
+    <div class="cta-card" (click)="navigateToGarage()">
+      <mat-icon>electric_scooter</mat-icon>
+      <div class="cta-content">
+        <h3>{{ 'home.cta.title' | translate }}</h3>
+        <p>{{ 'home.cta.description' | translate }}</p>
+      </div>
+      <mat-icon class="cta-arrow">arrow_forward</mat-icon>
+    </div>
+  </section>
+  }
+
+  @if (isLoading()) {
+  <section class="features-section">
+    <div class="features-grid">
+      @for (i of [1, 2, 3, 4]; track i) {
+      <app-skeleton-loader type="card" height="180px"></app-skeleton-loader>
+      }
+    </div>
+  </section>
+  }
+
+  @if (hasError() && error()) {
+  <section class="error-section">
+    <app-error-state [message]="error()!" (retry)="onRetry()">
+    </app-error-state>
+  </section>
+  }
+  @if (!isLoading() && !hasError()) {
+  <section class="features-section">
+    <h2 class="section-title">{{ 'home.features.title' | translate }}</h2>
+    <div class="features-grid">
+      @for (feature of features(); track feature.id) {
+      <div class="feature-card" [routerLink]="feature.route">
+        <mat-icon>{{ feature.icon }}</mat-icon>
+        <h3>{{ feature.titleKey | translate }}</h3>
+        <p>{{ feature.descriptionKey | translate }}</p>
+      </div>
+      }
+    </div>
+  </section>
+  }
+  <section class="quick-actions">
+    <h2>{{ 'home.quickActions' | translate }}</h2>
+    <div class="action-buttons">
+      <button class="btn-primary" routerLink="/vehicle-status">
+        <mat-icon>lock_open</mat-icon>
+        {{ 'home.actions.checkStatus' | translate }}
+      </button>
+      <button class="btn-secondary" (click)="onScheduleUnlock()">
+        <mat-icon>schedule</mat-icon>
+        {{ 'home.actions.schedule' | translate }}
+      </button>
+      <button class="btn-tertiary" routerLink="/booking">
+        <mat-icon>book_online</mat-icon>
+        {{ 'home.actions.viewBookings' | translate }}
+      </button>
+    </div>
+  </section>
+</div>
