@@ -23,7 +23,7 @@ export class TripInitializerService {
   async initializeTripFromBooking(booking: Booking): Promise<boolean> {
     try {
       // Verificar que el booking está desbloqueado
-      if (booking.status !== 'confirmed' || !booking.actualStartDate) {
+      if (booking.status !== 'active' || !booking.actualStartDate) {
         console.warn('Booking no está desbloqueado o no tiene actualStartDate');
         return false;
       }
@@ -98,6 +98,6 @@ export class TripInitializerService {
    * @returns true si el booking está desbloqueado y listo para iniciar viaje
    */
   canInitializeTripFromBooking(booking: Booking): boolean {
-    return booking.status === 'confirmed' && booking.actualStartDate !== null;
+    return booking.status === 'active' && booking.actualStartDate !== null;
   }
 }

@@ -27,3 +27,6 @@ export interface BookingResponse {
 export interface BookingsListResponse {
   bookings: BookingResponse[];
 }
+export type BackendBookingResponse = Omit<BookingResponse, 'status'> & {
+  status: BookingResponse['status'] | 'reserved' | 'in_progress';
+};

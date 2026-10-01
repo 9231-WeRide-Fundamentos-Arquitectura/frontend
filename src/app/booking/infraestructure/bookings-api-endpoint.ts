@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { BookingResponse } from './bookings-response';
+import { Observable, map } from 'rxjs';
+import { BookingResponse, BackendBookingResponse } from './bookings-response';
+import { normalizeBookingResponse } from './booking-assembler';
 import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
@@ -12,22 +13,34 @@ export class BookingsApiEndpoint {
 
   // Obtener todas las reservas
   getAll(): Observable<BookingResponse[]> {
-    return this.http.get<BookingResponse[]>(this.baseUrl);
+    return this.http.get<BackendBookingResponse[]>(this.baseUrl).pipe(map(bookings => bookings.map(normalizeBookingResponse)));
   }
 
   // Crear una nueva reserva
-  create(booking: Omit<BookingResponse, 'id'>): Observable<BookingResponse> {
-    return this.http.post<BookingResponse>(this.baseUrl, booking);
+  create(booking: Pick<BookingResponse, 'userId' | 'vehicleId' | 'startLocationId' | 'endLocationId'>): Observable<BookingResponse> {
+    return this.http.post<BackendBookingResponse>(this.baseUrl, booking).pipe(map(normalizeBookingResponse));
   }
 
   // Obtener una reserva por ID
   getById(id: string): Observable<BookingResponse> {
-    return this.http.get<BookingResponse>(`${this.baseUrl}/${id}`);
+    return this.getAll().pipe(map(bookings => {
+      const booking = bookings.find(b => b.id === id);
+      if (!booking) throw new Error(`Reserva ${id} no encontrada`);
+      return booking;
+    }));
   }
 
   // Actualizar una reserva
-  update(id: string, booking: Partial<BookingResponse>): Observable<BookingResponse> {
-    return this.http.patch<BookingResponse>(`${this.baseUrl}/${id}`, booking);
+  cancel(id: string): Observable<BookingResponse> {
+    return this.http.patch<BackendBookingResponse>(`${this.baseUrl}/${id}`, null).pipe(map(normalizeBookingResponse));
+  }
+
+  start(id: string): Observable<BookingResponse> {
+    return this.http.put<BackendBookingResponse>(`${this.baseUrl}/${id}/start`, null).pipe(map(normalizeBookingResponse));
+  }
+
+  complete(id: string, metrics: Pick<BookingResponse, 'totalCost' | 'discount' | 'distance' | 'duration' | 'averageSpeed' | 'rating'>): Observable<BookingResponse> {
+    return this.http.post<BackendBookingResponse>(`${this.baseUrl}/${id}/complete`, metrics).pipe(map(normalizeBookingResponse));
   }
 
   // Eliminar una reserva
@@ -37,11 +50,11 @@ export class BookingsApiEndpoint {
 
   // Obtener reservas por userId
   getByUserId(userId: string): Observable<BookingResponse[]> {
-    return this.http.get<BookingResponse[]>(`${this.baseUrl}?userId=${userId}`);
+    return this.getAll();
   }
 
   // Obtener reservas por vehicleId
   getByVehicleId(vehicleId: string): Observable<BookingResponse[]> {
-    return this.http.get<BookingResponse[]>(`${this.baseUrl}?vehicleId=${vehicleId}`);
+    return this.http.get<BackendBookingResponse[]>(this.baseUrl, { params: { vehicleId } }).pipe(map(bookings => bookings.map(normalizeBookingResponse)));
   }
 }

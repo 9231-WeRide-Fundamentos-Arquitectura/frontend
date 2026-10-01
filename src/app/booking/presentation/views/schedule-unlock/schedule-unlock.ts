@@ -378,32 +378,11 @@ export class ScheduleUnlockComponent implements OnInit {
    * Actualiza el booking en la API cuando se desbloquea
    */
   private async updateBookingOnUnlock(booking: any): Promise<void> {
-    try {
-      const updateData = {
-        status: 'confirmed' as const,
-        actualStartDate: new Date().toISOString()
-      };
-
-      const updatedBooking = await firstValueFrom(
-        this.bookingsApi.update(booking.id, updateData)
-      );
-
-      // Actualizar el booking local
-      booking.status = updatedBooking.status;
-      booking.actualStartDate = updatedBooking.actualStartDate
-        ? new Date(updatedBooking.actualStartDate)
-        : new Date();
-
-      // Actualizar en el servicio y store
-      const domainBooking = toDomainBooking(updatedBooking);
-      this.activeBookingService.setActiveBooking(domainBooking);
-      this.bookingStore.updateBooking(domainBooking);
-    } catch (error) {
-      console.error('Error actualizando booking:', error);
-      // Continuar aunque falle la actualización en la API
-      booking.actualStartDate = new Date();
-      booking.status = 'confirmed';
-    }
+    const response = await firstValueFrom(this.bookingsApi.start(booking.id));
+    const domainBooking = toDomainBooking(response);
+    Object.assign(booking, domainBooking);
+    this.activeBookingService.setActiveBooking(domainBooking);
+    this.bookingStore.updateBooking(domainBooking);
   }
 
   /**

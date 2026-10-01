@@ -1,8 +1,19 @@
 import { Booking } from '../domain/model/booking.entity';
-import { BookingResponse } from './bookings-response';
+import { BookingResponse, BackendBookingResponse } from './bookings-response';
+
+export function normalizeBookingResponse(response: BackendBookingResponse): BookingResponse {
+  return {
+    ...response,
+    id: String(response.id), userId: String(response.userId), vehicleId: String(response.vehicleId),
+    startLocationId: String(response.startLocationId), endLocationId: response.endLocationId == null ? '' : String(response.endLocationId),
+    status: response.status === 'reserved' ? 'pending' : response.status === 'in_progress' ? 'active' : response.status,
+    issues: response.issues ?? []
+  };
+}
 
 // Convierte BookingResponse (infraestructura) a Booking (dominio)
-export function toDomainBooking(response: BookingResponse): Booking {
+export function toDomainBooking(raw: BackendBookingResponse): Booking {
+  const response = normalizeBookingResponse(raw);
   return new Booking(
     response.id,
     response.userId,

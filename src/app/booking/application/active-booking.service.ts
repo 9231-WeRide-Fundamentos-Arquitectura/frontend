@@ -21,7 +21,7 @@ export class ActiveBookingService {
       
       // Filter for active bookings (pending or confirmed status)
       const activeBookings = bookings
-        .filter(b => b.status === 'pending' || b.status === 'confirmed')
+        .filter(b => b.status === 'pending' || b.status === 'confirmed' || b.status === 'active')
         .map(b => toDomainBooking(b))
         .sort((a, b) => b.reservedAt.getTime() - a.reservedAt.getTime());
 

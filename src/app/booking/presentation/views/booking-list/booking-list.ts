@@ -1,3 +1,4 @@
+import { toDomainBooking } from '../../../infraestructure/booking-assembler';
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
@@ -81,6 +82,11 @@ export class BookingListComponent implements OnInit {
       locations: this.locationsApi.getAll()
     }).subscribe({
       next: ({ bookings, vehicles, locations }) => {
+        bookings.forEach(response => {
+          const booking = toDomainBooking(response);
+          if (this.bookingStore.getBookingById(booking.id)) this.bookingStore.updateBooking(booking);
+          else this.bookingStore.addBooking(booking);
+        });
         // Merge API bookings with local bookings
         const allBookings = [...localBookings, ...bookings];
         
@@ -179,30 +185,15 @@ export class BookingListComponent implements OnInit {
     const confirmText = this.translate.instant('common.confirm');
     
     if (confirm(message)) {
-      // Update in localStorage
-      const success = this.bookingStorage.cancelBooking(id);
-      
-      if (success) {
-        // Update local view
-        booking.status = 'cancelled';
-        
-        // Update in store
-        this.bookingStore.loadFromLocalStorage();
-        
-        // Try to update in API as well (optional)
-        this.bookingsApi.update(id, { status: 'cancelled' }).subscribe({
-          next: () => {
-            this.showSuccessMessage('booking.cancelSuccess');
-          },
-          error: (error) => {
-            console.error('Error updating booking in API:', error);
-            // Still show success since localStorage was updated
-            this.showSuccessMessage('booking.cancelSuccess');
-          }
-        });
-      } else {
-        this.showErrorMessage('booking.cancelError');
-      }
+      this.bookingsApi.cancel(id).subscribe({
+        next: response => {
+          this.bookingStore.updateBooking(toDomainBooking(response));
+          if (this.activeBookingService.getActiveBooking()?.id === id) this.activeBookingService.clearActiveBooking();
+          this.loadBookings();
+          this.showSuccessMessage('booking.cancelSuccess');
+        },
+        error: () => this.showErrorMessage('booking.cancelError')
+      });
     }
   }
 
@@ -251,7 +242,7 @@ export class BookingListComponent implements OnInit {
 
       // Check if there's already an active booking
       const activeBooking = this.activeBookingService.getActiveBooking();
-      if (activeBooking) {
+      if (activeBooking?.status === 'active') {
         this.showErrorMessage('booking.alreadyHasActive');
         return;
       }
@@ -310,14 +301,11 @@ export class BookingListComponent implements OnInit {
   }
 
   private activateBookingNow(booking: any, vehicle: any): void {
-    // Update booking status to active
-    booking.status = 'active';
-    booking.actualStartDate = new Date();
-    
-    this.bookingStorage.updateBooking(booking.id, booking);
-    this.bookingStore.loadFromLocalStorage();
-    this.activeBookingService.setActiveBooking(booking);
-
+    this.bookingsApi.start(booking.id).subscribe({
+      next: response => {
+        booking = toDomainBooking(response);
+        this.bookingStore.updateBooking(booking);
+        this.activeBookingService.setActiveBooking(booking);
     // Update the view
     const bookingView = this.bookings.find(b => b.id === booking.id);
     if (bookingView) {
@@ -354,6 +342,9 @@ export class BookingListComponent implements OnInit {
     });
 
     this.showSuccessMessage('booking.activatedSuccessfully');
+      },
+      error: () => this.showErrorMessage('booking.activateError')
+    });
   }
 
   private showSuccessMessage(key: string): void {

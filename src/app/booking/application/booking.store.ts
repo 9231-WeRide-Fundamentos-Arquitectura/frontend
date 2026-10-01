@@ -89,23 +89,11 @@ export class BookingStore {
   }
 
   async activateBooking(bookingId: string): Promise<void> {
-    const bookingResponse = await firstValueFrom(
-      this.bookingsApi.getById(bookingId)
-    );
-
-    const activatedBooking = toDomainBooking(bookingResponse);
+    const response = await firstValueFrom(this.bookingsApi.start(bookingId));
+    const activatedBooking = toDomainBooking(response);
     activatedBooking.activationStatus = 'active';
     activatedBooking.isActivated = true;
-    activatedBooking.activatedAt = new Date();
-    activatedBooking.status = 'active';
-
-    await firstValueFrom(
-      this.bookingsApi.update(bookingId, {
-        ...bookingResponse,
-        status: 'active',
-        actualStartDate: new Date().toISOString()
-      })
-    );
+    activatedBooking.activatedAt = activatedBooking.actualStartDate ?? undefined;
 
     this.activeBookingSubject.next(activatedBooking);
     this.updateBooking(activatedBooking);
