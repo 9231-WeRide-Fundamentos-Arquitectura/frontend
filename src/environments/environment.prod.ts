@@ -1,7 +1,7 @@
 export const environment = {
   production: true,
   mapboxAccessToken: 'pk.eyJ1IjoiamhpbXlwb29sIiwiYSI6ImNtZGY4cjVoMDBheHcyaXEzaDV5a2g4eGIifQ.QYmwDCEn26DEW-8RbIG2jg',
-  apiUrl: 'https://weride.duckdns.org/api/v1',
+  apiUrl: 'https://backend-xb39.onrender.com/api/v1',
   endpoints: {
     users: '/users',
     vehicles: '/vehicles',
