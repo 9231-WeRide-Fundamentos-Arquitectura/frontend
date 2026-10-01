@@ -164,9 +164,7 @@ export class ApiService {
   private readonly baseUrl = environment.apiUrl;
   private readonly endpoints = environment.endpoints;
 
-  constructor(private http: HttpClient) {
-    console.log('ApiService inicializado - URL base:', this.baseUrl);
-  }
+  constructor(private http: HttpClient) {}
 
   getUsers(): Observable<User[]> {
     return this.http.get<User[]>(`${this.baseUrl}${this.endpoints.users}`);
