@@ -123,21 +123,24 @@ describe('Pre-deploy backend contracts', () => {
     expect(active.booking()?.status).toBe('active');
   });
 
-  it('keeps a created reservation after start fails and reuses it on retry', async () => {
+  it('keeps a created reservation when unlock is cancelled and reuses it on retry', async () => {
     const initializer = TestBed.inject(TripInitializerService);
-    const initialize = spyOn(initializer, 'initializeTripFromBooking').and.resolveTo(true);
+    const unlock = spyOn(initializer, 'requestUnlock').and.rejectWith(new Error('Cancelado'));
     TestBed.tick();
     const failed = initializer.reserveAndStart('7', '3');
     http.expectOne(api + '/bookings').flush([]); await firstValueFrom(timer(0));
+    http.expectOne(api + '/location').flush([{ id: 3, coordinates: { lat: -12, lng: -77 } }]);
+    await firstValueFrom(timer(0));
     const create = http.expectOne(api + '/bookings'); expect(create.request.method).toBe('POST');
-    create.flush(reserved); await firstValueFrom(timer(0));
-    http.expectOne(api + '/bookings/booking-uuid/start').flush({}, { status: 500, statusText: 'Failed' });
-    await expectAsync(failed).toBeRejected(); expect(initialize).not.toHaveBeenCalled();
+    create.flush(reserved);
+    await expectAsync(failed).toBeRejected();
     expect(TestBed.inject(ActiveBookingService).getActiveBooking()?.id).toBe(reserved.id);
+    unlock.and.resolveTo();
     const retry = initializer.reserveAndStart('7', '3');
-    http.expectOne(api + '/bookings').flush([reserved]); await firstValueFrom(timer(0));
-    http.expectOne(api + '/bookings/booking-uuid/start').flush({ ...reserved, status: 'in_progress', actualStartDate: reserved.startDate });
-    await retry; expect(initialize.calls.mostRecent().args[0].status).toBe('active');
+    http.expectOne(api + '/bookings').flush([reserved]);
+    await retry;
+    expect(unlock.calls.count()).toBe(2);
+    http.expectNone(api + '/bookings/booking-uuid/start');
   });
 
   it('retains the active trip when completion fails', async () => {
@@ -151,22 +154,23 @@ describe('Pre-deploy backend contracts', () => {
     expect(TestBed.inject(ActiveBookingService).getActiveBooking()?.id).toBe(reserved.id);
   });
 
-  it('starts a listed reservation using the actual dialog result objects', async () => {
+  it('opens the selected unlock modal without starting a listed reservation', async () => {
     const list = TestBed.runInInjectionContext(() => new BookingListComponent());
     const store = TestBed.inject(BookingStore); TestBed.tick();
     store.addBooking(toDomainBooking(reserved));
     const dialog = TestBed.inject(MatDialog);
     (dialog.open as jasmine.Spy).and.returnValues(
       { afterClosed: () => of({ action: 'book_now' }) },
-      { afterClosed: () => of({ method: 'manual' }) }
+      { afterClosed: () => of({ method: 'manual' }) },
+      { afterClosed: () => of({ cancelled: true }) }
     );
-    const navigate = spyOn(TestBed.inject(Router), 'navigate').and.resolveTo(true);
     await list.activateBooking({ id: reserved.id, vehicleId: '7', status: 'pending' } as any);
     http.expectOne(api + '/vehicles').flush([{ id: 7, location: 3, companyId: 2 }]);
-    const start = http.expectOne(api + '/bookings/booking-uuid/start');
-    expect(start.request.method).toBe('PUT');
-    start.flush({ ...reserved, status: 'in_progress', actualStartDate: reserved.startDate });
-    expect(TestBed.inject(ActiveBookingService).getActiveBooking()?.status).toBe('active');
-    expect(navigate).toHaveBeenCalledWith(['/garage'], { queryParams: { action: 'unlock-manual', vehicleId: '7', bookingId: reserved.id } });
+    expect((dialog.open as jasmine.Spy).calls.count()).toBe(3);
+    const data = (dialog.open as jasmine.Spy).calls.mostRecent().args[1].data;
+    expect(data.booking.id).toBe(reserved.id);
+    expect(data.vehicle.id).toBe('7');
+    http.expectNone(api + '/bookings/booking-uuid/start');
+    expect(store.getBookingById(reserved.id)?.status).toBe('pending');
   });
 });

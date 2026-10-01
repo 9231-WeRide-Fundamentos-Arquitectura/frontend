@@ -33,10 +33,14 @@ export class AuthService {
   }
 
   logout(): void {
+    const token = this.session()?.token;
     localStorage.removeItem('weride_session');
     localStorage.removeItem('active_booking');
     localStorage.removeItem('userProfile');
     this.session.set(null);
+    if (token) this.http.post<void>(`${environment.apiUrl}/accounts/me/sessions/logout`, {}, {
+      headers: { Authorization: `Bearer ${token}` }
+    }).subscribe({ error: () => {} });
   }
 
   private restore(): Session | null {
