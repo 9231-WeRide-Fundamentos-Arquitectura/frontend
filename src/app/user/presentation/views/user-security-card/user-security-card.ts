@@ -5,11 +5,12 @@ import { Observable } from 'rxjs';
 import { MatIcon } from '@angular/material/icon';
 import { UserStore } from '../../../application/user.store';
 import { UserSettingsStateService } from '../../../application/user-settings-state.service';
+import { AccountSecurityActions } from '../account-security-actions/account-security-actions';
 
 @Component({
   selector: 'app-user-security-card',
   standalone: true,
-  imports: [CommonModule, MatIcon, TranslateModule],
+  imports: [CommonModule, MatIcon, TranslateModule, AccountSecurityActions],
   templateUrl: './user-security-card.html',
   styleUrl: './user-security-card.css'
 })
