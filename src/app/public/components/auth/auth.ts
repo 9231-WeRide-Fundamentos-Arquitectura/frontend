@@ -1,50 +1,79 @@
 import { Component, inject, signal } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
-import { finalize, switchMap } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
+import { catchError, finalize, of, switchMap } from 'rxjs';
+import { environment } from '../../../../environments/environment';
 import { AuthService } from '../../../core/services/auth.service';
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 @Component({
   selector: 'app-auth',
-  imports: [ReactiveFormsModule, RouterLink, MatFormFieldModule, MatInputModule, MatButtonModule],
-  template: `
-    <main class="container">
-      <h1>{{ register ? 'Crear cuenta' : 'Iniciar sesión' }}</h1>
-      <form [formGroup]="form" (ngSubmit)="submit()">
-        <mat-form-field><mat-label>Usuario</mat-label>
-          <input matInput formControlName="username" autocomplete="username" required>
-        </mat-form-field>
-        <mat-form-field><mat-label>Contraseña</mat-label>
-          <input matInput type="password" formControlName="password" [attr.autocomplete]="register ? 'new-password' : 'current-password'" required>
-        </mat-form-field>
-        @if (error()) { <p role="alert">{{ error() }}</p> }
-        <button mat-raised-button type="submit" [disabled]="busy() || form.invalid">{{ register ? 'Registrarse' : 'Entrar' }}</button>
-        <a mat-button [routerLink]="register ? '/auth/login' : '/auth/register'">{{ register ? 'Ya tengo cuenta' : 'Crear cuenta' }}</a>
-      </form>
-    </main>`
+  imports: [FormsModule, TranslateModule],
+  templateUrl: './auth.html',
+  styleUrl: './auth.css'
 })
 export class AuthComponent {
   private auth = inject(AuthService);
+  private http = inject(HttpClient);
   private router = inject(Router);
-  readonly register = inject(ActivatedRoute).snapshot.data['register'] === true;
-  readonly form = inject(FormBuilder).nonNullable.group({ username: ['', Validators.required], password: ['', Validators.required] });
+
+  readonly isRegisterMode = signal(inject(ActivatedRoute).snapshot.data['register'] === true);
+  readonly email = signal('');
+  readonly password = signal('');
+  readonly firstName = signal('');
+  readonly lastName = signal('');
+  readonly showPassword = signal(false);
   readonly busy = signal(false);
   readonly error = signal('');
+  private submitted = signal(false);
 
-  submit(): void {
-    if (this.form.invalid || this.busy()) return;
-    const { username, password } = this.form.getRawValue();
+  goBack(): void {
+    void this.router.navigate(['/auth/login']);
+  }
+
+  togglePassword(): void {
+    this.showPassword.update(shown => !shown);
+  }
+
+  setMode(register: boolean): void {
+    this.isRegisterMode.set(register);
+    this.submitted.set(false);
+    this.error.set('');
+  }
+
+  isEmailInvalid(): boolean {
+    return this.submitted() && !!this.email() && !EMAIL_REGEX.test(this.email());
+  }
+
+  isRequiredInvalid(value: string): boolean {
+    return this.submitted() && !value.trim();
+  }
+
+  continue(): void {
+    if (this.busy()) return;
+    this.submitted.set(true);
+    const register = this.isRegisterMode();
+    const email = this.email().trim();
+    const password = this.password();
+    const name = `${this.firstName().trim()} ${this.lastName().trim()}`;
+    if (!EMAIL_REGEX.test(email) || !password || (register && (!this.firstName().trim() || !this.lastName().trim()))) return;
+
     this.busy.set(true);
     this.error.set('');
-    const request = this.register
-      ? this.auth.signUp(username, password).pipe(switchMap(() => this.auth.signIn(username, password)))
-      : this.auth.signIn(username, password);
+    // El backend identifica la cuenta por `username`: se envía el correo como username.
+    const request = register
+      ? this.auth.signUp(email, password).pipe(
+          switchMap(() => this.auth.signIn(email, password)),
+          // El sign-up ya crea el perfil vacío; si guardar el nombre falla, la cuenta sigue siendo válida.
+          switchMap(() => this.http.put(`${environment.apiUrl}/profiles/${this.auth.userId}`, { name }).pipe(catchError(() => of(null))))
+        )
+      : this.auth.signIn(email, password);
     request.pipe(finalize(() => this.busy.set(false))).subscribe({
       next: () => void this.router.navigate(['/home']),
-      error: () => this.error.set(this.register ? 'No se pudo crear la cuenta o iniciar sesión. Intenta iniciar sesión si ya se creó.' : 'No se pudo iniciar sesión. Revisa tus credenciales y la conexión.')
+      error: (e: { status?: number }) => this.error.set(e.status === 0 ? 'auth.emailLogin.connectionError' : register ? 'auth.register.failed' : 'auth.emailLogin.invalidCredentials')
     });
   }
 }
