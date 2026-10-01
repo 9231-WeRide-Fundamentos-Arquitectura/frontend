@@ -91,21 +91,6 @@
       </div>
 
       <div class="trip-footer">
-        <div class="trip-rating">
-          <div class="stars">
-            @for (star of [1,2,3,4,5]; track star) {
-            <span
-              class="star"
-              [class.filled]="star <= rating()"
-              (click)="setRating(star)"
-            >
-              ★
-            </span>
-            }
-          </div>
-          <span class="rating-label">{{ 'trip.leaveRating' | translate }}</span>
-        </div>
-
         <div class="trip-actions">
           <button mat-stroked-button class="action-btn" (click)="goToHistory()">
             {{ 'trip.tripHistory' | translate }}

@@ -1,24 +1,60 @@
 <div class="trip-history-container">
   <div class="header">
-    <button mat-icon-button class="back-btn" (click)="goBack()" aria-label="Volver">
+    <button mat-icon-button class="back-btn" (click)="goBack()" [attr.aria-label]="'common.back' | translate">
       <span style="font-size: 24px;">←</span>
     </button>
     <h2>{{ 'trip.tripHistory' | translate }}</h2>
   </div>
-  <div *ngFor="let trip of trips" class="trip-card">
-    <img [src]="trip.image" [alt]="'trip.electricScooter' | translate" class="vehicle-img" />
-    <div class="trip-info">
-      <h3>{{ 'trip.trip' | translate }} ({{ trip.route }})</h3>
-      <p>{{ 'trip.dateAndTime' | translate }}: {{ trip.date }}</p>
-      <p>{{ 'trip.vehicle' | translate }}: {{ trip.vehicle }}</p>
-      <p>{{ 'trip.tripDuration' | translate }}: {{ trip.duration }}</p>
-      <p>{{ 'trip.distanceTraveled' | translate }}: {{ trip.distance }}</p>
-      <p>{{ 'trip.tripId' | translate }}: {{ trip.id }}</p>
+  @if (loading) { <p role="status">{{ 'trip.history.loading' | translate }}</p> }
+  @if (error) {
+    <p role="alert">{{ error | translate }}</p>
+    <button type="button" (click)="retry()" [disabled]="loading">{{ 'common.retry' | translate }}</button>
+  }
+  @if (!loading && !error && trips.length === 0) { <p>{{ 'trip.history.empty' | translate }}</p> }
+  @if (detailLoadingId) { <p role="status">{{ 'trip.history.loading' | translate }}</p> }
+  @if (detailErrorId) {
+    <p role="alert">{{ 'trip.history.error' | translate }}</p>
+    <button type="button" (click)="loadDetails(detailErrorId)">{{ 'common.retry' | translate }}</button>
+  }
+  @if (selectedTrip; as trip) {
+    <section class="trip-card" id="trip-history-details" aria-labelledby="trip-history-detail-title">
+      <div class="trip-info">
+        <h3 id="trip-history-detail-title">{{ 'trip.viewDetails' | translate }}: {{ trip.route }}</h3>
+        <p>{{ 'trip.tripId' | translate }}: {{ trip.id }}</p>
+        <p>{{ 'trip.vehicle' | translate }}: {{ trip.vehicleName }}</p>
+        <p>{{ 'trip.dateAndTime' | translate }}: {{ formatDate(trip.startedAt) }} → {{ formatDate(trip.endedAt) }}</p>
+        <p>{{ 'trip.tripDuration' | translate }}: {{ trip.duration ?? '—' }} min</p>
+        <p>{{ 'trip.distanceTraveled' | translate }}: {{ trip.distance ?? '—' }} km</p>
+        <p>{{ 'trip.history.averageSpeed' | translate }}: {{ trip.averageSpeed ?? '—' }} km/h</p>
+        <p>{{ 'trip.history.cost' | translate }}: {{ trip.finalCost == null ? '—' : (trip.finalCost | currency:'USD') }}</p>
+        <p>{{ 'trip.history.route' | translate }}</p>
+        @if (trip.routeCoordinates.length) {
+          <ol class="route-coordinates">
+            @for (point of trip.routeCoordinates; track $index) { <li>{{ point.lat | number:'1.4-6' }}, {{ point.lng | number:'1.4-6' }}</li> }
+          </ol>
+        } @else { <p>{{ 'trip.history.noRoute' | translate }}</p> }
+      </div>
+      <button type="button" (click)="selectedTrip = null">{{ 'common.close' | translate }}</button>
+    </section>
+  }
+  @for (trip of trips; track trip.id) {
+    <div class="trip-card">
+      @if (trip.image) { <img [src]="trip.image" [alt]="trip.vehicleName" class="vehicle-img" /> }
+      <div class="trip-info">
+        <h3>{{ 'trip.trip' | translate }} ({{ trip.route }})</h3>
+        <p>{{ 'trip.dateAndTime' | translate }}: {{ formatDate(trip.startedAt) }}</p>
+        <p>{{ 'trip.vehicle' | translate }}: {{ trip.vehicleName }}</p>
+        <p>{{ 'trip.tripDuration' | translate }}: {{ trip.duration ?? '—' }} min</p>
+        <p>{{ 'trip.distanceTraveled' | translate }}: {{ trip.distance ?? '—' }} km</p>
+        <p>{{ 'trip.history.cost' | translate }}: {{ trip.finalCost == null ? '—' : (trip.finalCost | currency:'USD') }}</p>
+        <p>{{ 'trip.tripId' | translate }}: {{ trip.id }}</p>
+      </div>
+      <div class="trip-actions">
+        <button type="button" disabled [attr.title]="'trip.history.receiptPending' | translate">{{ 'trip.printReceipt' | translate }}</button>
+        <small>{{ 'trip.history.receiptPending' | translate }}</small>
+        <button type="button" (click)="viewDetails(trip)" [disabled]="!!detailLoadingId" [attr.aria-expanded]="selectedTrip?.id === trip.id" aria-controls="trip-history-details">{{ 'trip.viewDetails' | translate }}</button>
+      </div>
     </div>
-    <div class="trip-actions">
-      <button (click)="printReceipt(trip)">{{ 'trip.printReceipt' | translate }}</button>
-      <button (click)="viewDetails(trip)">{{ 'trip.viewDetails' | translate }}</button>
-    </div>
-  </div>
-  <button class="see-more-btn" (click)="seeMore()">{{ 'trip.seeMore' | translate }}</button>
+  }
+  @if (hasMore) { <button type="button" class="see-more-btn" (click)="seeMore()" [disabled]="loading">{{ 'trip.seeMore' | translate }}</button> }
 </div>

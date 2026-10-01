@@ -40,12 +40,15 @@
 }
 
 .star-icon {
-  font-size: 48px;
   width: 48px;
   height: 48px;
   cursor: pointer;
   transition: transform 0.2s, color 0.2s;
 }
+
+.star-icon mat-icon { font-size: 32px; width: 32px; height: 32px; }
+.tags { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.tags button[aria-pressed="true"] { background: #eee7fc; }
 
 .star-icon:hover {
   transform: scale(1.1);

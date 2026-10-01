@@ -31,7 +31,9 @@ export class OfflineSyncService {
       vehicleId: report.vehicleId!,
       categories: report.categories!,
       description: report.description || '',
-      status: 'pending'
+      status: 'pending',
+      bookingId: report.bookingId,
+      photo: report.photo
     };
     queue.push(queuedReport);
     this.saveProblemReportsQueue(queue);
@@ -66,7 +68,8 @@ export class OfflineSyncService {
           vehicleId: report.vehicleId,
           categories: report.categories,
           description: report.description,
-          tripId: report.tripId,
+          bookingId: report.bookingId,
+          photo: report.photo,
           userId: report.userId
         }).toPromise();
         success++;

@@ -16,13 +16,13 @@ import {VehicleDetailsModal} from '../../../../garage/presentation/views/vehicle
 import {ActiveTripPanel} from '../active-trip-panel/active-trip-panel';
 import {ReportProblemModal} from '../report-problem-modal/report-problem-modal';
 import {RateTripModal} from '../rate-trip-modal/rate-trip-modal';
-import {ProblemReportsApiEndpoint} from '../../../infrastructure/problem-reports-api-endpoint';
 import {RatingsApiEndpoint} from '../../../infrastructure/ratings-api-endpoint';
 import {OfflineSyncService} from '../../../application/offline-sync.service';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {TranslateService} from '@ngx-translate/core';
 import { ActiveBookingService } from '../../../../booking/application/active-booking.service';
 import { TripInitializerService } from '../../../application/trip-initializer.service';
+import { RouteCoordinate } from '../../../domain/model/trip.entity';
 
 @Component({
   selector: 'app-trip-map',
@@ -35,7 +35,6 @@ export class TripMap implements OnInit, OnDestroy {
   private vehiclesApi = inject(VehiclesApiEndpoint);
   protected tripStore = inject(TripStore);
   private dialog = inject(MatDialog);
-  private problemReportsApi = inject(ProblemReportsApiEndpoint);
   private ratingsApi = inject(RatingsApiEndpoint);
   private offlineSyncService = inject(OfflineSyncService);
   private snackBar = inject(MatSnackBar);
@@ -47,14 +46,22 @@ export class TripMap implements OnInit, OnDestroy {
   private bookingStore = inject(BookingStore);
   private bookingBusy = false;
   private completedBookingId: string | null = null;
+  private routeCoordinates: RouteCoordinate[] = [];
+  private routeBookingId: string | null = null;
+  private routeDistance = 0;
 
   userLocation = signal<[number, number] | null>(null);
-  // ponytail: disponibilidad simulada en el cliente (cada vehículo se oculta al azar); cambiar por telemetría real del backend cuando exista.
+  // Un vehículo se oculta solo si tiene una reserva activa que lo ocupa en los próximos 15 min (disponibilidad real del backend).
   private hiddenVehicleIds = signal(new Set<string>());
-  private availabilityInterval = window.setInterval(() => this.hiddenVehicleIds.set(
-    new Set(this.tripStore.vehicles().filter(() => Math.random() < this.HIDDEN_PROBABILITY).map(v => v.id))
-  ), 25000);
-  private readonly HIDDEN_PROBABILITY = 0.35;
+  private async refreshBusyVehicles(): Promise<void> {
+    const now = new Date(), soon = new Date(now.getTime() + 15 * 60000);
+    const busy = await Promise.all(this.tripStore.vehicles().filter(v => v.status === 'available').map(async v => {
+      try { return (await firstValueFrom(this.bookingsApi.availability(v.id, now, soon))).available ? null : v.id; }
+      catch { return null; }
+    }));
+    this.hiddenVehicleIds.set(new Set(busy.filter((id): id is string => id !== null)));
+  }
+  private availabilityInterval = window.setInterval(() => void this.refreshBusyVehicles(), 25000);
   markers: Array<{lng: number, lat: number}> = [];
   vehicleMarkers = computed(() => {
     const vehicles = this.tripStore.vehicles();
@@ -91,6 +98,7 @@ export class TripMap implements OnInit, OnDestroy {
   async ngOnInit(): Promise<void> {
     this.loadLocations();
     this.loadVehicles();
+    setTimeout(() => void this.refreshBusyVehicles(), 2000);
     this.startLocationTracking();
     this.startTripUpdates();
 
@@ -301,6 +309,7 @@ export class TripMap implements OnInit, OnDestroy {
         (pos) => {
           const {longitude, latitude} = pos.coords;
           this.userLocation.set([longitude, latitude]);
+          if (pos.coords.accuracy <= 100) this.recordRoutePosition({ lat: latitude, lng: longitude });
         },
         (error) => {
           // Error obteniendo la ubicación
@@ -314,6 +323,47 @@ export class TripMap implements OnInit, OnDestroy {
     } else {
       alert('Tu navegador no soporta geolocalizacion')
     }
+  }
+
+  // ponytail: GPS is captured while the map is open; background tracking requires a native client.
+  recordRoutePosition(point: RouteCoordinate): void {
+    const booking = this.activeBookingService.getActiveBooking();
+    if (!this.isActiveTrip() || !booking || !Number.isFinite(point.lat) || !Number.isFinite(point.lng)
+        || Math.abs(point.lat) > 90 || Math.abs(point.lng) > 180) return;
+    const key = `weride_route_${booking.userId}_${booking.id}`;
+    if (this.routeBookingId !== booking.id) {
+      this.routeBookingId = booking.id;
+      this.routeCoordinates = [];
+      this.routeDistance = 0;
+      try {
+        const saved: unknown = JSON.parse(sessionStorage.getItem(key) || '[]');
+        if (Array.isArray(saved) && saved.length <= 5000 && saved.every(p => p && Number.isFinite(p.lat)
+            && Number.isFinite(p.lng) && Math.abs(p.lat) <= 90 && Math.abs(p.lng) <= 180)) this.routeCoordinates = saved;
+      } catch { /* A damaged local route must not stop a ride. */ }
+      for (let i = 1; i < this.routeCoordinates.length; i++) {
+        const from = this.routeCoordinates[i - 1], to = this.routeCoordinates[i];
+        this.routeDistance += this.calculateDistance(from.lat, from.lng, to.lat, to.lng);
+      }
+    }
+    const last = this.routeCoordinates.at(-1);
+    if (last?.lat === point.lat && last?.lng === point.lng) return;
+    if (last) this.routeDistance += this.calculateDistance(last.lat, last.lng, point.lat, point.lng);
+    // Keep the whole route represented within the server limit by reducing sampling density.
+    if (this.routeCoordinates.length >= 5000) this.routeCoordinates = this.routeCoordinates.filter((_, i) => i % 2 === 0);
+    this.routeCoordinates.push(point);
+    this.estimatedDistance.set(this.routeDistance);
+    try { sessionStorage.setItem(key, JSON.stringify(this.routeCoordinates)); } catch { /* Keep the in-memory route if browser storage is full. */ }
+  }
+
+  private simulateRoute(fromId: string, toId: string): { points: RouteCoordinate[]; distance: number } | null {
+    const locations = this.tripStore.locations();
+    const from = locations.find(l => l.id === fromId)?.coordinates, to = locations.find(l => l.id === toId)?.coordinates;
+    if (!from || !to) return null;
+    const steps = 10;
+    const points = Array.from({ length: steps + 1 }, (_, i) => ({
+      lat: from.lat + (to.lat - from.lat) * i / steps, lng: from.lng + (to.lng - from.lng) * i / steps
+    }));
+    return { points, distance: this.calculateDistance(from.lat, from.lng, to.lat, to.lng) };
   }
 
   startTripUpdates() {
@@ -362,13 +412,31 @@ export class TripMap implements OnInit, OnDestroy {
     if (!booking || !vehicle || !start) { this.showMessage('No hay una reserva activa para finalizar', 'error'); return; }
     this.bookingBusy = true;
     try {
+      if (this.routeBookingId !== booking.id) {
+        try {
+          const saved = JSON.parse(sessionStorage.getItem(`weride_route_${booking.userId}_${booking.id}`) || '[]');
+          if (Array.isArray(saved) && saved.length) this.recordRoutePosition(saved.at(-1));
+        } catch { /* Invalid browser data cannot block completion. */ }
+      }
       const duration = Math.max(0, Math.ceil((Date.now() - start.getTime()) / 60000));
-      const distance = this.estimatedDistance();
+      let distance = this.routeBookingId === booking.id ? this.routeDistance : 0;
+      let route = this.routeBookingId === booking.id ? this.routeCoordinates : [];
+      let routeSource: 'gps' | 'simulated' = 'gps';
+      if (route.length < 2) {
+        // No usable GPS (e.g. desktop): interpolate station to station and flag it as simulated.
+        const simulated = this.simulateRoute(booking.startLocationId, booking.endLocationId);
+        if (simulated) { route = simulated.points; distance = simulated.distance; routeSource = 'simulated'; }
+      }
       const response = await firstValueFrom(this.bookingsApi.complete(booking.id, {
         totalCost: duration * vehicle.pricePerMinute, discount: 0, distance, duration,
-        averageSpeed: duration ? distance / (duration / 60) : 0, rating: null
+        averageSpeed: duration ? distance / (duration / 60) : 0, rating: null,
+        routeCoordinates: route, routeSource
       }));
       this.bookingStore.updateBooking(toDomainBooking(response));
+      try { sessionStorage.removeItem(`weride_route_${booking.userId}_${booking.id}`); } catch { /* Completion already persisted on the server. */ }
+      this.routeCoordinates = [];
+      this.routeBookingId = null;
+      this.routeDistance = 0;
       this.bookingStore.setActiveBooking(null);
       this.completedBookingId = booking.id;
       this.activeBookingService.clearActiveBooking();
@@ -397,117 +465,28 @@ export class TripMap implements OnInit, OnDestroy {
       restoreFocus: false
     });
 
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.submitProblemReport(result);
+    dialogRef.afterClosed().subscribe((report) => {
+      if (!report) return;
+      if (report.chargeWaived) {
+        this.activeBookingService.clearActiveBooking();
+        this.tripStore.endTrip();
+        this.tripStore.setCurrentTrip(null);
+        this.bookingStore.setActiveBooking(null);
       }
+      this.loadVehicles();
     });
-  }
-
-  submitProblemReport(reportData: any) {
-    const isOffline = this.connectionError();
-
-    if (isOffline) {
-      // Save to local storage for later sync
-      this.offlineSyncService.queueProblemReport({
-        vehicleId: reportData.vehicleId,
-        categories: reportData.categories,
-        description: reportData.description,
-        tripId: this.tripStore.currentTrip()?.id
-      });
-
-      this.showMessage(
-        this.translate.instant('trip.reportProblem.savedOffline'),
-        'info'
-      );
-    } else {
-      // Submit directly to API
-      this.problemReportsApi.create({
-        vehicleId: reportData.vehicleId,
-        categories: reportData.categories,
-        description: reportData.description,
-        tripId: this.tripStore.currentTrip()?.id
-      }).subscribe({
-        next: () => {
-          this.showMessage(
-            this.translate.instant('trip.reportProblem.success'),
-            'success'
-          );
-        },
-        error: (error) => {
-          console.error('Error submitting problem report:', error);
-          // Fallback to offline queue if submission fails
-          this.offlineSyncService.queueProblemReport({
-            vehicleId: reportData.vehicleId,
-            categories: reportData.categories,
-            description: reportData.description,
-            tripId: this.tripStore.currentTrip()?.id
-          });
-          this.showMessage(
-            this.translate.instant('trip.reportProblem.savedOffline'),
-            'info'
-          );
-        }
-      });
-    }
   }
 
   openRateTripModal() {
-    const dialogRef = this.dialog.open(RateTripModal, {
-      data: this.tripStore.currentTrip() ?? {},
+    if (!this.completedBookingId) return;
+    this.dialog.open(RateTripModal, {
+      data: { bookingId: this.completedBookingId },
       width: '600px',
       maxWidth: '95vw',
       panelClass: 'rate-trip-dialog',
-      autoFocus: false,
-      restoreFocus: false
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.submitRating(result);
-      }
+      disableClose: true
     });
   }
-
-  submitRating(ratingData: any) {
-    // La calificación se guarda sobre la reserva; un viaje iniciado solo en local no tiene nada que calificar en el backend.
-    const bookingId = this.completedBookingId ?? this.activeBookingService.getActiveBooking()?.id;
-    if (!bookingId) {
-      console.warn('Calificación descartada: no hay reserva activa a la que asociarla');
-      return;
-    }
-    const rating = { bookingId, rating: ratingData.rating, comment: ratingData.comment };
-
-    if (this.connectionError()) {
-      // Save to local storage for later sync
-      this.offlineSyncService.queueRating(rating);
-
-      this.showMessage(
-        this.translate.instant('trip.rateTrip.savedOffline'),
-        'info'
-      );
-    } else {
-      // Submit directly to API
-      this.ratingsApi.create(rating).subscribe({
-        next: () => {
-          this.showMessage(
-            this.translate.instant('trip.rateTrip.thankYou'),
-            'success'
-          );
-        },
-        error: (error) => {
-          console.error('Error submitting rating:', error);
-          // Fallback to offline queue if submission fails
-          this.offlineSyncService.queueRating(rating);
-          this.showMessage(
-            this.translate.instant('trip.rateTrip.savedOffline'),
-            'info'
-          );
-        }
-      });
-    }
-  }
-
   private showMessage(message: string, type: 'success' | 'error' | 'info') {
     this.snackBar.open(message, this.translate.instant('common.close'), {
       duration: 4000,

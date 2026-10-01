@@ -1,3 +1,7 @@
+import { MatDialog } from '@angular/material/dialog';
+import { UnlockMethodSelectionModal } from '../../booking/presentation/views/unlock-method-selection-modal/unlock-method-selection-modal';
+import { ManualUnlockModal } from '../../garage/presentation/views/manual-unlock-modal/manual-unlock-modal';
+import { QrScannerModal } from '../../garage/presentation/views/qr-scanner-modal/qr-scanner-modal';
 import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { Booking } from '../../booking/domain/model/booking.entity';
@@ -11,18 +15,22 @@ import { BookingsApiEndpoint } from '../../booking/infraestructure/bookings-api-
 import { ActiveBookingService } from '../../booking/application/active-booking.service';
 import { BookingStore } from '../../booking/application/booking.store';
 import { toDomainBooking } from '../../booking/infraestructure/booking-assembler';
+import { hasCriticalBattery } from '../../garage/domain/model/vehicle.model';
+import { TranslateService } from '@ngx-translate/core';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TripInitializerService {
   private tripStore = inject(TripStore);
+  private dialog = inject(MatDialog);
   private vehiclesApi = inject(VehiclesApiEndpoint);
   private locationsApi = inject(LocationsApiEndpoint);
   private auth = inject(AuthService);
   private bookingsApi = inject(BookingsApiEndpoint);
   private activeBooking = inject(ActiveBookingService);
   private bookingStore = inject(BookingStore);
+  private translate = inject(TranslateService);
 
   // ponytail: vuelve al origen por defecto; usar un destino elegido cuando haya selector.
   async reserveAndStart(vehicleId: string, startLocationId: string, endLocationId = startLocationId): Promise<void> {
@@ -31,22 +39,38 @@ export class TripInitializerService {
       throw new Error('Ya tienes una reserva. Continúa desde tus reservas.');
     }
     if (!booking) {
+      const vehicle = await firstValueFrom(this.vehiclesApi.getById(vehicleId));
+      if (hasCriticalBattery(vehicle)) throw new Error(this.translate.instant('garage.vehicle.criticalBattery'));
       // Sin ubicación válida no se crea la reserva: evita dejar una reserva iniciada huérfana.
       await firstValueFrom(this.locationsApi.getById(startLocationId)).catch(() => {
         throw new Error('Este vehículo no tiene una ubicación válida y no se puede reservar ahora.');
       });
       booking = toDomainBooking(await firstValueFrom(this.bookingsApi.create({
         userId: this.auth.userId, vehicleId, startLocationId, endLocationId
-      })));
+      })).catch(error => {
+        if (error.error?.message === 'Batería crítica') throw new Error(this.translate.instant('garage.vehicle.criticalBattery'));
+        throw error;
+      }));
       this.activeBooking.setActiveBooking(booking);
       this.bookingStore.addBooking(booking);
     }
-    booking = toDomainBooking(await firstValueFrom(this.bookingsApi.start(booking.id)));
-    this.activeBooking.setActiveBooking(booking);
-    this.bookingStore.updateBooking(booking);
-    if (!await this.initializeTripFromBooking(booking)) {
-      throw new Error('La reserva se inició, pero no se pudo cargar el viaje. Vuelve a abrir el mapa.');
+    await this.requestUnlock(booking);
+  }
+
+  async requestUnlock(booking: Booking): Promise<void> {
+    const vehicle = await firstValueFrom(this.vehiclesApi.getById(booking.vehicleId));
+    const selection = await firstValueFrom(this.dialog.open(UnlockMethodSelectionModal, {
+      data: { booking, vehicle }, width: '500px', maxWidth: '95vw'
+    }).afterClosed());
+    if (selection?.method !== 'manual' && selection?.method !== 'qr_code') {
+      throw new Error('La reserva está guardada. Puedes desbloquearla desde Mis Reservas.');
     }
+    const data = { booking, vehicle };
+    const dialog = selection.method === 'manual'
+      ? this.dialog.open(ManualUnlockModal, { data, width: '600px', maxWidth: '95vw' })
+      : this.dialog.open(QrScannerModal, { data, width: '600px', maxWidth: '95vw' });
+    const result = await firstValueFrom(dialog.afterClosed());
+    if (!result?.success) throw new Error('La reserva está guardada. Reintenta el desbloqueo desde Mis Reservas.');
   }
 
   /**

@@ -7,7 +7,9 @@ export interface ProblemReport {
   id?: string;
   vehicleId: string;
   userId?: string;
-  tripId?: string;
+  bookingId?: string;
+  photo?: string;
+  chargeWaived?: boolean;
   categories: string[];
   description: string;
   status?: string;
