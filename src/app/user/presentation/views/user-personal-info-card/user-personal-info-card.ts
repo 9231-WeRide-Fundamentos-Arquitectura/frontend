@@ -1,5 +1,6 @@
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatIcon } from '@angular/material/icon';
 import { TranslateModule } from '@ngx-translate/core';
@@ -15,6 +16,7 @@ import { User } from '../../../domain/model/user.entity';
   styleUrl: './user-personal-info-card.css'
 })
 export class UserPersonalInfoCard implements OnInit {
+  private destroyRef = inject(DestroyRef);
   private readonly userStore = inject(UserStore);
   private readonly stateService = inject(UserSettingsStateService);
   private readonly fb = inject(FormBuilder);
@@ -29,7 +31,7 @@ export class UserPersonalInfoCard implements OnInit {
   profilePicturePreview = '';
 
   ngOnInit(): void {
-    this.user$.subscribe(user => {
+    this.user$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(user => {
       this.currentUser = user;
       if (user) {
         this.initializeForm(user);

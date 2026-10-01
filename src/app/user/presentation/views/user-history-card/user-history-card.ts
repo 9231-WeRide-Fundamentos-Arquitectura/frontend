@@ -1,5 +1,6 @@
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
 import { Observable } from 'rxjs';
 import { MatIcon } from '@angular/material/icon';
@@ -16,6 +17,7 @@ import { UserSettingsStateService } from '../../../application/user-settings-sta
   styleUrl: './user-history-card.css'
 })
 export class UserHistoryCard implements OnInit {
+  private destroyRef = inject(DestroyRef);
   private readonly userStore = inject(UserStore);
   private readonly tripsApi = inject(TripsApiEndpoint);
   private readonly bookingsApi = inject(BookingsApiEndpoint);
@@ -26,7 +28,7 @@ export class UserHistoryCard implements OnInit {
   bookings$: Observable<any[]> = new Observable(observer => observer.next([]));
 
   ngOnInit(): void {
-    this.user$.subscribe(user => {
+    this.user$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(user => {
       if (user?.id) {
         const userId = user.id.toString();
         this.trips$ = this.tripsApi.getByUserId(userId);
