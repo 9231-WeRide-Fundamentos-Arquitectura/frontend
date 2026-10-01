@@ -1,57 +1,30 @@
-import { Injectable } from '@angular/core';
-import { environment } from '../../../environments/environment';
+import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
+import { environment } from '../../../environments/environment';
+import { AuthService } from '../../core/services/auth.service';
 import { User } from '../domain/model/user.entity';
 import { UserResponse } from './user-response';
-import { map } from 'rxjs/operators';
 import { UserAssembler } from './user-assembler';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class UserApiEndpoint {
-  private baseUrl = `${environment.apiUrl}${environment.endpoints.users}`;
-
+  private baseUrl = environment.apiUrl + '/profiles';
+  private auth = inject(AuthService);
   constructor(private http: HttpClient) {}
 
-  getAll(): Observable<User[]>
-  {
-    return this.http.get<UserResponse[]>(this.baseUrl).pipe(
-      map(responses => responses.map(response => UserAssembler.toDomain(response)))
-    );
+  getAll(): Observable<User[]> {
+    return this.getById(Number(this.auth.userId)).pipe(map(user => [user]));
   }
 
-  getById(id: number): Observable<User>
-  {
-    return this.http.get<UserResponse>(`${this.baseUrl}/${id}`).pipe(
-      map(response => UserAssembler.toDomain(response))
-    );
+  getById(id: number): Observable<User> {
+    return this.http.get<UserResponse>(this.baseUrl + '/' + id).pipe(map(UserAssembler.toDomain));
   }
 
-  getByName(name: string): Observable<User>
-  {
-    return this.http.get<UserResponse>(`${this.baseUrl}/name/${name}`).pipe(
-      map(response => UserAssembler.toDomain(response))
-    );
-  }
-
-  create(user: User): Observable<User>
-  {
-    return this.http.post<UserResponse>(this.baseUrl, user).pipe(
-      map(response => UserAssembler.toDomain(response))
-    );
-  }
-
-  update(id: number, user: User): Observable<User>
-  {
-    return this.http.put<UserResponse>(`${this.baseUrl}/${id}`, user).pipe(
-      map(response => UserAssembler.toDomain(response))
-    );
-  }
-
-  delete(id: number): Observable<void>
-  {
-    return this.http.delete<void>(`${this.baseUrl}/${id}`);
+  update(id: number, user: User): Observable<User> {
+    const { name, phone, profilePicture, dateOfBirth, address, emergencyContact } = user;
+    return this.http.put<UserResponse>(this.baseUrl + '/' + id, {
+      name, phone, profilePicture, dateOfBirth: dateOfBirth || null, address, emergencyContact
+    }).pipe(map(UserAssembler.toDomain));
   }
 }

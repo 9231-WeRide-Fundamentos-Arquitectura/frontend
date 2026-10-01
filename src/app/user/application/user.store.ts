@@ -1,5 +1,5 @@
 import { AuthService } from '../../core/services/auth.service';
-import { inject, Injectable } from '@angular/core';
+import { effect, inject, Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { User } from '../domain/model/user.entity';
@@ -19,7 +19,13 @@ export class UserStore {
   private loadingSubject = new BehaviorSubject<boolean>(false);
   readonly loading$ = this.loadingSubject.asObservable();
 
-  constructor(private userApiEndpoint: UserApiEndpoint) {}
+  constructor(private userApiEndpoint: UserApiEndpoint) {
+    effect(() => {
+      this.auth.session();
+      this.usersSubject.next([]);
+      this.selectedUserSubject.next(null);
+    });
+  }
 
   loadUsers(): void {
     this.loadingSubject.next(true);
@@ -64,16 +70,6 @@ export class UserStore {
     this.selectedUserSubject.next(user);
   }
 
-  createUser(user: User): Observable<User> {
-    return this.userApiEndpoint.create(user)
-      .pipe(
-        tap(newUser => {
-          const currentUsers = this.usersSubject.getValue();
-          this.usersSubject.next([...currentUsers, newUser]);
-        })
-      );
-  }
-
   updateUser(id: number, user: User): Observable<User> {
     return this.userApiEndpoint.update(id, user)
       .pipe(
@@ -88,13 +84,4 @@ export class UserStore {
       );
   }
 
-  deleteUser(id: number): Observable<void> {
-    return this.userApiEndpoint.delete(id)
-      .pipe(
-        tap(() => {
-          const currentUsers = this.usersSubject.value;
-          this.usersSubject.next(currentUsers.filter(u => u.id !== id));
-        })
-      );
-  }
 }
