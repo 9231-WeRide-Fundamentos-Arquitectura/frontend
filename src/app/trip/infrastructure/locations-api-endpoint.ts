@@ -1,3 +1,4 @@
+import { normalizeLocationResponse } from '../../booking/infraestructure/location-assembler';
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable, map } from 'rxjs';
@@ -14,7 +15,7 @@ export class LocationsApiEndpoint {
   // GET /api/v1/location devuelve la entidad tal cual: `id` numérico y `active` en vez de `isActive`.
   getAll(): Observable<Location[]> {
     return this.http.get<any[]>(this.baseUrl).pipe(
-      map(locations => locations.map(l => ({ ...l, id: String(l.id), isActive: l.active ?? l.isActive })))
+      map(locations => locations.map(normalizeLocationResponse))
     );
   }
 

@@ -1,8 +1,13 @@
 import { Location } from '../domain/model/location.entity';
 import { LocationResponse } from './locations-response';
 
+export function normalizeLocationResponse<T extends { id: string; isActive: boolean; active?: boolean }>(response: T): T {
+  return { ...response, id: String(response.id), isActive: response.active ?? response.isActive };
+}
+
 // Convierte LocationResponse (infraestructura) a Location (dominio)
-export function toDomainLocation(response: LocationResponse): Location {
+export function toDomainLocation(raw: LocationResponse): Location {
+  const response = normalizeLocationResponse(raw);
   return new Location(
     response.id,
     response.name,

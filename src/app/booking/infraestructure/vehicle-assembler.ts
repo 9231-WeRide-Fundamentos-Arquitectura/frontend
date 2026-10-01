@@ -1,7 +1,12 @@
 import { Vehicle } from '../domain/model/vehicle.entity';
 import { VehicleResponse } from './vehicle-response';
 
-export function toDomainVehicle(response: VehicleResponse): Vehicle {
+export function normalizeVehicleResponse<T extends { id: string; location: string; companyId: string }>(response: T): T {
+  return { ...response, id: String(response.id), location: String(response.location), companyId: String(response.companyId) };
+}
+
+export function toDomainVehicle(raw: VehicleResponse): Vehicle {
+  const response = normalizeVehicleResponse(raw);
   return new Vehicle(
     response.id,
     response.brand,

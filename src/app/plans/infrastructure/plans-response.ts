@@ -1,4 +1,6 @@
 export interface PlanResponse {
+  active?: boolean;
+  popular?: boolean;
   id: string;
   name: string;
   description: string;

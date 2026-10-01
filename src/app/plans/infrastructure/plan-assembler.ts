@@ -4,7 +4,7 @@ import { PlanResponse } from './plans-response';
 export class PlanAssembler {
   static toDomain(response: PlanResponse): Plan {
     return new Plan(
-      response.id,
+      String(response.id),
       response.name,
       response.description,
       response.price,
@@ -18,8 +18,8 @@ export class PlanAssembler {
       response.discountPercentage,
       response.benefits,
       response.color,
-      response.isPopular,
-      response.isActive,
+      response.popular ?? response.isPopular,
+      response.active ?? response.isActive,
       response.studentVerificationRequired,
       response.corporateVerificationRequired
     );
