@@ -98,7 +98,8 @@
       "errorTitle": "An Error Occurred",
       "successTitle": "Verified Successfully",
       "successMessage": "OTP entered correctly",
-      "failed": "We could not create the account. The email may already be registered."
+      "failed": "We could not create the account. Please try again in a few minutes.",
+      "emailTaken": "This email is already registered."
     },
     "verification": {
       "title": "Enter verification code",

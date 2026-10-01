@@ -5,10 +5,10 @@
 }
 
 .main-content {
-  flex-grow: 1;
+  flex: 1 1 auto;
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  width: 100%;
   margin-left: 260px;
   padding-top: 60px;
   transition: margin-left 0.3s ease;
@@ -21,6 +21,13 @@
 .content-wrapper {
   flex: 1;
   padding: 2rem;
+}
+
+/* El menú mide 180px en este rango (sidebar.css): el margen debe coincidir. */
+@media (min-width: 900px) and (max-width: 1700px) {
+  .main-content {
+    margin-left: 180px;
+  }
 }
 
 @media (max-width: 768px) {

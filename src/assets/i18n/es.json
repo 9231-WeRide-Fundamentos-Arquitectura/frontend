@@ -98,7 +98,8 @@
       "errorTitle": "Ocurrio un Error",
       "successTitle": "Verificado Correctamente",
       "successMessage": "Otp ingresado Correctamente",
-      "failed": "No pudimos crear la cuenta. Es posible que el email ya esté registrado."
+      "failed": "No pudimos crear la cuenta. Inténtalo de nuevo en unos minutos.",
+      "emailTaken": "Este correo ya está registrado."
     },
     "verification": {
       "title": "Introduce código de verificación",

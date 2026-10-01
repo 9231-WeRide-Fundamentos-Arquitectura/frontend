@@ -16,7 +16,8 @@ import { CommonModule } from '@angular/common';
   styleUrl: './layout.css'
 })
 export class LayoutComponent {
-  sidebarCollapsed = false;
+  // Bajo 1024 px el menú empieza oculto: con 260 px de menú el contenido queda demasiado angosto y se desborda.
+  sidebarCollapsed = window.innerWidth < 1024;
 
   toggleSidebar() {
     this.sidebarCollapsed = !this.sidebarCollapsed;

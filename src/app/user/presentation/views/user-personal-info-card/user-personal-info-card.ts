@@ -56,6 +56,12 @@ export class UserPersonalInfoCard implements OnInit {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files[0]) {
       const file = input.files[0];
+      if (file.size > 1024 * 1024) {
+        this.errorMessage = 'La foto no puede superar 1 MB';
+        input.value = '';
+        return;
+      }
+      this.errorMessage = '';
       const reader = new FileReader();
       
       reader.onload = (e: ProgressEvent<FileReader>) => {
