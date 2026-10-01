@@ -31,20 +31,7 @@ export class NotificationsApiEndpoint {
   }
 
   // Actualizar una notificación
-  update(id: string, notification: Partial<NotificationResponse>): Observable<NotificationResponse> {
-    return this.http.patch<NotificationResponse>(`${this.baseUrl}/${id}`, notification);
-  }
-
-  // Eliminar una notificación
-  delete(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}/${id}`);
-  }
-
-  // Marcar una notificación como leída
-  markAsRead(id: string): Observable<NotificationResponse> {
-    return this.http.patch<NotificationResponse>(`${this.baseUrl}/${id}`, {
-      isRead: true,
-      readAt: new Date().toISOString()
-    });
+  markAsRead(id: string): Observable<string> {
+    return this.http.patch(this.baseUrl + '/' + id + '/read', null, { responseType: 'text' });
   }
 }

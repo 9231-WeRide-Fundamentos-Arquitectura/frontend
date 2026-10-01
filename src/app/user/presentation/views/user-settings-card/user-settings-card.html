@@ -81,10 +81,7 @@
               <span class="setting-description">{{ 'user.settings.deleteAccountDescription' | translate }}</span>
             </div>
           </div>
-          <button class="setting-action danger" type="button">
-            <mat-icon>delete</mat-icon>
-            {{ 'common.delete' | translate }}
-          </button>
+          <app-account-security-actions [allowDelete]="true" />
         </div>
       </div>
 

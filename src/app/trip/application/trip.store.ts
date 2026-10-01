@@ -1,4 +1,5 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, effect, inject } from '@angular/core';
+import { AuthService } from '../../core/services/auth.service';
 import { Vehicle } from '../domain/model/vehicle.entity';
 import { Location } from '../domain/model/location.entity';
 import {Trip} from '../domain/model/trip.entity';
@@ -25,6 +26,15 @@ interface TripState {
   providedIn: 'root'
 })
 export class TripStore {
+  constructor() {
+    const auth = inject(AuthService);
+    effect(() => {
+      auth.session();
+      this.endTrip();
+      this.setCurrentTrip(null);
+      this.setTrips([]);
+    });
+  }
   private state = signal<TripState>({
     trips: [],
     currentTrip: null,

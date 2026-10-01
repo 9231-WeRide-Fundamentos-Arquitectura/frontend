@@ -1,4 +1,22 @@
 {
+  "accountSecurity": {
+    "revokeOthers": "Cerrar sesión en otros dispositivos",
+    "changePassword": "Cambiar contraseña",
+    "currentPassword": "Contraseña actual",
+    "newPassword": "Nueva contraseña",
+    "confirmPassword": "Confirmar nueva contraseña",
+    "passwordHint": "Entre 8 y 64 caracteres (máximo 72 bytes).",
+    "deleteWarning": "Esta acción es permanente. Se eliminarán tu cuenta y datos personales. El historial de la flota se conservará anónimo, sin tus rutas GPS ni comentarios.",
+    "saving": "Guardando…",
+    "confirm": "Confirmar",
+    "wrongPassword": "La contraseña actual es incorrecta.",
+    "invalidPassword": "La nueva contraseña debe tener entre 8 y 64 caracteres y un máximo de 72 bytes.",
+    "activeBookings": "Finaliza tu viaje o cancela tus reservas antes de eliminar la cuenta.",
+    "requestFailed": "No se pudo completar la solicitud. Inténtalo de nuevo.",
+    "passwordChanged": "Contraseña actualizada. Se cerraron las demás sesiones.",
+    "sessionsRevoked": "Se cerraron {{count}} sesiones adicionales.",
+    "noOtherSessions": "No existen sesiones adicionales."
+  },
   "common": {
     "close": "Cerrar",
     "save": "Guardar",
@@ -20,7 +38,9 @@
     "viewDetails": "Ver Detalles",
     "book": "Reservar",
     "notAvailable": "No Disponible",
-    "and": "y"
+    "and": "y",
+    "showPassword": "Mostrar contraseña",
+    "hidePassword": "Ocultar contraseña"
   },
   "navigation": {
     "home": "Inicio",
@@ -45,7 +65,7 @@
   "auth": {
     "login": {
       "title": "Iniciar Sesión",
-      "subtitle": "Entra y conduce tu salud",
+      "subtitle": "Tu movilidad urbana, cuando la necesites",
       "continueWithGoogle": "Continuar con Google",
       "loginWithPhone": "Entrar con número de celular",
       "loginWithEmail": "Entrar con mi email de empresa",
@@ -54,7 +74,8 @@
       "privacyPolicy": "Política de privacidad",
       "termsOfUse": "Términos de uso",
       "ofWeRide": "de WeRide",
-      "loadingMessage": "Cargando datos de WeRide..."
+      "loadingMessage": "Cargando datos de WeRide...",
+      "termsLine": "Al continuar, aceptas la Política de privacidad y los Términos de uso de WeRide."
     },
     "phoneLogin": {
       "title": "Introduce Número de Celular",
@@ -75,11 +96,13 @@
       "forgotPassword": "¿Olvidaste tu contraseña?",
       "rememberMe": "Recordarme",
       "signIn": "Iniciar Sesión",
-      "errorTitle": "Ocurrio un Error"
+      "errorTitle": "Ocurrio un Error",
+      "invalidCredentials": "Email o contraseña incorrectos.",
+      "connectionError": "No pudimos conectar con el servidor. Revisa tu conexión e inténtalo de nuevo."
     },
     "register": {
       "title": "Introduce tus datos",
-      "subtitle": "Recibirás un código de verificación por WhatsApp",
+      "subtitle": "Crea tu cuenta con tu email de empresa",
       "firstName": "Nombres",
       "lastName": "Apellidos",
       "name": "Nombre",
@@ -92,7 +115,9 @@
       "login": "Iniciar Sesión",
       "errorTitle": "Ocurrio un Error",
       "successTitle": "Verificado Correctamente",
-      "successMessage": "Otp ingresado Correctamente"
+      "successMessage": "Otp ingresado Correctamente",
+      "failed": "No pudimos crear la cuenta. Inténtalo de nuevo en unos minutos.",
+      "emailTaken": "Este correo ya está registrado."
     },
     "verification": {
       "title": "Introduce código de verificación",
@@ -165,6 +190,7 @@
       "price": "Precio",
       "rating": "Rating",
       "battery": "Batería",
+      "criticalBattery": "Batería crítica (menos del 15 %). No se puede reservar este vehículo.",
       "maxSpeed": "Velocidad Máx",
       "range": "Alcance",
       "reserve": "Reservar",
@@ -185,7 +211,9 @@
     "qrScanner": {
       "title": "Escanea el código QR del vehículo",
       "ok": "Todo OK.",
-      "scanHere": "Escanea aquí"
+      "scanHere": "Escanea aquí",
+      "simulateScan": "Simular escaneo del QR de este vehículo",
+      "codeHint": "Demo: el QR del vehículo contiene"
     },
     "manualUnlock": {
       "title": "Reserva de vehiculo",
@@ -195,9 +223,15 @@
       "unlock": "Desbloquear"
     },
     "reportProblem": {
+      "photo": "Foto opcional (JPEG, PNG o WebP, máximo 1 MB)",
+      "photoError": "Selecciona una foto JPEG, PNG o WebP de hasta 1 MB.",
+      "chargeWaived": "Viaje finalizado sin cobro por avería durante el primer minuto.",
+      "error": "No se pudo enviar el reporte. Intenta nuevamente.",
+      "saving": "Enviando…",
       "title": "Reportar un problema",
       "category": "Señala la categoría del problema:",
       "categories": {
+        "brakes": "Frenos", "damage": "Daño físico",
         "mechanical": "Falla mecánica",
         "tires": "Neumáticos",
         "gps": "GPS",
@@ -294,6 +328,8 @@
     "help": {
       "title": "Ayuda",
       "faqs": "Preguntas Frecuentes",
+      "search": "Buscar preguntas frecuentes",
+      "noResults": "Sin resultados. Contacta con soporte por chat. El chat aún no está disponible; puedes usar los datos de contacto de abajo.",
       "contact": "Contacto",
       "contactEmail": "Email",
       "contactPhone": "Teléfono",
@@ -316,7 +352,7 @@
       },
       "faq4": {
         "question": "¿Cómo contacto con soporte?",
-        "answer": "Puedes contactarnos a través del email de soporte o usando el chat en vivo disponible en la aplicación."
+        "answer": "Puedes usar el correo de soporte que aparece abajo. El chat aún no está disponible."
       },
       "hours": "Lunes a Viernes: 9:00 AM - 6:00 PM"
     }
@@ -418,9 +454,19 @@
     }
   },
   "trip": {
+    "history": {
+      "loading": "Cargando viajes…",
+      "error": "No se pudo cargar el historial. Intenta nuevamente.",
+      "empty": "Aún no tienes viajes completados.",
+      "averageSpeed": "Velocidad promedio",
+      "cost": "Costo final",
+      "route": "Ruta guardada",
+      "noRoute": "No se registró una ruta GPS para este viaje.",
+      "receiptPending": "Comprobante pendiente de habilitar"
+    },
     "title": "Viajes",
     "activeTrip": "Viaje Activo",
-    "tripHistory": "Historial de Viajes",
+    "tripHistory": "Historial de viajes",
     "startTrip": "Iniciar Viaje",
     "endTrip": "Finalizar Viaje",
     "tripDetails": "Detalles del Viaje",
@@ -431,7 +477,6 @@
     "loadingTrip": "Cargando datos del viaje...",
     "electricScooter": "Scooter Eléctrico",
     "leaveRating": "Déjanos tu puntuación",
-    "tripHistory": "Historial de viajes",
     "settings": "Configuración",
     "trip": "Viaje",
     "dateAndTime": "Fecha y hora",
@@ -442,6 +487,15 @@
     "viewDetails": "Ver detalles",
     "seeMore": "Ver más",
     "rateTrip": {
+      "skip": "Omitir",
+      "error": "No se pudo enviar. Verifica tu conexión; la reserva debe estar completada y sin calificación previa.",
+      "stars": "Estrellas",
+      "tags": {
+        "brakes_ok": "Frenos óptimos",
+        "good_condition": "Buen estado",
+        "clean": "Limpio",
+        "comfortable": "Cómodo"
+      },
       "title": "Califica tu viaje!",
       "subtitle": "Tu opinión nos ayuda a mejorar nuestro servicio",
       "commentPlaceholder": "Escribe un comentario aquí....",
@@ -449,6 +503,11 @@
       "savedOffline": "Tu calificación se guardó localmente y se enviará cuando haya conexión"
     },
     "reportProblem": {
+      "photo": "Foto opcional (JPEG, PNG o WebP, máximo 1 MB)",
+      "photoError": "Selecciona una foto JPEG, PNG o WebP de hasta 1 MB.",
+      "chargeWaived": "Viaje finalizado sin cobro por avería durante el primer minuto.",
+      "error": "No se pudo enviar el reporte. Intenta nuevamente.",
+      "saving": "Enviando…",
       "title": "Reportar un problema",
       "category": "Señala la categoría del problema:",
       "categories": {
@@ -601,4 +660,3 @@
     "max": "El valor máximo es {{max}}"
   }
 }
-

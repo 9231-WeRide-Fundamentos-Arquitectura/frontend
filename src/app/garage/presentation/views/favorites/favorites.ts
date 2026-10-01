@@ -7,6 +7,7 @@ import {Vehicle} from '../../../domain/model/vehicle.model';
 import {GetVehiclesUseCase} from '../../../application/use-cases/get-vehicles.usecase';
 import {ToggleFavoriteUseCase} from '../../../application/use-cases/toggle-favorite.usecase';
 import {FavoriteStore} from '../../../application/favorite.store';
+import {AuthService} from '../../../../core/services/auth.service';
 
 @Component({
   selector: 'app-favorites',
@@ -19,6 +20,7 @@ export class Favorites implements OnInit {
   private getVehiclesUseCase = inject(GetVehiclesUseCase);
   private toggleFavoriteUseCase = inject(ToggleFavoriteUseCase);
   private favoriteStore = inject(FavoriteStore);
+  private auth = inject(AuthService);
 
   // Use signal for reactivity
   allVehicles = signal<Vehicle[]>([]);
@@ -42,6 +44,7 @@ export class Favorites implements OnInit {
   });
 
   async ngOnInit() {
+    await this.favoriteStore.loadUserFavorites(this.auth.userId);
     // Load all vehicles once
     await this.loadVehicles();
   }

@@ -34,8 +34,12 @@ export class PaymentsApiEndpoint {
     return this.http.get<Payment[]>(this.baseUrl);
   }
 
-  getByUserId(userId: string): Observable<Payment[]> {
-    return this.http.get<Payment[]>(`${this.baseUrl}?userId=${userId}`);
+  getByUserId(userId: string, page = 0, limit = 100): Observable<Payment[]> {
+    return this.http.get<Payment[]>(this.baseUrl, { params: { userId, page, limit } });
+  }
+
+  getSummary(userId: string): Observable<{ totalSpent: number; currency: string }> {
+    return this.http.get<{ totalSpent: number; currency: string }>(`${this.baseUrl}/summary`, { params: { userId } });
   }
 
   getById(id: string): Observable<Payment> {

@@ -27,7 +27,6 @@ export class FavoriteApiService {
     const body = {
       userId,
       vehicleId,
-      addedAt: new Date().toISOString(),
       notes
     };
     return this.http.post<FavoriteApiResponse>(this.apiUrl, body);

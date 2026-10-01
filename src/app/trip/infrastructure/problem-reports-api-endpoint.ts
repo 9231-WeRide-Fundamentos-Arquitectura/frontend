@@ -7,7 +7,9 @@ export interface ProblemReport {
   id?: string;
   vehicleId: string;
   userId?: string;
-  tripId?: string;
+  bookingId?: string;
+  photo?: string;
+  chargeWaived?: boolean;
   categories: string[];
   description: string;
   status?: string;
@@ -30,12 +32,10 @@ export class ProblemReportsApiEndpoint {
     return this.http.get<ProblemReport>(`${this.baseUrl}/${id}`);
   }
 
+  // Contrato propuesto (aún no existe en el backend): POST /api/v1/problem-reports.
+  // userId, status y reportDate los asigna el servidor.
   create(data: Partial<ProblemReport>): Observable<ProblemReport> {
-    return this.http.post<ProblemReport>(this.baseUrl, {
-      ...data,
-      reportDate: new Date().toISOString(),
-      status: 'pending'
-    });
+    return this.http.post<ProblemReport>(this.baseUrl, data);
   }
 
   update(id: string, data: Partial<ProblemReport>): Observable<ProblemReport> {

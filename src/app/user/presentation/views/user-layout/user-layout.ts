@@ -1,5 +1,6 @@
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { UserStore } from '../../../application/user.store';
 import { UserStats } from '../user-stats/user-stats';
 import { UserSettings } from '../user-settings/user-settings';
@@ -29,6 +30,7 @@ import { UserSettingsStateService, UserSettingsSection } from '../../../applicat
   styleUrl: './user-layout.css'
 })
 export class UserLayout implements OnInit {
+  private destroyRef = inject(DestroyRef);
   private readonly userStore = inject(UserStore);
   private readonly stateService = inject(UserSettingsStateService);
 
@@ -36,7 +38,7 @@ export class UserLayout implements OnInit {
 
   ngOnInit(): void {
     this.userStore.loadUsers();
-    this.stateService.activeSection$.subscribe(section => {
+    this.stateService.activeSection$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(section => {
       this.activeSection = section;
     });
   }

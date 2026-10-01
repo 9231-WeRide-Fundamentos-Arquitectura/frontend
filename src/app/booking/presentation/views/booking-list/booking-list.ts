@@ -1,3 +1,4 @@
+import { toDomainBooking } from '../../../infraestructure/booking-assembler';
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
@@ -20,6 +21,8 @@ import { BookingConfirmationModal } from '../booking-confirmation-modal/booking-
 import { UnlockMethodSelectionModal } from '../unlock-method-selection-modal/unlock-method-selection-modal';
 import { BookingFilterService } from '../../../application/booking-filter.service';
 import { BookingFilter } from '../../../domain/model/booking-filter.model';
+import { ManualUnlockModal } from '../../../../garage/presentation/views/manual-unlock-modal/manual-unlock-modal';
+import { QrScannerModal } from '../../../../garage/presentation/views/qr-scanner-modal/qr-scanner-modal';
 import { forkJoin } from 'rxjs';
 
 interface BookingView {
@@ -81,6 +84,11 @@ export class BookingListComponent implements OnInit {
       locations: this.locationsApi.getAll()
     }).subscribe({
       next: ({ bookings, vehicles, locations }) => {
+        bookings.forEach(response => {
+          const booking = toDomainBooking(response);
+          if (this.bookingStore.getBookingById(booking.id)) this.bookingStore.updateBooking(booking);
+          else this.bookingStore.addBooking(booking);
+        });
         // Merge API bookings with local bookings
         const allBookings = [...localBookings, ...bookings];
         
@@ -179,30 +187,15 @@ export class BookingListComponent implements OnInit {
     const confirmText = this.translate.instant('common.confirm');
     
     if (confirm(message)) {
-      // Update in localStorage
-      const success = this.bookingStorage.cancelBooking(id);
-      
-      if (success) {
-        // Update local view
-        booking.status = 'cancelled';
-        
-        // Update in store
-        this.bookingStore.loadFromLocalStorage();
-        
-        // Try to update in API as well (optional)
-        this.bookingsApi.update(id, { status: 'cancelled' }).subscribe({
-          next: () => {
-            this.showSuccessMessage('booking.cancelSuccess');
-          },
-          error: (error) => {
-            console.error('Error updating booking in API:', error);
-            // Still show success since localStorage was updated
-            this.showSuccessMessage('booking.cancelSuccess');
-          }
-        });
-      } else {
-        this.showErrorMessage('booking.cancelError');
-      }
+      this.bookingsApi.cancel(id).subscribe({
+        next: response => {
+          this.bookingStore.updateBooking(toDomainBooking(response));
+          if (this.activeBookingService.getActiveBooking()?.id === id) this.activeBookingService.clearActiveBooking();
+          this.loadBookings();
+          this.showSuccessMessage('booking.cancelSuccess');
+        },
+        error: () => this.showErrorMessage('booking.cancelError')
+      });
     }
   }
 
@@ -246,13 +239,15 @@ export class BookingListComponent implements OnInit {
       // Validate booking can be activated
       if (bookingView.status !== 'pending' && bookingView.status !== 'confirmed') {
         this.showErrorMessage('booking.cannotActivate');
+        this.isActivating = false;
         return;
       }
 
       // Check if there's already an active booking
       const activeBooking = this.activeBookingService.getActiveBooking();
-      if (activeBooking) {
+      if (activeBooking?.status === 'active') {
         this.showErrorMessage('booking.alreadyHasActive');
+        this.isActivating = false;
         return;
       }
 
@@ -260,6 +255,7 @@ export class BookingListComponent implements OnInit {
       const booking = this.bookingStorage.getBookingById(bookingView.id);
       if (!booking) {
         this.showErrorMessage('booking.notFound');
+        this.isActivating = false;
         return;
       }
 
@@ -284,10 +280,10 @@ export class BookingListComponent implements OnInit {
           dialogRef.afterClosed().subscribe(result => {
             this.isActivating = false;
             
-            if (result === 'now') {
+            if (result?.action === 'book_now') {
               // Activate booking immediately
               this.activateBookingNow(booking, vehicle);
-            } else if (result === 'schedule') {
+            } else if (result?.action === 'schedule') {
               // Navigate to schedule page
               this.router.navigate(['/booking/schedule-unlock'], {
                 queryParams: { bookingId: booking.id }
@@ -310,50 +306,20 @@ export class BookingListComponent implements OnInit {
   }
 
   private activateBookingNow(booking: any, vehicle: any): void {
-    // Update booking status to active
-    booking.status = 'active';
-    booking.actualStartDate = new Date();
-    
-    this.bookingStorage.updateBooking(booking.id, booking);
-    this.bookingStore.loadFromLocalStorage();
-    this.activeBookingService.setActiveBooking(booking);
-
-    // Update the view
-    const bookingView = this.bookings.find(b => b.id === booking.id);
-    if (bookingView) {
-      bookingView.status = 'active';
-    }
-
-    // Open unlock method selection modal
     const dialogRef = this.dialog.open(UnlockMethodSelectionModal, {
-      width: '500px',
-      data: { booking, vehicle },
-      disableClose: true
+      width: '500px', data: { booking, vehicle }
     });
-
     dialogRef.afterClosed().subscribe(result => {
-      if (result === 'manual') {
-        // Navigate to manual unlock
-        this.router.navigate(['/garage'], {
-          queryParams: { 
-            action: 'unlock-manual',
-            vehicleId: vehicle.id,
-            bookingId: booking.id 
-          }
-        });
-      } else if (result === 'qr_code') {
-        // Navigate to QR scanner
-        this.router.navigate(['/garage'], {
-          queryParams: { 
-            action: 'unlock-qr',
-            vehicleId: vehicle.id,
-            bookingId: booking.id 
-          }
+      if (result?.method === 'manual' || result?.method === 'qr_code') {
+        const data = { booking, vehicle };
+        const unlockRef = result.method === 'manual'
+          ? this.dialog.open(ManualUnlockModal, { width: '600px', maxWidth: '95vw', data })
+          : this.dialog.open(QrScannerModal, { width: '600px', maxWidth: '95vw', data });
+        unlockRef.afterClosed().subscribe(unlock => {
+          if (unlock?.success) this.loadBookings();
         });
       }
     });
-
-    this.showSuccessMessage('booking.activatedSuccessfully');
   }
 
   private showSuccessMessage(key: string): void {

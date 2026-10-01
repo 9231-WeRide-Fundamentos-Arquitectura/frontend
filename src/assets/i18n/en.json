@@ -1,4 +1,22 @@
 {
+  "accountSecurity": {
+    "revokeOthers": "Sign out other devices",
+    "changePassword": "Change password",
+    "currentPassword": "Current password",
+    "newPassword": "New password",
+    "confirmPassword": "Confirm new password",
+    "passwordHint": "8 to 64 characters (maximum 72 bytes).",
+    "deleteWarning": "This action is permanent. Your account and personal data will be deleted. Fleet history will remain anonymous without your GPS routes or comments.",
+    "saving": "Saving…",
+    "confirm": "Confirm",
+    "wrongPassword": "The current password is incorrect.",
+    "invalidPassword": "The new password must contain 8 to 64 characters and at most 72 bytes.",
+    "activeBookings": "Finish your ride or cancel your bookings before deleting your account.",
+    "requestFailed": "The request could not be completed. Please try again.",
+    "passwordChanged": "Password updated. Other sessions were signed out.",
+    "sessionsRevoked": "Signed out {{count}} additional sessions.",
+    "noOtherSessions": "There are no additional sessions."
+  },
   "common": {
     "close": "Close",
     "save": "Save",
@@ -20,7 +38,9 @@
     "viewDetails": "View Details",
     "book": "Book",
     "notAvailable": "Not Available",
-    "and": "and"
+    "and": "and",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password"
   },
   "navigation": {
     "home": "Home",
@@ -45,7 +65,7 @@
   "auth": {
     "login": {
       "title": "Sign In",
-      "subtitle": "Enter and drive your health",
+      "subtitle": "Your urban mobility, on demand",
       "continueWithGoogle": "Continue with Google",
       "loginWithPhone": "Sign in with phone number",
       "loginWithEmail": "Sign in with company email",
@@ -54,7 +74,8 @@
       "privacyPolicy": "Privacy Policy",
       "termsOfUse": "Terms of Use",
       "ofWeRide": "of WeRide",
-      "loadingMessage": "Loading WeRide data..."
+      "loadingMessage": "Loading WeRide data...",
+      "termsLine": "By continuing, you accept the Privacy Policy and Terms of Use of WeRide."
     },
     "phoneLogin": {
       "title": "Enter Phone Number",
@@ -75,11 +96,13 @@
       "forgotPassword": "Forgot your password?",
       "rememberMe": "Remember me",
       "signIn": "Sign In",
-      "errorTitle": "An Error Occurred"
+      "errorTitle": "An Error Occurred",
+      "invalidCredentials": "Incorrect email or password.",
+      "connectionError": "We could not reach the server. Check your connection and try again."
     },
     "register": {
       "title": "Enter your information",
-      "subtitle": "You will receive a verification code via WhatsApp",
+      "subtitle": "Create your account with your company email",
       "firstName": "First Name",
       "lastName": "Last Name",
       "name": "Name",
@@ -92,7 +115,9 @@
       "login": "Sign In",
       "errorTitle": "An Error Occurred",
       "successTitle": "Verified Successfully",
-      "successMessage": "OTP entered correctly"
+      "successMessage": "OTP entered correctly",
+      "failed": "We could not create the account. Please try again in a few minutes.",
+      "emailTaken": "This email is already registered."
     },
     "verification": {
       "title": "Enter verification code",
@@ -165,6 +190,7 @@
       "price": "Price",
       "rating": "Rating",
       "battery": "Battery",
+      "criticalBattery": "Critical battery (below 15%). This vehicle cannot be booked.",
       "maxSpeed": "Max Speed",
       "range": "Range",
       "reserve": "Book",
@@ -185,7 +211,9 @@
     "qrScanner": {
       "title": "Scan the vehicle's QR code",
       "ok": "All OK.",
-      "scanHere": "Scan here"
+      "scanHere": "Scan here",
+      "simulateScan": "Simulate scanning this vehicle's QR",
+      "codeHint": "Demo: the vehicle QR contains"
     },
     "manualUnlock": {
       "title": "Vehicle Reservation",
@@ -195,9 +223,15 @@
       "unlock": "Unlock"
     },
     "reportProblem": {
+      "photo": "Optional photo (JPEG, PNG or WebP, up to 1 MB)",
+      "photoError": "Choose a JPEG, PNG or WebP photo up to 1 MB.",
+      "chargeWaived": "Ride ended without a charge for a fault reported within the first minute.",
+      "error": "Could not submit the report. Please try again.",
+      "saving": "Sending…",
       "title": "Report a problem",
       "category": "Indicate the problem category:",
       "categories": {
+        "brakes": "Brakes", "damage": "Physical damage",
         "mechanical": "Mechanical failure",
         "tires": "Tires",
         "gps": "GPS",
@@ -294,6 +328,8 @@
     "help": {
       "title": "Help",
       "faqs": "Frequently Asked Questions",
+      "search": "Search frequently asked questions",
+      "noResults": "No results. Contact support through chat. Chat is not available yet; you can use the contact details below.",
       "contact": "Contact",
       "contactEmail": "Email",
       "contactPhone": "Phone",
@@ -316,7 +352,7 @@
       },
       "faq4": {
         "question": "How do I contact support?",
-        "answer": "You can contact us through the support email or using the live chat available in the application."
+        "answer": "You can use the support email below. Chat is not available yet."
       },
       "hours": "Monday to Friday: 9:00 AM - 6:00 PM"
     }
@@ -417,6 +453,16 @@
     }
   },
   "trip": {
+    "history": {
+      "loading": "Loading rides…",
+      "error": "Could not load ride history. Please try again.",
+      "empty": "You have no completed rides yet.",
+      "averageSpeed": "Average speed",
+      "cost": "Final cost",
+      "route": "Saved route",
+      "noRoute": "No GPS route was recorded for this ride.",
+      "receiptPending": "Receipt download is not available yet"
+    },
     "title": "Trips",
     "activeTrip": "Active Trip",
     "tripHistory": "Trip History",
@@ -440,6 +486,15 @@
     "viewDetails": "View details",
     "seeMore": "See more",
     "rateTrip": {
+      "skip": "Skip",
+      "error": "Could not submit. Check your connection; the booking must be completed and not already rated.",
+      "stars": "Stars",
+      "tags": {
+        "brakes_ok": "Good brakes",
+        "good_condition": "Good condition",
+        "clean": "Clean",
+        "comfortable": "Comfortable"
+      },
       "title": "Rate your trip!",
       "subtitle": "Your opinion helps us improve our service",
       "commentPlaceholder": "Write a comment here....",
@@ -447,6 +502,11 @@
       "savedOffline": "Your rating has been saved locally and will be sent when there is a connection"
     },
     "reportProblem": {
+      "photo": "Optional photo (JPEG, PNG or WebP, up to 1 MB)",
+      "photoError": "Choose a JPEG, PNG or WebP photo up to 1 MB.",
+      "chargeWaived": "Ride ended without a charge for a fault reported within the first minute.",
+      "error": "Could not submit the report. Please try again.",
+      "saving": "Sending…",
       "title": "Report a problem",
       "category": "Indicate the problem category:",
       "categories": {
@@ -599,4 +659,3 @@
     "max": "Maximum value is {{max}}"
   }
 }
-

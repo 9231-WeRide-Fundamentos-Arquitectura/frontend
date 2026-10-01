@@ -14,10 +14,8 @@ import { Router } from '@angular/router';
 import { Vehicle } from '../../../domain/model/vehicle.model';
 import { Booking } from '../../../../booking/domain/model/booking.entity';
 import { UnlockRequest } from '../../../../booking/domain/model/unlockRequest.entity';
-import { UnlockRequestsApiEndpoint } from '../../../../booking/infraestructure/unlockRequests-api-endpoint';
 import { BookingStore } from '../../../../booking/application/booking.store';
-import { TripStore } from '../../../../trip/application/trip.store';
-import { firstValueFrom } from 'rxjs';
+import { TripInitializerService } from '../../../../trip/application/trip-initializer.service';
 
 export interface ManualUnlockModalData {
   vehicle: Vehicle;
@@ -49,18 +47,17 @@ export class ManualUnlockModal {
   isUnlocking = false;
   errorMessage = '';
   private fb = inject(FormBuilder);
-  private unlockRequestsApi = inject(UnlockRequestsApiEndpoint);
   private snackBar = inject(MatSnackBar);
   private router = inject(Router);
   private bookingStore = inject(BookingStore);
-  private tripStore = inject(TripStore);
+  private tripInitializer = inject(TripInitializerService);
 
   constructor(
     public dialogRef: MatDialogRef<ManualUnlockModal>,
     @Inject(MAT_DIALOG_DATA) public data: ManualUnlockModalData
   ) {
     this.unlockForm = this.fb.group({
-      vehiclePhone: ['', [Validators.required]],
+      vehiclePhone: [''],
       unlockCode: ['', [Validators.required]]
     });
   }
@@ -95,18 +92,15 @@ export class ManualUnlockModal {
     try {
       const unlockResult = await this.bookingStore.unlockVehicleManually(
         vehiclePhone,
-        unlockCode
+        unlockCode,
+        this.data.booking,
+        this.unlockRequest?.id
       );
 
       if (unlockResult.success) {
-        if (this.unlockRequest) {
-          await firstValueFrom(
-            this.unlockRequestsApi.update(this.unlockRequest.id, {
-              status: 'unlocked',
-              actualUnlockTime: new Date().toISOString(),
-              attempts: this.unlockRequest.attempts + 1
-            })
-          );
+        const booking = await this.bookingStore.getBookingByIdAsync(unlockResult.bookingId!);
+        if (!await this.tripInitializer.initializeTripFromBooking(booking)) {
+          throw new Error('El vehículo se desbloqueó. Vuelve a abrir el mapa para cargar el viaje.');
         }
 
         this.snackBar.open(

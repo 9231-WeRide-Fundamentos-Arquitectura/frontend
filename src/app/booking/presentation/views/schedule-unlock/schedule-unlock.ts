@@ -7,7 +7,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
-import { Vehicle } from '../../../../garage/domain/model/vehicle.model';
+import { Vehicle, hasCriticalBattery } from '../../../../garage/domain/model/vehicle.model';
 import { BookingsApiEndpoint } from '../../../infraestructure/bookings-api-endpoint';
 import { toDomainBooking } from '../../../infraestructure/booking-assembler';
 import { ActiveBookingService } from '../../../application/active-booking.service';
@@ -19,8 +19,13 @@ import { firstValueFrom } from 'rxjs';
 import { ManualUnlockModal } from '../../../../garage/presentation/views/manual-unlock-modal/manual-unlock-modal';
 import { QrScannerModal } from '../../../../garage/presentation/views/qr-scanner-modal/qr-scanner-modal';
 import { BookingSuccessModal } from '../../../../public/components/booking-success-modal/booking-success-modal';
+import { AuthService } from '../../../../core/services/auth.service';
 import { DraftBookingService } from '../../../application/draft-booking.service';
 import { BookingDraft } from '../../../domain/model/booking-draft.entity';
+import { GetVehiclesUseCase } from '../../../../garage/application/use-cases/get-vehicles.usecase';
+import { LocationsApiEndpoint } from '../../../../trip/infrastructure/locations-api-endpoint';
+import { Location } from '../../../../trip/domain/model/location.entity';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-schedule-unlock',
@@ -30,6 +35,7 @@ import { BookingDraft } from '../../../domain/model/booking-draft.entity';
 })
 export class ScheduleUnlockComponent implements OnInit {
   private router = inject(Router);
+  private auth = inject(AuthService);
   private snackBar = inject(MatSnackBar);
   private bookingsApi = inject(BookingsApiEndpoint);
   private activeBookingService = inject(ActiveBookingService);
@@ -37,6 +43,20 @@ export class ScheduleUnlockComponent implements OnInit {
   private dialog = inject(MatDialog);
   private unlockRequestsApi = inject(UnlockRequestsApiEndpoint);
   private draftService = inject(DraftBookingService);
+  private getVehicles = inject(GetVehiclesUseCase);
+  private locationsApi = inject(LocationsApiEndpoint);
+  private translate = inject(TranslateService);
+  locations: Location[] = [];
+
+  stationName(vehicle: Vehicle | null): string {
+    return this.locations.find(location => location.id === String(vehicle?.location))?.name
+      ?? this.translate.instant('scheduleUnlock.stationUnavailable');
+  }
+
+  private async loadVehicles(): Promise<void> {
+    this.vehicles = await this.getVehicles.execute();
+    this.filterVehicles();
+  }
 
   availabilityError: string = '';
   vehicleAvailable: boolean = false;
@@ -58,6 +78,11 @@ export class ScheduleUnlockComponent implements OnInit {
   drafts$ = this.draftService.drafts$;
 
   ngOnInit() {
+    this.locationsApi.getAll().subscribe({
+      next: locations => { this.locations = locations; },
+      error: () => { this.snackBar.open(this.translate.instant('scheduleUnlock.locationsError'), this.translate.instant('common.close'), { duration: 4000 }); }
+    });
+    this.loadVehicles().catch(() => this.snackBar.open(this.translate.instant('garage.error'), this.translate.instant('common.close'), { duration: 4000 }));
     // Get vehicle from router state
     const navigation = this.router.getCurrentNavigation();
     const state = navigation?.extras?.state || history.state;
@@ -78,13 +103,17 @@ export class ScheduleUnlockComponent implements OnInit {
 
   setImmediateBooking() {
     const now = new Date();
-    this.selectedDate = now.toISOString().split('T')[0];
+    this.selectedDate = now.toLocaleDateString('sv-SE');
     this.unlockTime = now.toTimeString().substring(0, 5);
   }
 
   setDefaultDateTime() {
-    const today = new Date();
-    this.selectedDate = today.toISOString().split('T')[0];
+    this.selectedDate = new Date().toLocaleDateString('sv-SE');
+  }
+
+  // "YYYY-MM-DD" del input date, a medianoche local (new Date('YYYY-MM-DD') lo toma como UTC y corre el día).
+  private localDate(): Date {
+    return new Date(`${this.selectedDate}T00:00:00`);
   }
 
   filterVehicles() {
@@ -94,7 +123,7 @@ export class ScheduleUnlockComponent implements OnInit {
       this.filteredVehicles = this.vehicles.filter(vehicle =>
         vehicle.brand.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
         vehicle.model.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        vehicle.location.toLowerCase().includes(this.searchTerm.toLowerCase())
+        this.stationName(vehicle).toLowerCase().includes(this.searchTerm.toLowerCase())
       );
     }
   }
@@ -122,11 +151,13 @@ export class ScheduleUnlockComponent implements OnInit {
   }
 
   get isFormValid(): boolean {
-    return !!(this.selectedVehicle && this.selectedDate && this.unlockTime);
+    return !!(this.selectedVehicle && this.selectedDate && this.unlockTime) && !this.criticalBattery;
   }
 
+  get criticalBattery(): boolean { return hasCriticalBattery(this.selectedVehicle); }
+
   get dateError(): string | null {
-    if (!this.selectedDate) return null;
+    if (!this.selectedDate || !this.unlockTime) return null;
     if (!this.validateDateTime()) {
       return 'La fecha debe ser futura';
     }
@@ -138,7 +169,7 @@ export class ScheduleUnlockComponent implements OnInit {
       return 'Select date and time';
     }
 
-    const date = new Date(this.selectedDate);
+    const date = this.localDate();
     const time = this.unlockTime;
 
     const formattedDate = date.toLocaleDateString('en-US', {
@@ -170,7 +201,7 @@ export class ScheduleUnlockComponent implements OnInit {
     }
 
     const [hours, minutes] = this.unlockTime.split(':');
-    const selectedDateTime = new Date(this.selectedDate);
+    const selectedDateTime = this.localDate();
     selectedDateTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
     const now = new Date();
 
@@ -186,94 +217,17 @@ export class ScheduleUnlockComponent implements OnInit {
     }
 
     try {
-      const bookings = await firstValueFrom(this.bookingsApi.getByVehicleId(this.selectedVehicle.id));
-
-      // Filtrar bookings activos (pending, confirmed)
-      const activeBookings = bookings.filter(b =>
-        b.status === 'pending' || b.status === 'confirmed'
-      );
-
-      // Verificar solapamiento de fechas
-      for (const booking of activeBookings) {
-        const bookingStart = new Date(booking.startDate);
-        const bookingEnd = booking.endDate ? new Date(booking.endDate) : null;
-
-        // Verificar si hay solapamiento
-        if (bookingEnd) {
-          // Hay solapamiento si:
-          // - La nueva reserva empieza antes de que termine la existente Y
-          // - La nueva reserva termina después de que empiece la existente
-          if (startDate < bookingEnd && endDate > bookingStart) {
-            const conflictStart = bookingStart.toLocaleString('es-ES', {
-              day: 'numeric',
-              month: 'short',
-              hour: '2-digit',
-              minute: '2-digit'
-            });
-            const conflictEnd = bookingEnd.toLocaleString('es-ES', {
-              day: 'numeric',
-              month: 'short',
-              hour: '2-digit',
-              minute: '2-digit'
-            });
-
-            return {
-              available: false,
-              message: `El vehículo no está disponible del ${conflictStart} al ${conflictEnd}. Por favor, selecciona otro horario.`
-            };
-          }
-        } else {
-          // Si no hay endDate, verificar solapamiento con startDate
-          if (startDate < bookingStart && endDate > bookingStart) {
-            return {
-              available: false,
-              message: `El vehículo tiene una reserva activa que comienza el ${bookingStart.toLocaleString('es-ES')}.`
-            };
-          }
-        }
-      }
-
-      return { available: true };
+      const result = await firstValueFrom(this.bookingsApi.availability(this.selectedVehicle.id, startDate, endDate));
+      if (result.available) return { available: true };
+      // Sugerencia: la primera hora libre posterior al inicio pedido (US22 esc. 2).
+      const nextFree = result.busySlots.map(s => new Date(s.endDate)).filter(d => d > startDate).sort((x, y) => x.getTime() - y.getTime())[0];
+      const hint = nextFree ? ` Prueba a partir de las ${nextFree.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}.` : ' Prueba con otro vehículo.';
+      return { available: false, message: `El vehículo no está disponible en ese horario.${hint}` };
     } catch (error) {
       console.error('Error checking vehicle availability:', error);
-      // En caso de error, permitir continuar pero mostrar advertencia
+      // En caso de error se permite continuar: el backend vuelve a validar al crear la reserva (409).
       return { available: true };
     }
-  }
-
-  /**
-   * Genera un código de desbloqueo único
-   */
-  private generateUnlockCode(): string {
-    const prefix = 'UNLOCK';
-    const randomPart = Math.random().toString(36).substring(2, 10).toUpperCase();
-    return `${prefix}${randomPart}`;
-  }
-
-  /**
-   * Obtiene la ubicación actual del usuario
-   */
-  private async getCurrentLocation(): Promise<{ lat: number; lng: number }> {
-    return new Promise((resolve) => {
-      if ('geolocation' in navigator) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            resolve({
-              lat: position.coords.latitude,
-              lng: position.coords.longitude
-            });
-          },
-          () => {
-            // Ubicación por defecto si no se puede obtener (Lima, Perú)
-            resolve({ lat: -12.046374, lng: -77.042793 });
-          },
-          { timeout: 5000 }
-        );
-      } else {
-        // Ubicación por defecto
-        resolve({ lat: -12.046374, lng: -77.042793 });
-      }
-    });
   }
 
   /**
@@ -281,9 +235,9 @@ export class ScheduleUnlockComponent implements OnInit {
    */
   private async createUnlockRequest(bookingId: string, scheduledUnlockTime: Date, method: 'manual' | 'qr_code'): Promise<UnlockRequest | null> {
     try {
-      const userId = '1'; // TODO: Get from AuthService
-      const location = await this.getCurrentLocation();
-      const unlockCode = this.generateUnlockCode();
+      const userId = this.auth.userId;
+      const location = { lat: 0, lng: 0 };
+      const unlockCode = '';
 
       const unlockRequestData = {
         userId: userId,
@@ -375,35 +329,6 @@ export class ScheduleUnlockComponent implements OnInit {
   /**
    * Actualiza el booking en la API cuando se desbloquea
    */
-  private async updateBookingOnUnlock(booking: any): Promise<void> {
-    try {
-      const updateData = {
-        status: 'confirmed' as const,
-        actualStartDate: new Date().toISOString()
-      };
-
-      const updatedBooking = await firstValueFrom(
-        this.bookingsApi.update(booking.id, updateData)
-      );
-
-      // Actualizar el booking local
-      booking.status = updatedBooking.status;
-      booking.actualStartDate = updatedBooking.actualStartDate
-        ? new Date(updatedBooking.actualStartDate)
-        : new Date();
-
-      // Actualizar en el servicio y store
-      const domainBooking = toDomainBooking(updatedBooking);
-      this.activeBookingService.setActiveBooking(domainBooking);
-      this.bookingStore.updateBooking(domainBooking);
-    } catch (error) {
-      console.error('Error actualizando booking:', error);
-      // Continuar aunque falle la actualización en la API
-      booking.actualStartDate = new Date();
-      booking.status = 'confirmed';
-    }
-  }
-
   /**
    * Abre el modal de confirmación de reserva exitosa
    */
@@ -442,9 +367,7 @@ export class ScheduleUnlockComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(async (result) => {
-      if (result && result.unlocked) {
-        // Actualizar el booking en la API
-        await this.updateBookingOnUnlock(booking);
+      if (result && result.success) {
 
         // Abrir modal de confirmación
         this.openBookingSuccessModal(booking);
@@ -469,9 +392,7 @@ export class ScheduleUnlockComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(async (result) => {
-      if (result && result.unlocked) {
-        // Actualizar el booking en la API
-        await this.updateBookingOnUnlock(booking);
+      if (result && result.success) {
 
         // Abrir modal de confirmación
         this.openBookingSuccessModal(booking);
@@ -480,6 +401,10 @@ export class ScheduleUnlockComponent implements OnInit {
   }
 
   async scheduleUnlock() {
+    if (this.criticalBattery) {
+      this.snackBar.open(this.translate.instant('garage.vehicle.criticalBattery'), this.translate.instant('common.close'), { duration: 4000 });
+      return;
+    }
     // Validar campos requeridos
     if (!this.selectedVehicle || !this.selectedDate || !this.unlockTime) {
       this.snackBar.open('Por favor completa todos los campos requeridos', 'Cerrar', {
@@ -504,7 +429,7 @@ export class ScheduleUnlockComponent implements OnInit {
 
     // Combine date and time into startDate
     const [hours, minutes] = this.unlockTime.split(':');
-    const startDate = new Date(this.selectedDate);
+    const startDate = this.localDate();
     startDate.setHours(parseInt(hours), parseInt(minutes), 0, 0);
 
     // Calculate endDate based on duration
@@ -526,7 +451,7 @@ export class ScheduleUnlockComponent implements OnInit {
     }
 
     // Get current user ID (replace with actual user service)
-    const userId = '1'; // TODO: Get from AuthService
+    const userId = this.auth.userId;
 
     // Create booking data with explicit status type
     const status: 'pending' | 'confirmed' | 'completed' | 'cancelled' = this.isImmediate ? 'confirmed' : 'pending';
@@ -534,8 +459,8 @@ export class ScheduleUnlockComponent implements OnInit {
     const bookingData = {
       userId: userId,
       vehicleId: this.selectedVehicle.id,
-      startLocationId: '1', // TODO: Get current location
-      endLocationId: '1', // TODO: Will be updated on trip end
+      startLocationId: this.selectedVehicle.location, // ubicación real del vehículo
+      endLocationId: this.selectedVehicle.location, // se actualiza al terminar el viaje
       reservedAt: new Date().toISOString(),
       startDate: startDate.toISOString(),
       endDate: endDate.toISOString(),
@@ -584,7 +509,9 @@ export class ScheduleUnlockComponent implements OnInit {
 
         // Mensajes de error más específicos
         if (error.status === 409) {
-          errorMessage = 'El vehículo ya está reservado en ese horario. Por favor, selecciona otro horario.';
+          errorMessage = error.error?.message === 'Batería crítica'
+            ? this.translate.instant('garage.vehicle.criticalBattery')
+            : 'El vehículo ya está reservado en ese horario. Por favor, selecciona otro horario.';
         } else if (error.status === 400) {
           errorMessage = 'Los datos de la reserva no son válidos. Verifica la información.';
         }
@@ -611,7 +538,7 @@ export class ScheduleUnlockComponent implements OnInit {
     this.isSavingDraft = true;
 
     const draftData: Partial<BookingDraft> = {
-      userId: '1',
+      userId: this.auth.userId,
       vehicleId: this.selectedVehicle.id,
       selectedDate: this.selectedDate,
       unlockTime: this.unlockTime,
@@ -643,7 +570,20 @@ export class ScheduleUnlockComponent implements OnInit {
     });
   }
 
-  loadDraft(draft: BookingDraft) {
+  async loadDraft(draft: BookingDraft) {
+    try {
+      if (draft.expiresAt <= new Date()) throw new Error('Expired draft');
+      if (!this.vehicles.length) await this.loadVehicles();
+      const vehicle = this.vehicles.find(vehicle => String(vehicle.id) === String(draft.vehicleId));
+      if (!vehicle) throw new Error('Vehicle no longer exists');
+      this.selectVehicle(vehicle);
+    } catch {
+      this.snackBar.open(this.translate.instant('scheduleUnlock.draftRestoreError'), this.translate.instant('common.close'), { duration: 4000 });
+      return;
+    }
+    this.isImmediate = false;
+    this.vehicleAvailable = false;
+    this.availabilityError = '';
     this.selectedDate = draft.selectedDate;
     this.unlockTime = draft.unlockTime;
     this.duration = draft.duration;

@@ -1,9 +1,11 @@
+import { normalizeVehicleResponse } from '../../../booking/infraestructure/vehicle-assembler';
 import { Vehicle } from '../../domain/model/vehicle.model';
 import { VehicleApiResponse } from '../http/vehicle-api.service';
 import { FavoriteService } from '../../application/services/favorite.service';
 
 export class VehicleMapper {
-  static toDomain(apiResponse: VehicleApiResponse): Vehicle {
+  static toDomain(raw: VehicleApiResponse): Vehicle {
+    const apiResponse = normalizeVehicleResponse(raw);
     return {
       id: apiResponse.id,
       brand: apiResponse.brand,

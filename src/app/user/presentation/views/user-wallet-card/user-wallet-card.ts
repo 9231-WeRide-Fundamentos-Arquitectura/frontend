@@ -1,5 +1,6 @@
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { MatIcon } from '@angular/material/icon';
 import { TranslateModule } from '@ngx-translate/core';
@@ -16,6 +17,7 @@ import { UserSettingsStateService } from '../../../application/user-settings-sta
   styleUrl: './user-wallet-card.css'
 })
 export class UserWalletCard implements OnInit {
+  private destroyRef = inject(DestroyRef);
   private readonly userStore = inject(UserStore);
   private readonly paymentsService = inject(UserPaymentsService);
   private readonly stateService = inject(UserSettingsStateService);
@@ -25,7 +27,7 @@ export class UserWalletCard implements OnInit {
   totalSpent$: Observable<number> = new Observable();
 
   ngOnInit(): void {
-    this.user$.subscribe(user => {
+    this.user$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(user => {
       if (user?.id) {
         const userId = user.id.toString();
         this.payments$ = this.paymentsService.getRecentPayments(userId, 10);

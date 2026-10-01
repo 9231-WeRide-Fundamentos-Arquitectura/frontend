@@ -1,5 +1,6 @@
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatIcon } from '@angular/material/icon';
 import { TranslateModule } from '@ngx-translate/core';
@@ -15,6 +16,7 @@ import { User } from '../../../domain/model/user.entity';
   styleUrl: './user-personal-info-card.css'
 })
 export class UserPersonalInfoCard implements OnInit {
+  private destroyRef = inject(DestroyRef);
   private readonly userStore = inject(UserStore);
   private readonly stateService = inject(UserSettingsStateService);
   private readonly fb = inject(FormBuilder);
@@ -29,13 +31,11 @@ export class UserPersonalInfoCard implements OnInit {
   profilePicturePreview = '';
 
   ngOnInit(): void {
-    this.user$.subscribe(user => {
+    this.user$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(user => {
       this.currentUser = user;
       if (user) {
-        const storedProfile = localStorage.getItem('userProfile');
-        const profileData = storedProfile ? JSON.parse(storedProfile) : user;
-        this.initializeForm(profileData);
-        this.profilePicturePreview = profileData.profilePicture || '';
+        this.initializeForm(user);
+        this.profilePicturePreview = user.profilePicture || '';
       }
     });
   }
@@ -43,7 +43,6 @@ export class UserPersonalInfoCard implements OnInit {
   private initializeForm(user: User): void {
     this.personalInfoForm = this.fb.group({
       name: [user.name, [Validators.required, Validators.minLength(2)]],
-      email: [user.email, [Validators.required, Validators.email]],
       phone: [user.phone, [Validators.required, Validators.pattern(/^\+?[1-9]\d{1,14}$/)]],
       profilePicture: [user.profilePicture || '']
     });
@@ -57,6 +56,12 @@ export class UserPersonalInfoCard implements OnInit {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files[0]) {
       const file = input.files[0];
+      if (file.size > 1024 * 1024) {
+        this.errorMessage = 'La foto no puede superar 1 MB';
+        input.value = '';
+        return;
+      }
+      this.errorMessage = '';
       const reader = new FileReader();
       
       reader.onload = (e: ProgressEvent<FileReader>) => {
@@ -90,42 +95,20 @@ export class UserPersonalInfoCard implements OnInit {
     const updatedUser = {
       ...this.currentUser,
       name: formValue.name,
-      email: formValue.email,
       phone: formValue.phone,
       profilePicture: formValue.profilePicture
     };
 
-    try {
-      localStorage.setItem('userProfile', JSON.stringify(updatedUser));
-
-      this.userStore.updateUser(this.currentUser.id, updatedUser).subscribe({
-        next: () => {
-          this.isLoading = false;
-          this.successMessage = 'Información actualizada correctamente';
-          setTimeout(() => {
-            this.closeCard();
-          }, 1500);
-        },
-        error: (error) => {
-          console.error('Error al actualizar usuario:', error);
-          
-          const storedUser = localStorage.getItem('userProfile');
-          if (storedUser) {
-            this.isLoading = false;
-            this.errorMessage = 'Error de conexión. Los datos se guardaron localmente y se sincronizarán cuando haya conexión';
-            setTimeout(() => {
-              this.closeCard();
-            }, 2000);
-          } else {
-            this.isLoading = false;
-            this.errorMessage = 'Error al guardar la información. Por favor, intente nuevamente';
-          }
-        }
-      });
-    } catch (error) {
-      this.isLoading = false;
-      this.errorMessage = 'Error al procesar los datos';
-    }
+    this.userStore.updateUser(this.currentUser.id, updatedUser).subscribe({
+      next: () => {
+        this.isLoading = false;
+        this.successMessage = 'Información actualizada correctamente';
+      },
+      error: () => {
+        this.isLoading = false;
+        this.errorMessage = 'No se pudo guardar la información. Intenta nuevamente.';
+      }
+    });
   }
 
   private markFormGroupTouched(formGroup: FormGroup): void {
@@ -142,17 +125,6 @@ export class UserPersonalInfoCard implements OnInit {
     }
     if (control?.hasError('minlength') && control.touched) {
       return 'El nombre debe tener al menos 2 caracteres';
-    }
-    return '';
-  }
-
-  get emailError(): string {
-    const control = this.personalInfoForm.get('email');
-    if (control?.hasError('required') && control.touched) {
-      return 'El correo electrónico es obligatorio';
-    }
-    if (control?.hasError('email') && control.touched) {
-      return 'El formato del correo electrónico no es válido';
     }
     return '';
   }

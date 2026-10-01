@@ -7,6 +7,7 @@ import { NotificationsApiEndpoint } from '../infraestructure/notifications-api-e
 import { Booking } from '../domain/model/booking.entity';
 import { BookingEndingModal } from '../presentation/views/booking-ending-modal/booking-ending-modal';
 import { firstValueFrom } from 'rxjs';
+import { AuthService } from '../../core/services/auth.service';
 
 interface NotificationState {
   notifiedStartIds: Set<string>;
@@ -23,6 +24,7 @@ export class BookingNotificationService implements OnDestroy {
   private translate = inject(TranslateService);
   private activeBookingService = inject(ActiveBookingService);
   private notificationsApi = inject(NotificationsApiEndpoint);
+  private auth = inject(AuthService);
 
   private checkInterval?: number;
   private isMonitoring = false;
@@ -47,7 +49,17 @@ export class BookingNotificationService implements OnDestroy {
 
     console.log('Starting booking notification monitoring');
     this.isMonitoring = true;
+    this.checkBookings();
+    this.checkInterval = window.setInterval(() => this.checkBookings(), this.CHECK_INTERVAL_MS);
+  }
 
+  private checkBookings(): void {
+    const booking = this.activeBookingService.getActiveBooking();
+    if (!booking || booking.userId !== this.auth.session()?.id) return;
+    const now = new Date();
+    this.checkBookingStart(booking, now);
+    this.checkBookingExpiring(booking, now);
+    this.checkBookingExpired(booking, now);
   }
 
   /**
@@ -76,7 +88,7 @@ export class BookingNotificationService implements OnDestroy {
     const timeDiffMinutes = (startTime.getTime() - now.getTime()) / (1000 * 60);
 
     // Trigger if within 1 minute window (before or after start time)
-    if (Math.abs(timeDiffMinutes) <= 1 && booking.status === 'confirmed') {
+    if (Math.abs(timeDiffMinutes) <= 1 && (booking.status === 'pending' || booking.status === 'confirmed')) {
       this.notifyBookingStart(booking);
       this.state.notifiedStartIds.add(booking.id);
     }
@@ -233,7 +245,7 @@ export class BookingNotificationService implements OnDestroy {
   ): Promise<void> {
     try {
       await firstValueFrom(this.notificationsApi.create({
-        userId,
+        userId: this.auth.session()!.username,
         title,
         message,
         type,

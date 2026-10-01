@@ -1,6 +1,9 @@
+import { normalizeVehicleResponse } from '../../booking/infraestructure/vehicle-assembler';
+import { normalizeLocationResponse } from '../../booking/infraestructure/location-assembler';
+import { toDomainTrip } from '../../trip/infrastructure/trip-assembler';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 export interface User {
@@ -161,9 +164,7 @@ export class ApiService {
   private readonly baseUrl = environment.apiUrl;
   private readonly endpoints = environment.endpoints;
 
-  constructor(private http: HttpClient) {
-    console.log('ApiService inicializado - URL base:', this.baseUrl);
-  }
+  constructor(private http: HttpClient) {}
 
   getUsers(): Observable<User[]> {
     return this.http.get<User[]>(`${this.baseUrl}${this.endpoints.users}`);
@@ -174,11 +175,11 @@ export class ApiService {
   }
 
   getVehicles(): Observable<Vehicle[]> {
-    return this.http.get<Vehicle[]>(`${this.baseUrl}${this.endpoints.vehicles}`);
+    return this.http.get<Vehicle[]>(`${this.baseUrl}${this.endpoints.vehicles}`).pipe(map(responses => responses.map(normalizeVehicleResponse)));
   }
 
   getAvailableVehicles(): Observable<Vehicle[]> {
-    return this.http.get<Vehicle[]>(`${this.baseUrl}${this.endpoints.vehicles}?status=available`);
+    return this.http.get<Vehicle[]>(`${this.baseUrl}${this.endpoints.vehicles}?status=available`).pipe(map(responses => responses.map(normalizeVehicleResponse)));
   }
 
   getPlans(): Observable<Plan[]> {
@@ -186,7 +187,7 @@ export class ApiService {
   }
 
   getLocations(): Observable<Location[]> {
-    return this.http.get<Location[]>(`${this.baseUrl}${this.endpoints.locations}`);
+    return this.http.get<Location[]>(`${this.baseUrl}${this.endpoints.locations}`).pipe(map(responses => responses.map(normalizeLocationResponse)));
   }
 
   getBookings(): Observable<Booking[]> {
@@ -210,7 +211,7 @@ export class ApiService {
   }
 
   getTrips(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.baseUrl}${this.endpoints.trips}`);
+    return this.http.get<any[]>(`${this.baseUrl}${this.endpoints.trips}`).pipe(map(responses => responses.map(toDomainTrip)));
   }
 
   getPayments(): Observable<any[]> {

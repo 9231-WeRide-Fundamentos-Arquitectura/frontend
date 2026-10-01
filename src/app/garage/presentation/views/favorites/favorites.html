@@ -7,7 +7,7 @@
   </div>
   } @if (error()) {
   <div class="error">
-    <p>{{ error() }}</p>
+    <p>{{ error()! | translate }}</p>
   </div>
   } @if (!isLoading() && !error()) {
   <div class="vehicle-grid">

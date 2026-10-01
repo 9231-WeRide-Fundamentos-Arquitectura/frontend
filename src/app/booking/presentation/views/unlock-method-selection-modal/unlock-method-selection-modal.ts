@@ -52,7 +52,7 @@ export interface UnlockMethodSelectionData {
             <mat-icon>lock</mat-icon>
             <div class="button-text">
               <strong>Desbloqueo Manual</strong>
-              <span>Ingresa tu número y contraseña</span>
+              <span>Ingresa la placa del vehículo</span>
             </div>
           </button>
 
@@ -64,7 +64,7 @@ export interface UnlockMethodSelectionData {
             <mat-icon>qr_code_scanner</mat-icon>
             <div class="button-text">
               <strong>Desbloqueo con QR</strong>
-              <span>Escanea el código QR del vehículo</span>
+              <span>Ingresa el contenido QR (simulación)</span>
             </div>
           </button>
         </div>

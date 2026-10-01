@@ -48,7 +48,6 @@ export class TripDetails implements OnInit, OnDestroy {
   elapsedTime = signal<string>('00:00');
   remainingTime = signal<string>('00:00');
   extraTime = signal<string>('Aún no sobrepasas tu tiempo');
-  rating = signal<number>(0);
 
   relatedBooking = signal<Booking | null>(null);
   canActivateBooking = signal<boolean>(false);
@@ -144,16 +143,12 @@ export class TripDetails implements OnInit, OnDestroy {
     this.router.navigate(['/garage']);
   }
 
-  setRating(stars: number) {
-    this.rating.set(stars);
-  }
-
   goToHistory() {
     this.router.navigate(['/trip/history']);
   }
 
   goToSettings() {
-    this.router.navigate(['/user/profile']);
+    this.router.navigate(['/user']);
   }
 
   goToGarage() {
@@ -165,7 +160,7 @@ export class TripDetails implements OnInit, OnDestroy {
     if (!booking || !this.canActivateBooking()) return;
 
     try {
-      await this.bookingStore.activateBooking(booking.id);
+      await this.tripInitializer.requestUnlock(booking);
 
       this.router.navigate(['/trip'], {
         queryParams: {

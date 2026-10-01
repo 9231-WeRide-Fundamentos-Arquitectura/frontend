@@ -1,6 +1,6 @@
 <div class="rate-trip-modal">
   <div class="modal-header">
-    <button mat-icon-button (click)="onClose()" class="close-button">
+    <button mat-icon-button (click)="onClose()" [disabled]="saving" [attr.aria-label]="'common.close' | translate" class="close-button">
       <mat-icon>close</mat-icon>
     </button>
   </div>
@@ -10,31 +10,42 @@
     <p class="subtitle">{{ 'trip.rateTrip.subtitle' | translate }}</p>
 
     <div class="stars-container">
-      <mat-icon
+      <button mat-icon-button type="button"
         *ngFor="let star of getStars()"
+        [attr.aria-label]="('trip.rateTrip.stars' | translate) + ' ' + star"
+        [attr.aria-pressed]="star === rating"
+        [disabled]="saving"
         [class.star-filled]="star <= rating"
         [class.star-empty]="star > rating"
         (click)="setRating(star)"
-        (mouseenter)="setRating(star)"
         class="star-icon"
       >
-        {{ star <= rating ? 'star' : 'star_border' }}
-      </mat-icon>
+        <mat-icon>{{ star <= rating ? 'star' : 'star_border' }}</mat-icon>
+      </button>
     </div>
 
     <mat-form-field appearance="outline" class="full-width">
       <textarea
         matInput
         [(ngModel)]="comment"
+        maxlength="1000"
+        [disabled]="saving"
         [placeholder]="'trip.rateTrip.commentPlaceholder' | translate"
         rows="4"
         class="comment-textarea"
       ></textarea>
     </mat-form-field>
+    <div class="tags">
+      @for (tag of availableTags; track tag) {
+        <button mat-stroked-button type="button" [disabled]="saving" [attr.aria-pressed]="tags.includes(tag)" (click)="toggleTag(tag)">{{ ('trip.rateTrip.tags.' + tag) | translate }}</button>
+      }
+    </div>
+    @if (error) { <p role="alert">{{ error }}</p> }
   </div>
 
   <div mat-dialog-actions class="modal-actions">
-    <button mat-raised-button (click)="onSubmit()" [disabled]="rating === 0" class="submit-button">
+    <button mat-button (click)="onClose()" [disabled]="saving">{{ 'trip.rateTrip.skip' | translate }}</button>
+    <button mat-raised-button (click)="onSubmit()" [disabled]="rating === 0 || saving" class="submit-button">
       {{ 'common.save' | translate }}
     </button>
   </div>

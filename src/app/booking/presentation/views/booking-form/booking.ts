@@ -7,6 +7,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { BookingStorageService } from '../../../application/booking-storage.service';
 import { BookingStore } from '../../../application/booking.store';
 import { Booking } from '../../../domain/model/booking.entity';
+import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
   selector: 'app-booking-form',
@@ -22,6 +23,7 @@ export class BookingFormComponent implements OnInit {
   private bookingStore = inject(BookingStore);
   private snackBar = inject(MatSnackBar);
   private translate = inject(TranslateService);
+  private auth = inject(AuthService);
 
   // Edit mode properties
   isEditMode = false;
@@ -140,7 +142,7 @@ export class BookingFormComponent implements OnInit {
     
     const newBooking = new Booking(
       this.generateBookingId(),
-      'current-user-id', // Replace with actual user ID
+      this.auth.userId,
       this.selectedVehicle,
       'start-location-id', // Replace with actual location
       'end-location-id', // Replace with actual location

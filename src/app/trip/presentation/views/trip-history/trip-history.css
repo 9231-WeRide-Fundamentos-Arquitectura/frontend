@@ -34,7 +34,11 @@
 
 .trip-info {
   flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
+
+.route-coordinates { max-height: 180px; overflow-y: auto; }
 
 .trip-info h3 {
   margin: 0 0 8px 0;
@@ -98,7 +102,9 @@
     flex-direction: row;
     gap: 12px;
     margin-top: 16px;
-    width: 30%;
+    width: 100%;
+    min-width: 0;
+    flex-wrap: wrap;
   }
 
   .see-more-btn {

@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { AuthService } from '../../core/services/auth.service';
+import { effect, inject, Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { User } from '../domain/model/user.entity';
@@ -8,6 +9,7 @@ import { UserApiEndpoint } from '../infrastructure/user-api-endpoint';
   providedIn: 'root'
 })
 export class UserStore {
+  private auth = inject(AuthService);
   private usersSubject = new BehaviorSubject<User[]>([]);
   readonly users$ = this.usersSubject.asObservable();
 
@@ -17,7 +19,13 @@ export class UserStore {
   private loadingSubject = new BehaviorSubject<boolean>(false);
   readonly loading$ = this.loadingSubject.asObservable();
 
-  constructor(private userApiEndpoint: UserApiEndpoint) {}
+  constructor(private userApiEndpoint: UserApiEndpoint) {
+    effect(() => {
+      this.auth.session();
+      this.usersSubject.next([]);
+      this.selectedUserSubject.next(null);
+    });
+  }
 
   loadUsers(): void {
     this.loadingSubject.next(true);
@@ -53,23 +61,13 @@ export class UserStore {
 
   getGuestUser$(): Observable<User | null> {
     return this.users$.pipe(
-      map(users => users.length ? users[0] : null),
+      map(users => users.find(user => String(user.id) === this.auth.session()?.id) ?? null),
       tap(user => this.selectedUserSubject.next(user))
     );
   }
 
   selectUser(user: User): void {
     this.selectedUserSubject.next(user);
-  }
-
-  createUser(user: User): Observable<User> {
-    return this.userApiEndpoint.create(user)
-      .pipe(
-        tap(newUser => {
-          const currentUsers = this.usersSubject.getValue();
-          this.usersSubject.next([...currentUsers, newUser]);
-        })
-      );
   }
 
   updateUser(id: number, user: User): Observable<User> {
@@ -86,13 +84,4 @@ export class UserStore {
       );
   }
 
-  deleteUser(id: number): Observable<void> {
-    return this.userApiEndpoint.delete(id)
-      .pipe(
-        tap(() => {
-          const currentUsers = this.usersSubject.value;
-          this.usersSubject.next(currentUsers.filter(u => u.id !== id));
-        })
-      );
-  }
 }

@@ -80,6 +80,16 @@
   gap: 1rem;
 }
 
+#faq-search {
+  box-sizing: border-box;
+  width: 100%;
+  margin: 0.5rem 0 1rem;
+  padding: 0.75rem;
+  border: 1px solid #6b7280;
+  border-radius: 8px;
+  font: inherit;
+}
+
 .faq-item {
   padding: 1rem;
   background: #f9fafb;

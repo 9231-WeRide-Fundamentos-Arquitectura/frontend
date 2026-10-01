@@ -57,16 +57,6 @@ export class NotificationList implements OnInit {
     });
   }
 
-  deleteNotification(id: string): void {
-    this.notificationsApi.delete(id).subscribe({
-      next: () => {
-        this.notifications = this.notifications.filter(n => n.id !== id);
-        this.unreadCount = this.notifications.filter(n => !n.isRead).length;
-      },
-      error: (error) => console.error('Error deleting notification:', error)
-    });
-  }
-
   getPriorityColor(priority: string): string {
     switch (priority) {
       case 'high': return 'warn';

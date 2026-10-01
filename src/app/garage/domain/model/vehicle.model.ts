@@ -23,3 +23,7 @@ export interface Vehicle {
   rating: number;
   favorite?: boolean;
 }
+
+export function hasCriticalBattery(vehicle: { type: string; battery: number } | null): boolean {
+  return vehicle?.type === 'electric_scooter' && vehicle.battery < 15;
+}

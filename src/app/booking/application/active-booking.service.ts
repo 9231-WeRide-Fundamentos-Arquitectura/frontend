@@ -1,4 +1,5 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, signal, effect } from '@angular/core';
+import { AuthService } from '../../core/services/auth.service';
 import { Booking } from '../domain/model/booking.entity';
 import { BookingsApiEndpoint } from '../infraestructure/bookings-api-endpoint';
 import { toDomainBooking } from '../infraestructure/booking-assembler';
@@ -11,6 +12,15 @@ const ACTIVE_BOOKING_KEY = 'active_booking';
 })
 export class ActiveBookingService {
   private bookingsApi = inject(BookingsApiEndpoint);
+  private auth = inject(AuthService);
+  readonly booking = signal<Booking | null>(null);
+
+  constructor() {
+    this.booking.set(this.getActiveBooking());
+    effect(() => {
+      if (this.booking()?.userId !== this.auth.session()?.id) this.clearActiveBooking();
+    });
+  }
 
   /**
    * Check if user has an active booking from API and store in localStorage
@@ -21,9 +31,9 @@ export class ActiveBookingService {
       
       // Filter for active bookings (pending or confirmed status)
       const activeBookings = bookings
-        .filter(b => b.status === 'pending' || b.status === 'confirmed')
+        .filter(b => b.status === 'pending' || b.status === 'confirmed' || b.status === 'active')
         .map(b => toDomainBooking(b))
-        .sort((a, b) => b.reservedAt.getTime() - a.reservedAt.getTime());
+        .sort((a, b) => Number(b.status === 'active') - Number(a.status === 'active') || b.reservedAt.getTime() - a.reservedAt.getTime());
 
       if (activeBookings.length > 0) {
         const mostRecent = activeBookings[0];
@@ -35,7 +45,7 @@ export class ActiveBookingService {
       return null;
     } catch (error) {
       console.error('Error checking active booking:', error);
-      return null;
+      throw error;
     }
   }
 
@@ -48,6 +58,7 @@ export class ActiveBookingService {
 
     try {
       const data = JSON.parse(stored);
+      if (String(data.userId) !== this.auth.session()?.id) return null;
       return new Booking(
         data.id,
         data.userId,
@@ -83,6 +94,7 @@ export class ActiveBookingService {
    */
   setActiveBooking(booking: Booking): void {
     localStorage.setItem(ACTIVE_BOOKING_KEY, JSON.stringify(booking));
+    this.booking.set(booking);
   }
 
   /**
@@ -90,6 +102,7 @@ export class ActiveBookingService {
    */
   clearActiveBooking(): void {
     localStorage.removeItem(ACTIVE_BOOKING_KEY);
+    this.booking.set(null);
   }
 
   /**

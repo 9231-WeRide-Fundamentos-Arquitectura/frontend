@@ -14,17 +14,11 @@ export class UserPaymentsService {
   }
 
   getTotalSpent(userId: string): Observable<number> {
-    return this.getUserPayments(userId).pipe(
-      map(payments => 
-        payments
-          .filter(p => p.status === 'completed')
-          .reduce((total, payment) => total + payment.amount, 0)
-      )
-    );
+    return this.paymentsApi.getSummary(userId).pipe(map(summary => summary.totalSpent));
   }
 
   getRecentPayments(userId: string, limit: number = 5): Observable<Payment[]> {
-    return this.getUserPayments(userId).pipe(
+    return this.paymentsApi.getByUserId(userId, 0, limit).pipe(
       map(payments => 
         payments
           .sort((a, b) => new Date(b.processedAt).getTime() - new Date(a.processedAt).getTime())

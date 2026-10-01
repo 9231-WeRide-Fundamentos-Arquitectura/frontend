@@ -4,12 +4,10 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 export interface TripRating {
-  id?: string;
-  tripId: string;
-  userId?: string;
+  bookingId: string;
   rating: number;
   comment?: string;
-  ratingDate?: string;
+  tags?: string[];
 }
 
 @Injectable({
@@ -17,32 +15,13 @@ export interface TripRating {
 })
 export class RatingsApiEndpoint {
   private http = inject(HttpClient);
-  private baseUrl = `${environment.apiUrl}${environment.endpoints.ratings}`;
+  private baseUrl = `${environment.apiUrl}${environment.endpoints.bookings}`;
 
-  getAll(): Observable<TripRating[]> {
-    return this.http.get<TripRating[]>(this.baseUrl);
-  }
-
-  getById(id: string): Observable<TripRating> {
-    return this.http.get<TripRating>(`${this.baseUrl}/${id}`);
-  }
-
-  getByTripId(tripId: string): Observable<TripRating[]> {
-    return this.http.get<TripRating[]>(`${this.baseUrl}?tripId=${tripId}`);
-  }
-
-  create(data: Partial<TripRating>): Observable<TripRating> {
-    return this.http.post<TripRating>(this.baseUrl, {
-      ...data,
-      ratingDate: new Date().toISOString()
+  create(data: TripRating): Observable<unknown> {
+    return this.http.post(`${this.baseUrl}/${data.bookingId}/rating`, {
+      score: data.rating,
+      comment: data.comment,
+      tags: data.tags ?? []
     });
-  }
-
-  update(id: string, data: Partial<TripRating>): Observable<TripRating> {
-    return this.http.patch<TripRating>(`${this.baseUrl}/${id}`, data);
-  }
-
-  delete(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}/${id}`);
   }
 }

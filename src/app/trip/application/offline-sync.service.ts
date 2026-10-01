@@ -31,7 +31,9 @@ export class OfflineSyncService {
       vehicleId: report.vehicleId!,
       categories: report.categories!,
       description: report.description || '',
-      status: 'pending'
+      status: 'pending',
+      bookingId: report.bookingId,
+      photo: report.photo
     };
     queue.push(queuedReport);
     this.saveProblemReportsQueue(queue);
@@ -42,7 +44,7 @@ export class OfflineSyncService {
     const queuedRating: QueuedRating = {
       queueId: this.generateId(),
       timestamp: Date.now(),
-      tripId: rating.tripId!,
+      bookingId: rating.bookingId!,
       rating: rating.rating!,
       comment: rating.comment || ''
     };
@@ -66,7 +68,8 @@ export class OfflineSyncService {
           vehicleId: report.vehicleId,
           categories: report.categories,
           description: report.description,
-          tripId: report.tripId,
+          bookingId: report.bookingId,
+          photo: report.photo,
           userId: report.userId
         }).toPromise();
         success++;
@@ -94,10 +97,9 @@ export class OfflineSyncService {
     for (const rating of queue) {
       try {
         await this.ratingsApi.create({
-          tripId: rating.tripId,
+          bookingId: rating.bookingId,
           rating: rating.rating,
-          comment: rating.comment,
-          userId: rating.userId
+          comment: rating.comment
         }).toPromise();
         success++;
       } catch (error) {
