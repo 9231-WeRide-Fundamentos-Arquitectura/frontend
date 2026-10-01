@@ -42,7 +42,7 @@ export class OfflineSyncService {
     const queuedRating: QueuedRating = {
       queueId: this.generateId(),
       timestamp: Date.now(),
-      tripId: rating.tripId!,
+      bookingId: rating.bookingId!,
       rating: rating.rating!,
       comment: rating.comment || ''
     };
@@ -94,10 +94,9 @@ export class OfflineSyncService {
     for (const rating of queue) {
       try {
         await this.ratingsApi.create({
-          tripId: rating.tripId,
+          bookingId: rating.bookingId,
           rating: rating.rating,
-          comment: rating.comment,
-          userId: rating.userId
+          comment: rating.comment
         }).toPromise();
         success++;
       } catch (error) {

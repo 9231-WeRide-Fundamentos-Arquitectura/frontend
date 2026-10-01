@@ -1,4 +1,3 @@
-//db.json deploy = https://db-weride-4.onrender.com
 //deploy previo = http://20.81.154.140:8080/
 //deploy actual = https://weride.duckdns.org/api/v1
 //probando
@@ -17,7 +16,6 @@ export const environment = {
     trips: '/trips',
     payments: '/payments',
     unlockRequests: '/unlockRequests',
-    problemReports: '/problemReports',
-    ratings: '/ratings'
+    problemReports: '/problem-reports'
   }
 };

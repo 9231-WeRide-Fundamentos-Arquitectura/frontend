@@ -440,58 +440,34 @@ export class TripMap implements OnInit, OnDestroy {
   }
 
   openRateTripModal() {
-    const trip = this.tripStore.currentTrip();
-    if (!trip) {
-      // Create a mock trip object for now
-      const mockTrip = {
-        id: `trip_${Date.now()}`,
-        vehicleId: this.currentVehicle()?.id || '',
-        startLocationId: this.currentLocation()?.id || '',
-        endLocationId: this.destinationLocation()?.id || ''
-      };
+    const dialogRef = this.dialog.open(RateTripModal, {
+      data: this.tripStore.currentTrip() ?? {},
+      width: '600px',
+      maxWidth: '95vw',
+      panelClass: 'rate-trip-dialog',
+      autoFocus: false,
+      restoreFocus: false
+    });
 
-      const dialogRef = this.dialog.open(RateTripModal, {
-        data: mockTrip,
-        width: '600px',
-        maxWidth: '95vw',
-        panelClass: 'rate-trip-dialog',
-        autoFocus: false,
-        restoreFocus: false
-      });
-
-      dialogRef.afterClosed().subscribe((result) => {
-        if (result) {
-          this.submitRating(result);
-        }
-      });
-    } else {
-      const dialogRef = this.dialog.open(RateTripModal, {
-        data: trip,
-        width: '600px',
-        maxWidth: '95vw',
-        panelClass: 'rate-trip-dialog',
-        autoFocus: false,
-        restoreFocus: false
-      });
-
-      dialogRef.afterClosed().subscribe((result) => {
-        if (result) {
-          this.submitRating(result);
-        }
-      });
-    }
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.submitRating(result);
+      }
+    });
   }
 
   submitRating(ratingData: any) {
-    const isOffline = this.connectionError();
+    // La calificación se guarda sobre la reserva; un viaje iniciado solo en local no tiene nada que calificar en el backend.
+    const bookingId = this.activeBookingService.getActiveBooking()?.id;
+    if (!bookingId) {
+      console.warn('Calificación descartada: no hay reserva activa a la que asociarla');
+      return;
+    }
+    const rating = { bookingId, rating: ratingData.rating, comment: ratingData.comment };
 
-    if (isOffline) {
+    if (this.connectionError()) {
       // Save to local storage for later sync
-      this.offlineSyncService.queueRating({
-        tripId: ratingData.tripId,
-        rating: ratingData.rating,
-        comment: ratingData.comment
-      });
+      this.offlineSyncService.queueRating(rating);
 
       this.showMessage(
         this.translate.instant('trip.rateTrip.savedOffline'),
@@ -499,11 +475,7 @@ export class TripMap implements OnInit, OnDestroy {
       );
     } else {
       // Submit directly to API
-      this.ratingsApi.create({
-        tripId: ratingData.tripId,
-        rating: ratingData.rating,
-        comment: ratingData.comment
-      }).subscribe({
+      this.ratingsApi.create(rating).subscribe({
         next: () => {
           this.showMessage(
             this.translate.instant('trip.rateTrip.thankYou'),
@@ -513,11 +485,7 @@ export class TripMap implements OnInit, OnDestroy {
         error: (error) => {
           console.error('Error submitting rating:', error);
           // Fallback to offline queue if submission fails
-          this.offlineSyncService.queueRating({
-            tripId: ratingData.tripId,
-            rating: ratingData.rating,
-            comment: ratingData.comment
-          });
+          this.offlineSyncService.queueRating(rating);
           this.showMessage(
             this.translate.instant('trip.rateTrip.savedOffline'),
             'info'
