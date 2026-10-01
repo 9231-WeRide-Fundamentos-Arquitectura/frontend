@@ -29,11 +29,19 @@
       <p class="placeholder-text">
         {{ 'garage.qrScanner.scanHere' | translate }}
       </p>
+      <label for="qr-content">Contenido del QR (simulación)</label>
+      <input id="qr-content" [(ngModel)]="scannedCode" placeholder="weride:vehicle:1" [disabled]="isScanning" />
+      <ng-container *ngIf="vehicle">
+        <p class="placeholder-text">{{ 'garage.qrScanner.codeHint' | translate }}: <code>{{ qrContent }}</code></p>
+        <button mat-stroked-button type="button" (click)="simulateScan()" [disabled]="isScanning">{{ 'garage.qrScanner.simulateScan' | translate }}</button>
+      </ng-container>
+      <p *ngIf="errorMessage" role="alert">{{ errorMessage }}</p>
       <p *ngIf="isScanning" class="scanning-text">Escaneando...</p>
     </div>
   </div>
 
   <div mat-dialog-actions class="modal-actions">
+    <button mat-button (click)="openManual()" [disabled]="isScanning">Ingresar placa manualmente</button>
     <button
       mat-raised-button
       (click)="onOK()"

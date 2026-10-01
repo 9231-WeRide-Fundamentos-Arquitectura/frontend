@@ -10,36 +10,18 @@
     <div class="instructions">
       <mat-icon>info_outline</mat-icon>
       <p>
-        Ingresa el número de teléfono del vehículo y el código de desbloqueo
+        Ingresa la placa alfanumérica impresa en el vehículo
       </p>
     </div>
 
     <form [formGroup]="unlockForm" (ngSubmit)="onSubmit()">
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Teléfono del Vehículo</mat-label>
-        <input
-          matInput
-          formControlName="vehiclePhone"
-          type="tel"
-          placeholder="987654321"
-          [disabled]="isUnlocking"
-        />
-        <mat-icon matPrefix>phone</mat-icon>
-        <mat-error *ngIf="vehiclePhoneControl?.hasError('required')">
-          El teléfono es requerido
-        </mat-error>
-        <mat-error *ngIf="vehiclePhoneControl?.hasError('pattern')">
-          Formato de teléfono inválido
-        </mat-error>
-      </mat-form-field>
-
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Código de Desbloqueo</mat-label>
         <input
           matInput
           formControlName="unlockCode"
           type="text"
-          placeholder="1234"
+          placeholder="XM001"
           [disabled]="isUnlocking"
         />
         <mat-icon matPrefix>lock_open</mat-icon>

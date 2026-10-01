@@ -9,10 +9,11 @@ import { Router } from '@angular/router';
 import { Vehicle } from '../../../domain/model/vehicle.model';
 import { Booking } from '../../../../booking/domain/model/booking.entity';
 import { UnlockRequest } from '../../../../booking/domain/model/unlockRequest.entity';
-import { UnlockRequestsApiEndpoint } from '../../../../booking/infraestructure/unlockRequests-api-endpoint';
 import { BookingStore } from '../../../../booking/application/booking.store';
-import { TripStore } from '../../../../trip/application/trip.store';
-import { firstValueFrom } from 'rxjs';
+import { TripInitializerService } from '../../../../trip/application/trip-initializer.service';
+import { FormsModule } from '@angular/forms';
+import { ManualUnlockModal } from '../manual-unlock-modal/manual-unlock-modal';
+import { MatDialog } from '@angular/material/dialog';
 
 export interface QrScannerModalData {
   vehicle?: Vehicle;
@@ -28,7 +29,7 @@ export interface QrScannerModalData {
     MatDialogModule,
     MatButtonModule,
     MatIconModule,
-    TranslateModule
+    TranslateModule, FormsModule
   ],
   templateUrl: './qr-scanner-modal.html',
   styleUrl: './qr-scanner-modal.css'
@@ -37,11 +38,11 @@ export class QrScannerModal {
   isScanning = false;
   scannedCode = '';
   errorMessage = '';
-  private unlockRequestsApi = inject(UnlockRequestsApiEndpoint);
   private snackBar = inject(MatSnackBar);
   private router = inject(Router);
   private bookingStore = inject(BookingStore);
-  private tripStore = inject(TripStore);
+  private tripInitializer = inject(TripInitializerService);
+  private dialog = inject(MatDialog);
 
   constructor(
     public dialogRef: MatDialogRef<QrScannerModal>,
@@ -60,6 +61,15 @@ export class QrScannerModal {
     return this.data?.unlockRequest;
   }
 
+  get qrContent(): string {
+    return `weride:vehicle:${this.vehicle?.id}`;
+  }
+
+  simulateScan(): void {
+    this.scannedCode = this.qrContent;
+    void this.onScan();
+  }
+
   async onScan(): Promise<void> {
     if (this.isScanning) {
       return;
@@ -69,20 +79,12 @@ export class QrScannerModal {
     this.errorMessage = '';
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
-
-      const qrCode = this.scannedCode || 'QR_CODE_MOCK';
-      const unlockResult = await this.bookingStore.unlockVehicleByQR(qrCode);
+      const unlockResult = await this.bookingStore.unlockVehicleByQR(this.scannedCode, this.booking, this.unlockRequest?.id);
 
       if (unlockResult.success) {
-        if (this.unlockRequest) {
-          await firstValueFrom(
-            this.unlockRequestsApi.update(this.unlockRequest.id, {
-              status: 'unlocked',
-              actualUnlockTime: new Date().toISOString(),
-              attempts: this.unlockRequest.attempts + 1
-            })
-          );
+        const booking = await this.bookingStore.getBookingByIdAsync(unlockResult.bookingId!);
+        if (!await this.tripInitializer.initializeTripFromBooking(booking)) {
+          throw new Error('El vehículo se desbloqueó. Vuelve a abrir el mapa para cargar el viaje.');
         }
 
         this.snackBar.open(
@@ -117,12 +119,10 @@ export class QrScannerModal {
     this.dialogRef.close({ cancelled: true });
   }
 
-  onOK(): void {
-    if (this.unlockRequest) {
-      this.onScan();
-    } else {
-      this.dialogRef.close({ scanned: true });
-    }
+  onOK(): void { this.onScan(); }
+
+  openManual(): void {
+    this.dialog.open(ManualUnlockModal, { data: this.data, width: '600px', maxWidth: '95vw' })
+      .afterClosed().subscribe(result => { if (result?.success) this.dialogRef.close(result); });
   }
 }
-

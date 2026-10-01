@@ -150,8 +150,9 @@
   </div>
 
   <div mat-dialog-actions class="modal-actions">
+    <p *ngIf="criticalBattery" role="alert">{{ 'garage.vehicle.criticalBattery' | translate }}</p>
     <button mat-button (click)="onClose()" class="cancel-button">{{ 'common.close' | translate }}</button>
-    <button mat-raised-button color="primary" class="reserve-button" (click)="onReserve()">
+    <button mat-raised-button color="primary" class="reserve-button" (click)="onReserve()" [disabled]="criticalBattery || vehicle.status !== 'available'">
       <mat-icon>bookmark</mat-icon>
       {{ 'garage.details.reserveVehicle' | translate }}
     </button>

@@ -9,9 +9,11 @@ import { MatChip, MatChipSet } from '@angular/material/chips';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { Vehicle } from '../../../domain/model/vehicle.model';
+import { Vehicle, hasCriticalBattery } from '../../../domain/model/vehicle.model';
 import { BookingConfirmationModal } from '../../../../booking/presentation/views/booking-confirmation-modal/booking-confirmation-modal';
 import { FavoriteStore } from '../../../application/favorite.store';
+import { ToggleFavoriteUseCase } from '../../../application/use-cases/toggle-favorite.usecase';
+import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
   selector: 'app-vehicle-card',
@@ -46,39 +48,35 @@ export class VehicleCard {
   private dialog = inject(MatDialog);
   private snackBar = inject(MatSnackBar);
   private favoriteStore = inject(FavoriteStore);
+  private toggleFavorite = inject(ToggleFavoriteUseCase);
+  private auth = inject(AuthService);
 
   isTogglingFavorite = false;
+  get criticalBattery(): boolean { return hasCriticalBattery(this.vehicle); }
 
-  onToggleFavorite() {
+  async onToggleFavorite() {
     if (this.isTogglingFavorite) return;
 
     this.isTogglingFavorite = true;
-    const previousState = this.vehicle.favorite;
-
-    // Optimistic UI update
-    this.vehicle.favorite = !this.vehicle.favorite;
-
-    // Check for errors after a delay
-    setTimeout(() => {
-      const error = this.favoriteStore.error();
-      if (error) {
-        // Rollback on error
-        this.vehicle.favorite = previousState;
-        this.snackBar.open(
-          this.translate.instant('garage.favorites.error'),
-          this.translate.instant('common.retry'),
-          {
-            duration: 4000,
-            horizontalPosition: 'end',
-            verticalPosition: 'top',
-            panelClass: ['error-snackbar']
-          }
-        ).onAction().subscribe(() => {
-          this.onToggleFavorite();
-        });
-      }
+    try {
+      await this.toggleFavorite.execute(this.auth.userId, this.vehicle.id);
+      this.vehicle.favorite = this.favoriteStore.isFavorite(this.vehicle.id);
+    } catch {
+      this.snackBar.open(
+        this.translate.instant('garage.favorites.error'),
+        this.translate.instant('common.retry'),
+        {
+          duration: 4000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['error-snackbar']
+        }
+      ).onAction().subscribe(() => {
+        this.onToggleFavorite();
+      });
+    } finally {
       this.isTogglingFavorite = false;
-    }, 500);
+    }
   }
 
   onViewDetails() {
@@ -86,6 +84,7 @@ export class VehicleCard {
   }
 
   onReserve() {
+    if (this.criticalBattery) return;
     // Open confirmation modal
     const dialogRef = this.dialog.open(BookingConfirmationModal, {
       data: { vehicle: this.vehicle },

@@ -5,7 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
-import { Vehicle } from '../../../domain/model/vehicle.model';
+import { Vehicle, hasCriticalBattery } from '../../../domain/model/vehicle.model';
 
 @Component({
   selector: 'app-vehicle-details-modal',
@@ -22,6 +22,7 @@ import { Vehicle } from '../../../domain/model/vehicle.model';
   styleUrl: './vehicle-details-modal.css'
 })
 export class VehicleDetailsModal {
+  get criticalBattery(): boolean { return hasCriticalBattery(this.vehicle); }
   constructor(
     public dialogRef: MatDialogRef<VehicleDetailsModal>,
     @Inject(MAT_DIALOG_DATA) public vehicle: Vehicle
@@ -32,6 +33,7 @@ export class VehicleDetailsModal {
   }
 
   onReserve(): void {
+    if (this.criticalBattery || this.vehicle.status !== 'available') return;
     this.dialogRef.close('reserve');
   }
 

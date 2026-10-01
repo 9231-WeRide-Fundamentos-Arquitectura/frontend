@@ -2,7 +2,7 @@
   <mat-card-header>
     <mat-card-title>{{ vehicle.brand }} {{ vehicle.model }}</mat-card-title>
     <mat-card-subtitle>{{ getTypeLabel() }}</mat-card-subtitle>
-    <button mat-icon-button class="favorite-btn" (click)="onToggleFavorite()">
+    <button mat-icon-button class="favorite-btn" (click)="onToggleFavorite()" [disabled]="isTogglingFavorite" [attr.aria-pressed]="vehicle.favorite === true" [attr.aria-label]="'garage.tabs.favorites' | translate">
       <mat-icon [class.favorited]="vehicle.favorite">
         {{ vehicle.favorite ? 'favorite' : 'favorite_border' }}
       </mat-icon>
@@ -34,7 +34,7 @@
         <span class="value">⭐ {{ vehicle.rating }}</span>
       </div>
 
-      @if (vehicle.battery > 0) {
+      @if (vehicle.type === 'electric_scooter' || vehicle.battery > 0) {
       <div class="info-row">
         <span class="label">{{ 'garage.vehicle.battery' | translate }}:</span>
         <span class="value">{{ vehicle.battery }}%</span>
@@ -63,11 +63,15 @@
     </div>
   </mat-card-content>
 
+  @if (criticalBattery) {
+    <p role="alert">{{ 'garage.vehicle.criticalBattery' | translate }}</p>
+  }
+
   <mat-card-actions>
     <button
       mat-raised-button
       color="primary"
-      [disabled]="vehicle.status !== 'available'"
+      [disabled]="vehicle.status !== 'available' || criticalBattery"
       (click)="onReserve()"
     >
       @if (vehicle.status === 'available') { {{ 'garage.vehicle.reserve' |
