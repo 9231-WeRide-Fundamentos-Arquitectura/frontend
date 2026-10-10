@@ -83,7 +83,8 @@ export class QrScannerModal {
 
       if (unlockResult.success) {
         const booking = await this.bookingStore.getBookingByIdAsync(unlockResult.bookingId!);
-        if (!await this.tripInitializer.initializeTripFromBooking(booking)) {
+        // El desbloqueo no inicia el viaje: primero se marca el destino y luego se inicia.
+        if (!await this.tripInitializer.startTripWithDestination(booking)) {
           throw new Error('El vehículo se desbloqueó. Vuelve a abrir el mapa para cargar el viaje.');
         }
 

@@ -7,7 +7,7 @@ export class VehicleFilterService {
       return (!filter.type || v.type === filter.type) &&
         (!filter.minPrice || v.pricePerMinute >= filter.minPrice) &&
         (!filter.maxPrice || v.pricePerMinute <= filter.maxPrice) &&
-        (!filter.status || v.status === filter.status) &&
+        (!filter.status || (filter.status === 'unavailable' ? v.status !== 'available' && v.status !== 'maintenance' : v.status === filter.status)) &&
         (!filter.minRating || v.rating >= filter.minRating) &&
         (!filter.brand || v.brand.toLowerCase().includes(filter.brand.toLowerCase())) &&
         (!filter.companyId || v.companyId === filter.companyId) &&
