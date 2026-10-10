@@ -2,6 +2,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { UnlockMethodSelectionModal } from '../../booking/presentation/views/unlock-method-selection-modal/unlock-method-selection-modal';
 import { ManualUnlockModal } from '../../garage/presentation/views/manual-unlock-modal/manual-unlock-modal';
 import { QrScannerModal } from '../../garage/presentation/views/qr-scanner-modal/qr-scanner-modal';
+import { DestinationModal } from '../../booking/presentation/views/destination-modal/destination-modal';
 import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { Booking } from '../../booking/domain/model/booking.entity';
@@ -32,7 +33,7 @@ export class TripInitializerService {
   private bookingStore = inject(BookingStore);
   private translate = inject(TranslateService);
 
-  // ponytail: vuelve al origen por defecto; usar un destino elegido cuando haya selector.
+  // El destino real se marca después del desbloqueo (DestinationModal); aquí solo se envía la estación como valor inicial.
   async reserveAndStart(vehicleId: string, startLocationId: string, endLocationId = startLocationId): Promise<void> {
     let booking = await this.activeBooking.checkAndStoreActiveBooking(this.auth.userId);
     if (booking && (booking.vehicleId !== vehicleId || booking.status === 'active')) {
@@ -71,6 +72,57 @@ export class TripInitializerService {
       : this.dialog.open(QrScannerModal, { data, width: '600px', maxWidth: '95vw' });
     const result = await firstValueFrom(dialog.afterClosed());
     if (!result?.success) throw new Error('La reserva está guardada. Reintenta el desbloqueo desde Mis Reservas.');
+  }
+
+  // Abre el modal compartido de destino. Devuelve la reserva con el destino guardado, o null si el usuario cancela.
+  private async askDestination(booking: Booking, mode: 'start' | 'change'): Promise<Booking | null> {
+    return await firstValueFrom(this.dialog.open(DestinationModal, {
+      data: { booking, mode }, width: '560px', maxWidth: '95vw', autoFocus: false
+    }).afterClosed()) ?? null;
+  }
+
+  private syncBooking(booking: Booking): void {
+    this.activeBooking.setActiveBooking(booking);
+    this.bookingStore.updateBooking(booking);
+    this.bookingStore.setActiveBooking(booking);
+  }
+
+  /**
+   * Tras el desbloqueo: pide el destino, lo guarda, inicia el viaje (PUT /start) y carga el viaje en el store.
+   * Es el único camino que inicia un viaje. Lanza error si el usuario cierra el modal sin confirmar:
+   * la reserva queda pendiente y puede reactivarse.
+   */
+  async startTripWithDestination(booking: Booking): Promise<boolean> {
+    let ready = booking;
+    if (booking.status !== 'active') {
+      const withDestination = await this.askDestination(booking, 'start');
+      if (!withDestination) throw new Error(this.translate.instant('booking.destination.pendingStart'));
+      ready = toDomainBooking(await firstValueFrom(this.bookingsApi.start(withDestination.id)));
+      this.syncBooking(ready);
+    }
+    return this.initializeTripFromBooking(ready);
+  }
+
+  /**
+   * Con el viaje en curso: reabre el modal para mover el destino (cargo fijo) y refresca el viaje.
+   * Devuelve la reserva actualizada o null si el usuario cancela.
+   */
+  async changeDestination(booking: Booking): Promise<Booking | null> {
+    const updated = await this.askDestination(booking, 'change');
+    if (!updated) return null;
+    this.syncBooking(updated);
+    const start = this.tripStore.currentLocation();
+    if (start) this.tripStore.setDestinationLocation(this.destinationFrom(updated, start));
+    return updated;
+  }
+
+  // El destino libre no es una estación: se arma una Location sintética para reutilizar marcador y panel.
+  private destinationFrom(booking: Booking, base: Location): Location {
+    const address = booking.destinationAddress ?? '';
+    return {
+      ...base, id: '', name: address || `${booking.destinationLat!.toFixed(5)}, ${booking.destinationLng!.toFixed(5)}`,
+      address, coordinates: { lat: booking.destinationLat!, lng: booking.destinationLng! }
+    };
   }
 
   /**
@@ -112,7 +164,9 @@ export class TripInitializerService {
 
       // Obtener la ubicación de destino si existe
       let destinationLocation: Location | null = null;
-      if (booking.endLocationId) {
+      if (booking.destinationLat != null && booking.destinationLng != null) {
+        destinationLocation = this.destinationFrom(booking, startLocation);
+      } else if (booking.endLocationId) {
         try {
           destinationLocation = await firstValueFrom(this.locationsApi.getById(booking.endLocationId));
         } catch (error) {

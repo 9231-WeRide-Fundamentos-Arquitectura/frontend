@@ -72,9 +72,20 @@
         <div class="route-details">
           <span class="route-label">Destino</span>
           <span class="route-name">{{destinationLocation()!.name}}</span>
+          @if (destinationEstimate(); as estimate) {
+            <span class="route-estimate">
+              {{ 'booking.destination.estimate' | translate }}:
+              {{ estimate.distance | number:'1.1-1' }} km · {{ estimate.minutes }} min · $ {{ estimate.cost | number:'1.2-2' }}
+            </span>
+          }
         </div>
       </div>
     </div>
+
+    <button class="change-destination-button" (click)="changeDestination()">
+      <span class="button-icon">📍</span>
+      {{ 'booking.destination.change' | translate }}
+    </button>
 
   </div>
 </div>

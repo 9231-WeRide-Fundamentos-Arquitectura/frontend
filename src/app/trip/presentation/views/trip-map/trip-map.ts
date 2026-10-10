@@ -355,9 +355,9 @@ export class TripMap implements OnInit, OnDestroy {
     try { sessionStorage.setItem(key, JSON.stringify(this.routeCoordinates)); } catch { /* Keep the in-memory route if browser storage is full. */ }
   }
 
-  private simulateRoute(fromId: string, toId: string): { points: RouteCoordinate[]; distance: number } | null {
+  private simulateRoute(fromId: string, toId: string, destination?: { lat: number; lng: number }): { points: RouteCoordinate[]; distance: number } | null {
     const locations = this.tripStore.locations();
-    const from = locations.find(l => l.id === fromId)?.coordinates, to = locations.find(l => l.id === toId)?.coordinates;
+    const from = locations.find(l => l.id === fromId)?.coordinates, to = destination ?? locations.find(l => l.id === toId)?.coordinates;
     if (!from || !to) return null;
     const steps = 10;
     const points = Array.from({ length: steps + 1 }, (_, i) => ({
@@ -424,7 +424,9 @@ export class TripMap implements OnInit, OnDestroy {
       let routeSource: 'gps' | 'simulated' = 'gps';
       if (route.length < 2) {
         // No usable GPS (e.g. desktop): interpolate station to station and flag it as simulated.
-        const simulated = this.simulateRoute(booking.startLocationId, booking.endLocationId);
+        const free = booking.destinationLat != null && booking.destinationLng != null
+          ? { lat: booking.destinationLat, lng: booking.destinationLng } : undefined;
+        const simulated = this.simulateRoute(booking.startLocationId, booking.endLocationId, free);
         if (simulated) { route = simulated.points; distance = simulated.distance; routeSource = 'simulated'; }
       }
       const response = await firstValueFrom(this.bookingsApi.complete(booking.id, {
@@ -449,6 +451,19 @@ export class TripMap implements OnInit, OnDestroy {
     } catch {
       this.showMessage('No se pudo finalizar el viaje. Tu reserva sigue activa; intenta nuevamente.', 'error');
     } finally { this.bookingBusy = false; }
+  }
+
+  async changeDestination() {
+    const booking = this.activeBookingService.getActiveBooking();
+    if (!booking) { this.showMessage('No hay una reserva activa para cambiar el destino', 'error'); return; }
+    try {
+      const updated = await this.tripInitializer.changeDestination(booking);
+      if (!updated) return;
+      if (updated.estimatedDistance != null) this.estimatedDistance.set(updated.estimatedDistance);
+      this.showMessage(this.translate.instant('booking.destination.changed'), 'success');
+    } catch {
+      this.showMessage(this.translate.instant('booking.destination.saveError'), 'error');
+    }
   }
 
   openReportProblemModal() {

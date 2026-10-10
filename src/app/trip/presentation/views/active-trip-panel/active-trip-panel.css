@@ -334,3 +334,28 @@
     font-size: 0.75rem;
   }
 }
+
+.route-estimate {
+  display: block;
+  font-size: 0.8125rem;
+  color: #92400e;
+  margin-top: 0.125rem;
+}
+
+.change-destination-button {
+  width: 100%;
+  background: #fff;
+  color: #2544cf;
+  border: 2px solid #2544cf;
+  padding: 0.625rem 1rem;
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.change-destination-button:hover {
+  background: #2544cf;
+  color: #fff;
+}
