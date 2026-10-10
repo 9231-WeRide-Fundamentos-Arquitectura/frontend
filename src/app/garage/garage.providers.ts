@@ -30,3 +30,9 @@ export const GARAGE_PROVIDERS: Provider[] = [
     useClass: FavoriteRepositoryImpl
   }
 ];
+
+// Lo mínimo que necesita una pantalla fuera del garaje para listar vehículos (p. ej. programar reserva).
+export const VEHICLE_LIST_PROVIDERS: Provider[] = [
+  VehicleApiService,
+  { provide: VehicleRepository, useClass: VehicleRepositoryImpl }
+];
