@@ -3,7 +3,8 @@ export interface VehicleFilter {
   minPrice?: number;
   maxPrice?: number;
   minRating?: number;
-  status?: 'available' | 'reserved' | 'maintenance' | 'in_use';
+  // 'unavailable' agrupa reserved, in_use y cualquier otro estado distinto de available y maintenance.
+  status?: 'available' | 'reserved' | 'maintenance' | 'in_use' | 'unavailable';
   brand?: string;
   companyId?: string;
   minBattery?: number;

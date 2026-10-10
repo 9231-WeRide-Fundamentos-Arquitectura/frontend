@@ -118,8 +118,14 @@ export class VehicleCard {
     } finally { this.bookingBusy = false; }
   }
 
+  // La tarjeta solo distingue tres estados; reservado, en uso y cualquier otro se muestran como no disponible.
+  private displayStatus(): 'available' | 'maintenance' | 'unavailable' {
+    const status = this.vehicle.status;
+    return status === 'available' || status === 'maintenance' ? status : 'unavailable';
+  }
+
   getStatusLabel(): string {
-    return this.translate.instant(`garage.vehicle.statuses.${this.vehicle.status}`) || this.vehicle.status;
+    return this.translate.instant(`garage.vehicle.statuses.${this.displayStatus()}`);
   }
 
   getTypeLabel(): string {
@@ -127,6 +133,6 @@ export class VehicleCard {
   }
 
   getStatusClass(): string {
-    return `status-${this.vehicle.status}`;
+    return `status-${this.displayStatus()}`;
   }
 }

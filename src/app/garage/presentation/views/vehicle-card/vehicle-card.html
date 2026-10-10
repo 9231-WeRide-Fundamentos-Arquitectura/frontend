@@ -19,7 +19,7 @@
     <div class="vehicle-info">
       <div class="info-row">
         <span class="label">{{ 'garage.vehicle.status' | translate }}:</span>
-        <span class="value" [ngClass]="getStatusClass()"
+        <span class="status-badge" [ngClass]="getStatusClass()"
           >{{ getStatusLabel() }}</span
         >
       </div>
