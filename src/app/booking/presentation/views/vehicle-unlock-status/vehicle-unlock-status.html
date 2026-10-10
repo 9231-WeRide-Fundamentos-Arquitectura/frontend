@@ -1,35 +1,34 @@
 <div class="main-layout">
   <div class="content expanded full-width">
     @if (isActiveTrip()) {
-    <h2>Vehicle Unlock Status</h2>
-    <p>Monitor your vehicle's unlock status in real-time</p>
+    <h2>{{ 'vehicleStatus.title' | translate }}</h2>
+    <p>{{ 'vehicleStatus.subtitle' | translate }}</p>
 
     @if (connectionError()) {
     <div class="error-card">
       <div class="error-content">
         <mat-icon class="error-icon">error_outline</mat-icon>
-        <h3>Error de conexión</h3>
+        <h3>{{ 'vehicleStatus.connectionError' | translate }}</h3>
         <p>
-          {{ errorMessage() || 'Hubo un problema al obtener el estado del
-          vehículo' }}
+          {{ errorMessage() || ('vehicleStatus.fetchProblem' | translate) }}
         </p>
         <button mat-raised-button color="primary" (click)="retryConnection()">
           <mat-icon>refresh</mat-icon>
-          Reintentar
+          {{ 'common.retry' | translate }}
         </button>
       </div>
     </div>
     } @if (!connectionError() && vehicleInfo().id) {
     <div class="status-card">
       <div class="status-header">
-        <h3>Current Status</h3>
+        <h3>{{ 'vehicleStatus.currentStatus' | translate }}</h3>
         <button
           class="refresh-btn"
           (click)="refreshStatus()"
           [disabled]="isLoading()"
         >
           <mat-icon>refresh</mat-icon>
-          Refresh
+          {{ 'vehicleStatus.refresh' | translate }}
         </button>
       </div>
       <div class="status-section">
@@ -43,7 +42,7 @@
           >
             <span>{{ getStatusLabel(unlockStatus) }}</span>
             @if (unlockStatus === 'Unlocked') {
-            <span class="user-label">Tu</span>
+            <span class="user-label">{{ 'vehicleStatus.you' | translate }}</span>
             }
           </div>
         </div>
@@ -53,29 +52,29 @@
           </span>
           <div class="vehicle-characteristics">
             <span class="characteristic-item"
-              ><strong>ID vehículo:</strong> {{ vehicleInfo().id }}</span
+              ><strong>{{ 'vehicleStatus.vehicleId' | translate }}:</strong> {{ vehicleInfo().id }}</span
             >
             <span class="characteristic-item"
-              ><strong>Marca y Modelo:</strong> {{ vehicleInfo().brand }} {{
+              ><strong>{{ 'vehicleStatus.brandModel' | translate }}:</strong> {{ vehicleInfo().brand }} {{
               vehicleInfo().model }}</span
             >
             <span class="characteristic-item"
-              ><strong>Placa:</strong> {{ vehicleInfo().licensePlate }}</span
+              ><strong>{{ 'vehicleStatus.plate' | translate }}:</strong> {{ vehicleInfo().licensePlate }}</span
             >
             <span class="characteristic-item"
-              ><strong>Batería:</strong> {{ vehicleInfo().battery }}%</span
+              ><strong>{{ 'vehicleStatus.battery' | translate }}:</strong> {{ vehicleInfo().battery }}%</span
             >
           </div>
         </div>
 
         @if (vehicleInfo().bookingStartDate) {
         <div class="booking-info-section">
-          <h4>Información de la Reserva</h4>
+          <h4>{{ 'vehicleStatus.bookingInfo' | translate }}</h4>
           <div class="booking-info-grid">
             <div class="booking-info-item">
               <mat-icon class="info-icon">schedule</mat-icon>
               <div class="info-content">
-                <span class="info-label">Hora de inicio</span>
+                <span class="info-label">{{ 'vehicleStatus.startTime' | translate }}</span>
                 <span class="info-value"
                   >{{ formatDateTime(vehicleInfo().bookingStartDate!) }}</span
                 >
@@ -85,7 +84,7 @@
             <div class="booking-info-item">
               <mat-icon class="info-icon">event</mat-icon>
               <div class="info-content">
-                <span class="info-label">Hora de fin</span>
+                <span class="info-label">{{ 'vehicleStatus.endTime' | translate }}</span>
                 <span class="info-value"
                   >{{ formatDateTime(vehicleInfo().bookingEndDate!) }}</span
                 >
@@ -95,14 +94,14 @@
             <div class="booking-info-item">
               <mat-icon class="info-icon">timer</mat-icon>
               <div class="info-content">
-                <span class="info-label">Tiempo transcurrido</span>
+                <span class="info-label">{{ 'vehicleStatus.elapsed' | translate }}</span>
                 <span class="info-value">{{ vehicleInfo().elapsedTime }}</span>
               </div>
             </div>
             <div class="booking-info-item">
               <mat-icon class="info-icon">hourglass_empty</mat-icon>
               <div class="info-content">
-                <span class="info-label">Tiempo restante</span>
+                <span class="info-label">{{ 'vehicleStatus.remaining' | translate }}</span>
                 <span class="info-value"
                   >{{ vehicleInfo().remainingTime }}</span
                 >
@@ -111,7 +110,7 @@
             <div class="booking-info-item">
               <mat-icon class="info-icon">info</mat-icon>
               <div class="info-content">
-                <span class="info-label">Estado de reserva</span>
+                <span class="info-label">{{ 'vehicleStatus.bookingStatus' | translate }}</span>
                 <span
                   class="info-value status-badge"
                   [class.confirmed]="vehicleInfo().bookingStatus === 'confirmed'"
@@ -133,7 +132,7 @@
             [disabled]="unlockStatus === 'Locked' || unlockStatus === 'Pending'"
           >
             <mat-icon>lock</mat-icon>
-            Ir al viaje para finalizar
+            {{ 'vehicleStatus.goToTrip' | translate }}
           </button>
           <button
             class="btn-unlock"
@@ -141,16 +140,16 @@
             [disabled]="unlockStatus === 'Unlocked'"
           >
             <mat-icon>lock_open</mat-icon>
-            Desbloquear vehículo
+            {{ 'vehicleStatus.unlock' | translate }}
           </button>
         </div>
       </div>
     </div>
     <div class="recent-activity">
-      <h3>Recent Activity</h3>
+      <h3>{{ 'vehicleStatus.recentActivity' | translate }}</h3>
       @if (recentActivity().length === 0) {
       <ul>
-        <li><span>No hay actividad reciente</span></li>
+        <li><span>{{ 'vehicleStatus.noActivity' | translate }}</span></li>
       </ul>
       } @else {
       <ul>
@@ -170,13 +169,13 @@
     } @if (isLoading()) {
     <div class="loading-message">
       <mat-icon>hourglass_empty</mat-icon>
-      <p>Cargando estado del vehículo...</p>
+      <p>{{ 'vehicleStatus.loading' | translate }}</p>
     </div>
     } } @if (!isActiveTrip()) {
     <mat-card class="no-trip-card">
       <div class="no-trip-content">
         <h2>
-          Aún no tienes un viaje en curso en este momento, quizás deseas...
+          {{ 'vehicleStatus.noTrip' | translate }}
         </h2>
 
         <div class="no-trip-actions">
@@ -186,7 +185,7 @@
             class="primary-action-btn"
             (click)="goToGarage()"
           >
-            Reservar un vehículo ahora
+            {{ 'vehicleStatus.bookNow' | translate }}
           </button>
 
           <button
@@ -194,7 +193,7 @@
             class="secondary-action-btn"
             (click)="goToScheduleBooking()"
           >
-            Programar una reserva
+            {{ 'vehicleStatus.schedule' | translate }}
           </button>
 
           <button
@@ -202,7 +201,7 @@
             class="secondary-action-btn"
             (click)="goToHistory()"
           >
-            Historial de Viajes
+            {{ 'vehicleStatus.history' | translate }}
           </button>
         </div>
       </div>
@@ -210,11 +209,10 @@
     }
 
     <div class="footer">
-      <p>© 2025 Vehicle Control System. All rights reserved.</p>
+      <p>{{ 'vehicleStatus.copyright' | translate }}</p>
       <div class="footer-links">
-        <a href="#">Privacy</a>
-        <a href="#">Terms</a>
-        <a href="#">Support</a>
+        <a routerLink="/privacy">{{ 'auth.login.privacyPolicy' | translate }}</a>
+        <a routerLink="/terms">{{ 'auth.login.termsOfUse' | translate }}</a>
       </div>
     </div>
   </div>

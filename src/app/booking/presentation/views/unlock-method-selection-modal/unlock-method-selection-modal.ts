@@ -73,7 +73,7 @@ export interface UnlockMethodSelectionData {
   `,
   styles: [`
     .unlock-method-selection-modal {
-      min-width: 400px;
+      min-width: min(400px, 100%);
       max-width: 500px;
     }
 
@@ -199,7 +199,8 @@ export interface UnlockMethodSelectionData {
 
     @media (max-width: 500px) {
       .unlock-method-selection-modal {
-        min-width: 100%;
+        min-width: 0;
+        width: 100%;
       }
 
       .vehicle-preview {

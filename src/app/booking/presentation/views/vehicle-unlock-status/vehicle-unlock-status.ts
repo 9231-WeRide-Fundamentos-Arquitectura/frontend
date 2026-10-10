@@ -4,8 +4,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialog } from '@angular/material/dialog';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ManualUnlockModal } from '../../../../garage/presentation/views/manual-unlock-modal/manual-unlock-modal';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { TripStore } from '../../../../trip/application/trip.store';
 import { ActiveBookingService } from '../../../application/active-booking.service';
 import { UnlockRequestsApiEndpoint } from '../../../infraestructure/unlockRequests-api-endpoint';
@@ -37,12 +38,13 @@ interface Activity {
 
 @Component({
   selector: 'app-vehicle-unlock-status',
-  imports: [CommonModule, MatIconModule, MatButtonModule, MatCardModule],
+  imports: [CommonModule, MatIconModule, MatButtonModule, MatCardModule, RouterLink, TranslateModule],
   templateUrl: './vehicle-unlock-status.html',
   styleUrl: './vehicle-unlock-status.css'
 })
 export class VehicleUnlockStatusComponent implements OnInit, OnDestroy {
   private router = inject(Router);
+  private translate = inject(TranslateService);
   private dialog = inject(MatDialog);
   private tripStore = inject(TripStore);
   private activeBookingService = inject(ActiveBookingService);
@@ -169,7 +171,7 @@ export class VehicleUnlockStatusComponent implements OnInit, OnDestroy {
             this.unlockRequestsApi.getByBookingId(booking.id).pipe(
               catchError(() => {
                 this.connectionError.set(true);
-                this.errorMessage.set('Error de conexión al obtener el estado de desbloqueo');
+                this.errorMessage.set(this.translate.instant('vehicleStatus.unlockFetchError'));
                 return of([]);
               })
             )
@@ -228,7 +230,7 @@ export class VehicleUnlockStatusComponent implements OnInit, OnDestroy {
           if (mostRecentRequest.actualUnlockTime) {
             activities.push({
               type: 'success',
-              message: 'Vehículo desbloqueado exitosamente',
+              message: this.translate.instant('vehicleStatus.activity.unlocked'),
               time: this.formatTime(mostRecentRequest.actualUnlockTime)
             });
           }
@@ -236,7 +238,7 @@ export class VehicleUnlockStatusComponent implements OnInit, OnDestroy {
           if (mostRecentRequest.status === 'pending') {
             activities.push({
               type: 'info',
-              message: 'Solicitud de desbloqueo iniciada',
+              message: this.translate.instant('vehicleStatus.activity.requested'),
               time: this.formatTime(mostRecentRequest.requestedAt)
             });
           }
@@ -244,7 +246,7 @@ export class VehicleUnlockStatusComponent implements OnInit, OnDestroy {
           if (mostRecentRequest.status === 'failed') {
             activities.push({
               type: 'error',
-              message: mostRecentRequest.errorMessage || 'Error en el desbloqueo - reintento intentado',
+              message: mostRecentRequest.errorMessage || this.translate.instant('vehicleStatus.activity.failed'),
               time: this.formatTime(mostRecentRequest.requestedAt)
             });
           }
@@ -253,7 +255,7 @@ export class VehicleUnlockStatusComponent implements OnInit, OnDestroy {
         if (booking) {
           activities.push({
             type: 'info',
-            message: `Reserva ${booking.status === 'confirmed' ? 'confirmada' : booking.status}`,
+            message: `${this.translate.instant('vehicleStatus.activity.booking')} ${this.getBookingStatusLabel(booking.status).toLowerCase()}`,
             time: this.formatDateTime(startDate)
           });
         }
@@ -263,7 +265,7 @@ export class VehicleUnlockStatusComponent implements OnInit, OnDestroy {
     } catch (error) {
       console.error('Error loading vehicle status:', error);
       this.connectionError.set(true);
-      this.errorMessage.set('Error al cargar el estado del vehículo');
+      this.errorMessage.set(this.translate.instant('vehicleStatus.loadError'));
     } finally {
       this.isLoading.set(false);
     }
@@ -299,25 +301,22 @@ export class VehicleUnlockStatusComponent implements OnInit, OnDestroy {
     const diffMs = now.getTime() - date.getTime();
     const diffMins = Math.floor(diffMs / 60000);
 
-    if (diffMins < 1) return 'Justo ahora';
-    if (diffMins === 1) return 'Hace 1 minuto';
-    if (diffMins < 60) return `Hace ${diffMins} minutos`;
+    if (diffMins < 1) return this.translate.instant('vehicleStatus.ago.now');
 
     const diffHours = Math.floor(diffMins / 60);
-    if (diffHours === 1) return 'Hace 1 hora';
-    if (diffHours < 24) return `Hace ${diffHours} horas`;
+    if (diffMins < 60) return this.translate.instant('vehicleStatus.ago.minutes', { count: diffMins });
 
     const diffDays = Math.floor(diffHours / 24);
-    if (diffDays === 1) return 'Hace 1 día';
-    return `Hace ${diffDays} días`;
+    if (diffHours < 24) return this.translate.instant('vehicleStatus.ago.hours', { count: diffHours });
+    return this.translate.instant('vehicleStatus.ago.days', { count: diffDays });
   }
 
   formatTime(date: Date): string {
-    return date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+    return date.toLocaleTimeString(this.locale(), { hour: '2-digit', minute: '2-digit' });
   }
 
   formatDateTime(date: Date): string {
-    return date.toLocaleString('es-ES', {
+    return date.toLocaleString(this.locale(), {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric',
@@ -337,7 +336,7 @@ export class VehicleUnlockStatusComponent implements OnInit, OnDestroy {
   calculateRemainingTime(now: Date, endDate: Date): string {
     const diffMs = endDate.getTime() - now.getTime();
     if (diffMs < 0) {
-      return 'Tiempo agotado';
+      return this.translate.instant('vehicleStatus.timeUp');
     }
     const diffMins = Math.floor(diffMs / 60000);
     const hours = Math.floor(diffMins / 60);
@@ -373,28 +372,30 @@ export class VehicleUnlockStatusComponent implements OnInit, OnDestroy {
   getStatusLabel(status: string): string {
     switch (status) {
       case 'Unlocked':
-        return 'Desbloqueado';
+        return this.translate.instant('vehicleStatus.states.unlocked');
       case 'Locked':
-        return 'Bloqueado';
+        return this.translate.instant('vehicleStatus.states.locked');
       case 'Pending':
-        return 'En proceso';
+        return this.translate.instant('vehicleStatus.states.pending');
       case 'Error':
-        return 'Error';
+        return this.translate.instant('vehicleStatus.states.error');
       default:
-        return 'Desconocido';
+        return this.translate.instant('vehicleStatus.states.unknown');
     }
+  }
+
+  private locale(): string {
+    return this.translate.currentLang === 'en' ? 'en-US' : 'es-ES';
   }
 
   getBookingStatusLabel(status: string): string {
     switch (status) {
       case 'confirmed':
-        return 'Confirmada';
       case 'pending':
-        return 'Pendiente';
       case 'completed':
-        return 'Completada';
       case 'cancelled':
-        return 'Cancelada';
+      case 'active':
+        return this.translate.instant(`booking.status.${status}`);
       default:
         return status;
     }

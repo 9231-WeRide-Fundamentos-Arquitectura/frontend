@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { VEHICLE_LIST_PROVIDERS } from '../../../garage/garage.providers';
 
 export const BOOKING_ROUTES: Routes = [
   {
@@ -24,6 +25,7 @@ export const BOOKING_ROUTES: Routes = [
   },
   {
     path: 'schedule-unlock',
+    providers: VEHICLE_LIST_PROVIDERS,
     loadComponent: () => import('./schedule-unlock/schedule-unlock').then(m => m.ScheduleUnlockComponent)
   },
 ];

@@ -17,7 +17,6 @@ import { LocationsApiEndpoint } from '../../../infraestructure/locations-api-end
 import { BookingStorageService } from '../../../application/booking-storage.service';
 import { BookingStore } from '../../../application/booking.store';
 import { ActiveBookingService } from '../../../application/active-booking.service';
-import { BookingConfirmationModal } from '../booking-confirmation-modal/booking-confirmation-modal';
 import { UnlockMethodSelectionModal } from '../unlock-method-selection-modal/unlock-method-selection-modal';
 import { BookingFilterService } from '../../../application/booking-filter.service';
 import { BookingFilter } from '../../../domain/model/booking-filter.model';
@@ -109,7 +108,7 @@ export class BookingListComponent implements OnInit {
             startLocationName: startLocation?.name || 'Unknown',
             // Reservas con destino libre muestran su dirección; las antiguas siguen mostrando la estación.
             endLocationName: booking.destinationAddress || endLocation?.name || 'Unknown',
-            startDate: new Date(booking.startDate),
+            startDate: this.effectiveStart(booking),
             duration: booking.duration,
             finalCost: booking.finalCost,
             status: booking.status
@@ -134,13 +133,26 @@ export class BookingListComponent implements OnInit {
       vehicleName: 'Vehicle',
       startLocationName: 'Start Location',
       endLocationName: 'End Location',
-      startDate: new Date(booking.startDate),
+      startDate: this.effectiveStart(booking),
       duration: booking.duration,
       finalCost: booking.finalCost,
       status: booking.status
     }));
     this.applyFilters();
     this.isLoading = false;
+  }
+
+  // Fecha efectiva: startDate, si no actualStartDate, si no reservedAt. Un valor nulo llegaba como 1970
+  // (new Date(null)) y la tarjeta mostraba «12/31/69»; esas fechas se descartan.
+  isValidDate(date: Date): boolean {
+    return date instanceof Date && date.getTime() > 0;
+  }
+
+  private effectiveStart(booking: { startDate?: Date | string | null; actualStartDate?: Date | string | null; reservedAt?: Date | string | null }): Date {
+    const valid = [booking.startDate, booking.actualStartDate, booking.reservedAt]
+      .map(d => (d ? new Date(d) : null))
+      .find(d => d && d.getTime() > 0);
+    return valid ?? new Date(NaN);
   }
 
   applyFilters(): void {
@@ -271,26 +283,9 @@ export class BookingListComponent implements OnInit {
             return;
           }
 
-          // Open booking confirmation modal (¿Cómo deseas reservar?)
-          const dialogRef = this.dialog.open(BookingConfirmationModal, {
-            width: '500px',
-            data: { vehicle },
-            disableClose: true
-          });
-
-          dialogRef.afterClosed().subscribe(result => {
-            this.isActivating = false;
-            
-            if (result?.action === 'book_now') {
-              // Activate booking immediately
-              this.activateBookingNow(booking, vehicle);
-            } else if (result?.action === 'schedule') {
-              // Navigate to schedule page
-              this.router.navigate(['/booking/schedule-unlock'], {
-                queryParams: { bookingId: booking.id }
-              });
-            }
-          });
+          // La reserva ya existe: no se pregunta «¿Cómo deseas reservar?», va directo al método de desbloqueo.
+          this.isActivating = false;
+          this.activateBookingNow(booking, vehicle);
         },
         error: (error) => {
           console.error('Error loading vehicle:', error);

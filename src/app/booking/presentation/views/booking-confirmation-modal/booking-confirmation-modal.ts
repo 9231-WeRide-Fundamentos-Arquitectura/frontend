@@ -73,7 +73,7 @@ export interface BookingConfirmationData {
   `,
   styles: [`
     .booking-confirmation-modal {
-      min-width: 400px;
+      min-width: min(400px, 100%);
       max-width: 500px;
     }
 
@@ -187,7 +187,8 @@ export interface BookingConfirmationData {
 
     @media (max-width: 500px) {
       .booking-confirmation-modal {
-        min-width: 100%;
+        min-width: 0;
+        width: 100%;
       }
 
       .vehicle-preview {

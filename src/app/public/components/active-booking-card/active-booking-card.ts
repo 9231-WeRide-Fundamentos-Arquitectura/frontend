@@ -1,9 +1,10 @@
-import { Component, Input, Output, EventEmitter, computed, signal, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, Output, EventEmitter, signal, inject, OnChanges, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { TranslateModule } from '@ngx-translate/core';
 import { Booking } from '../../../booking/domain/model/booking.entity';
+import { VehiclesApiEndpoint } from '../../../booking/infraestructure/vehicles-api-endpoint';
 
 @Component({
   selector: 'app-active-booking-card',
@@ -12,9 +13,13 @@ import { Booking } from '../../../booking/domain/model/booking.entity';
   templateUrl: './active-booking-card.html',
   styleUrl: './active-booking-card.css'
 })
-export class ActiveBookingCardComponent implements OnInit, OnDestroy {
+export class ActiveBookingCardComponent implements OnInit, OnChanges, OnDestroy {
   @Input() booking: Booking | null = null;
   @Output() cardClick = new EventEmitter<void>();
+
+  private vehiclesApi = inject(VehiclesApiEndpoint);
+  readonly vehicleName = signal('');
+  private loadedVehicleId: string | null = null;
 
   private intervalId: ReturnType<typeof setInterval> | null = null;
   private readonly _remainingTime = signal<string>('--:--');
@@ -24,6 +29,17 @@ export class ActiveBookingCardComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.updateRemainingTime();
     this.intervalId = setInterval(() => this.updateRemainingTime(), 1000);
+  }
+
+  // Muestra el vehículo (marca y modelo) en lugar del uuid de la reserva.
+  ngOnChanges(): void {
+    const id = this.booking?.vehicleId;
+    if (!id || id === this.loadedVehicleId) return;
+    this.loadedVehicleId = id;
+    this.vehiclesApi.getById(id).subscribe({
+      next: vehicle => this.vehicleName.set(`${vehicle.brand} ${vehicle.model}`),
+      error: () => this.vehicleName.set('')
+    });
   }
 
   ngOnDestroy(): void {

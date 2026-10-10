@@ -4,7 +4,7 @@
     <div class="booking-header">
       <mat-icon class="status-icon">directions_bike</mat-icon>
       <span class="status-badge"
-        >{{ 'home.activeBooking.active' | translate }}</span
+        >{{ (booking.status === 'active' ? 'home.activeBooking.active' : 'home.activeBooking.pending') | translate }}</span
       >
     </div>
 
@@ -12,10 +12,11 @@
       <div class="info-row">
         <mat-icon>confirmation_number</mat-icon>
         <span
-          >{{ 'home.activeBooking.bookingId' | translate }}: {{ booking.id
+          >{{ 'home.activeBooking.vehicle' | translate }}: {{ vehicleName() || ('home.activeBooking.loadingVehicle' | translate)
           }}</span
         >
       </div>
+      @if (booking.status === 'active' && booking.endDate) {
       <div class="info-row">
         <mat-icon>schedule</mat-icon>
         <span
@@ -23,6 +24,7 @@
           }}</span
         >
       </div>
+      }
     </div>
 
     <div class="booking-action">

@@ -9,29 +9,29 @@
 
   <div class="filters" *ngIf="!isLoading">
     <mat-form-field appearance="outline" class="search-field">
-      <mat-label>Buscar por vehículo</mat-label>
-      <input matInput [(ngModel)]="searchTerm" (ngModelChange)="onSearchChange()" placeholder="Nombre del vehículo">
+      <mat-label>{{ 'booking.list.searchByVehicle' | translate }}</mat-label>
+      <input matInput [(ngModel)]="searchTerm" (ngModelChange)="onSearchChange()" [placeholder]="'booking.list.vehiclePlaceholder' | translate">
       <mat-icon matPrefix>search</mat-icon>
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="sort-field">
-      <mat-label>Ordenar por</mat-label>
+      <mat-label>{{ 'booking.list.sortBy' | translate }}</mat-label>
       <mat-select [(ngModel)]="sortBy" (ngModelChange)="onSortChange()">
-        <mat-option value="date">Fecha</mat-option>
-        <mat-option value="vehicle">Vehículo</mat-option>
-        <mat-option value="status">Estado</mat-option>
+        <mat-option value="date">{{ 'booking.list.sortDate' | translate }}</mat-option>
+        <mat-option value="vehicle">{{ 'booking.list.sortVehicle' | translate }}</mat-option>
+        <mat-option value="status">{{ 'booking.list.sortStatus' | translate }}</mat-option>
       </mat-select>
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="order-field">
-      <mat-label>Orden</mat-label>
+      <mat-label>{{ 'booking.list.order' | translate }}</mat-label>
       <mat-select [(ngModel)]="sortOrder" (ngModelChange)="onSortChange()">
-        <mat-option value="desc">Más recientes</mat-option>
-        <mat-option value="asc">Más antiguos</mat-option>
+        <mat-option value="desc">{{ 'booking.list.newest' | translate }}</mat-option>
+        <mat-option value="asc">{{ 'booking.list.oldest' | translate }}</mat-option>
       </mat-select>
     </mat-form-field>
 
-    <button mat-icon-button (click)="clearFilters()" matTooltip="Limpiar filtros">
+    <button mat-icon-button (click)="clearFilters()" [title]="'booking.list.clearFilters' | translate" [attr.aria-label]="'booking.list.clearFilters' | translate">
       <mat-icon>clear</mat-icon>
     </button>
   </div>
@@ -65,21 +65,15 @@
         </div>
         <div class="detail">
           <mat-icon>schedule</mat-icon>
-          <span>{{ booking.startDate | date:'short' }}</span>
+          <span>{{ isValidDate(booking.startDate) ? (booking.startDate | date:'short') : '—' }}</span>
         </div>
         <div class="detail">
           <mat-icon>access_time</mat-icon>
-          <span
-            >{{ booking.duration || ('booking.notAvailable' | translate) }} {{
-            'booking.minutes' | translate }}</span
-          >
+          <span>{{ booking.duration ? booking.duration + ' ' + ('booking.minutes' | translate) : '—' }}</span>
         </div>
         <div class="detail">
           <mat-icon>attach_money</mat-icon>
-          <span
-            >${{ booking.finalCost ? booking.finalCost.toFixed(2) :
-            ('booking.notAvailable' | translate) }}</span
-          >
+          <span>{{ booking.finalCost != null ? '$' + booking.finalCost.toFixed(2) : '—' }}</span>
         </div>
       </div>
       <div class="booking-actions">
@@ -92,10 +86,11 @@
           <mat-icon>play_circle_filled</mat-icon>
           {{ 'booking.activate' | translate }}
         </button>
+        @if (booking.status !== 'completed' && booking.status !== 'cancelled') {
         <button
           class="btn-secondary"
           (click)="editBooking(booking.id)"
-          [disabled]="booking.status === 'completed' || booking.status === 'active'"
+          [disabled]="booking.status === 'active'"
         >
           <mat-icon>edit</mat-icon>
           {{ 'booking.edit' | translate }}
@@ -108,6 +103,7 @@
           <mat-icon>cancel</mat-icon>
           {{ 'booking.cancel' | translate }}
         </button>
+        }
         <button
           class="btn-danger-outline"
           (click)="deleteBooking(booking.id)"
