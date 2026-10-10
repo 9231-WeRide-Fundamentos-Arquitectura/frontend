@@ -57,7 +57,7 @@ export class UserPersonalInfoCard implements OnInit {
     if (input.files && input.files[0]) {
       const file = input.files[0];
       if (file.size > 1024 * 1024) {
-        this.errorMessage = 'La foto no puede superar 1 MB';
+        this.errorMessage = 'user.personalInfo.photoTooBig';
         input.value = '';
         return;
       }
@@ -79,13 +79,13 @@ export class UserPersonalInfoCard implements OnInit {
     this.successMessage = '';
 
     if (this.personalInfoForm.invalid) {
-      this.errorMessage = 'Por favor, corrija los errores en el formulario';
+      this.errorMessage = 'user.personalInfo.fixErrors';
       this.markFormGroupTouched(this.personalInfoForm);
       return;
     }
 
     if (!this.currentUser) {
-      this.errorMessage = 'No se pudo cargar el usuario';
+      this.errorMessage = 'user.personalInfo.userNotLoaded';
       return;
     }
 
@@ -102,11 +102,11 @@ export class UserPersonalInfoCard implements OnInit {
     this.userStore.updateUser(this.currentUser.id, updatedUser).subscribe({
       next: () => {
         this.isLoading = false;
-        this.successMessage = 'Información actualizada correctamente';
+        this.successMessage = 'user.personalInfo.saved';
       },
       error: () => {
         this.isLoading = false;
-        this.errorMessage = 'No se pudo guardar la información. Intenta nuevamente.';
+        this.errorMessage = 'user.personalInfo.saveError';
       }
     });
   }
@@ -121,10 +121,10 @@ export class UserPersonalInfoCard implements OnInit {
   get nameError(): string {
     const control = this.personalInfoForm.get('name');
     if (control?.hasError('required') && control.touched) {
-      return 'El nombre es obligatorio';
+      return 'user.personalInfo.nameRequired';
     }
     if (control?.hasError('minlength') && control.touched) {
-      return 'El nombre debe tener al menos 2 caracteres';
+      return 'user.personalInfo.nameMin';
     }
     return '';
   }
@@ -132,10 +132,10 @@ export class UserPersonalInfoCard implements OnInit {
   get phoneError(): string {
     const control = this.personalInfoForm.get('phone');
     if (control?.hasError('required') && control.touched) {
-      return 'El número de celular es obligatorio';
+      return 'user.personalInfo.phoneRequired';
     }
     if (control?.hasError('pattern') && control.touched) {
-      return 'El formato del número no es válido. Use formato internacional (ej: +51987654321)';
+      return 'user.personalInfo.phoneFormat';
     }
     return '';
   }

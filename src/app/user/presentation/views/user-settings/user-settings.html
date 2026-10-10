@@ -7,7 +7,7 @@
       type="button"
       (click)="onSettingClick(setting.key)">
       <mat-icon>{{ setting.icon }}</mat-icon>
-      <span class="us-item">{{ setting.label }}</span>
+      <span class="us-item">{{ setting.label | translate }}</span>
       <mat-icon class="arrow-icon">keyboard_arrow_right</mat-icon>
     </button>
   </div>

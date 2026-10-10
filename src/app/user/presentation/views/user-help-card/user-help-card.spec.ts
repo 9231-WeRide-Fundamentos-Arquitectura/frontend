@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { UserHelpCard } from './user-help-card';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { provideRouter } from '@angular/router';
 
 describe('UserHelpCard', () => {
   let component: UserHelpCard;
@@ -9,7 +10,8 @@ describe('UserHelpCard', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [UserHelpCard, TranslateModule.forRoot()]
+      imports: [UserHelpCard, TranslateModule.forRoot()],
+      providers: [provideRouter([])]
     })
     .compileComponents();
 

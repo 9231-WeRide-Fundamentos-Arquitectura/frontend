@@ -5,6 +5,9 @@ import { MatIcon } from '@angular/material/icon';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { UserStore } from '../../../application/user.store';
+import { PreferencesService, AppPreferences } from '../../../../core/services/preferences.service';
+import { TranslateService } from '@ngx-translate/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { UserSettingsStateService } from '../../../application/user-settings-state.service';
 import { AccountSecurityActions } from '../account-security-actions/account-security-actions';
 
@@ -18,10 +21,13 @@ import { AccountSecurityActions } from '../account-security-actions/account-secu
 export class UserSettingsCard implements OnInit {
   private readonly userStore = inject(UserStore);
   private readonly stateService = inject(UserSettingsStateService);
+  private readonly prefs = inject(PreferencesService);
+  private readonly translate = inject(TranslateService);
+  private readonly snackBar = inject(MatSnackBar);
 
   user$ = this.userStore.getGuestUser$();
   
-  preferences = {
+  preferences: AppPreferences = {
     language: 'es',
     notifications: true,
     theme: 'light'
@@ -30,8 +36,13 @@ export class UserSettingsCard implements OnInit {
   ngOnInit(): void {
     this.user$.subscribe(user => {
       if (user?.preferences) {
-        this.preferences = { ...user.preferences };
+        this.preferences = { ...this.preferences, ...user.preferences } as AppPreferences;
       }
+      // Lo guardado en este navegador manda; el idioma activo de la app es la fuente del selector.
+      this.preferences = {
+        ...this.preferences, ...this.prefs.load(),
+        language: (this.translate.currentLang || this.preferences.language) as AppPreferences['language']
+      };
     });
   }
 
@@ -40,7 +51,9 @@ export class UserSettingsCard implements OnInit {
   }
 
   savePreferences(): void {
-    console.log('Guardando preferencias:', this.preferences);
+    // ponytail: persistencia por navegador (localStorage); pasar al perfil cuando el backend guarde preferencias.
+    this.prefs.save(this.preferences);
+    this.snackBar.open(this.translate.instant('user.settings.saved'), this.translate.instant('common.close'), { duration: 3000 });
   }
 
   openPersonalInfo(): void {

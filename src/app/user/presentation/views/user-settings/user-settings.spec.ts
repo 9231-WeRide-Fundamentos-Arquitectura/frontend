@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { UserSettings } from './user-settings';
+import { TranslateModule } from '@ngx-translate/core';
 
 describe('UserSettings', () => {
   let component: UserSettings;
@@ -8,7 +9,7 @@ describe('UserSettings', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [UserSettings]
+      imports: [UserSettings, TranslateModule.forRoot()]
     })
     .compileComponents();
 

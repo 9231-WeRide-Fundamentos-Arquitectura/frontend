@@ -4,11 +4,12 @@ import { MatIcon } from '@angular/material/icon';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UserSettingsStateService } from '../../../application/user-settings-state.service';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-user-help-card',
   standalone: true,
-  imports: [CommonModule, MatIcon, TranslateModule, FormsModule],
+  imports: [CommonModule, MatIcon, TranslateModule, FormsModule, RouterLink],
   templateUrl: './user-help-card.html',
   styleUrl: './user-help-card.css'
 })

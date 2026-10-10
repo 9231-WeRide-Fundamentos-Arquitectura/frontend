@@ -4,12 +4,12 @@
       <div class="profile-picture-section">
         <div class="profile-picture-container">
           <div class="profile-picture" [class.has-image]="profilePicturePreview">
-            <img *ngIf="profilePicturePreview" [src]="profilePicturePreview" alt="Foto de perfil">
+            <img *ngIf="profilePicturePreview" [src]="profilePicturePreview" [alt]="'user.personalInfo.photo' | translate">
             <mat-icon *ngIf="!profilePicturePreview">person</mat-icon>
           </div>
           <label class="upload-button" for="profile-picture-input">
             <mat-icon>photo_camera</mat-icon>
-            <span>Cambiar foto</span>
+            <span>{{ 'user.personalInfo.changePhoto' | translate }}</span>
           </label>
           <input 
             type="file" 
@@ -24,21 +24,21 @@
         <div class="form-group">
           <label for="name">
             <mat-icon>person</mat-icon>
-            Nombre completo
+            {{ 'user.personalInfo.fullName' | translate }}
           </label>
           <input 
             type="text" 
             id="name" 
             formControlName="name"
-            placeholder="Ingrese su nombre completo"
+            [placeholder]="'user.personalInfo.fullNamePlaceholder' | translate"
             [class.error]="personalInfoForm.get('name')?.invalid && personalInfoForm.get('name')?.touched">
-          <span class="error-message" *ngIf="nameError">{{ nameError }}</span>
+          <span class="error-message" *ngIf="nameError">{{ nameError | translate }}</span>
         </div>
 
         <div class="form-group">
           <label for="phone">
             <mat-icon>phone</mat-icon>
-            Número de celular
+            {{ 'user.personalInfo.phone' | translate }}
           </label>
           <input 
             type="tel" 
@@ -46,28 +46,28 @@
             formControlName="phone"
             placeholder="+51987654321"
             [class.error]="personalInfoForm.get('phone')?.invalid && personalInfoForm.get('phone')?.touched">
-          <span class="error-message" *ngIf="phoneError">{{ phoneError }}</span>
-          <span class="input-hint">Formato internacional: +51987654321</span>
+          <span class="error-message" *ngIf="phoneError">{{ phoneError | translate }}</span>
+          <span class="input-hint">{{ 'user.personalInfo.phoneHint' | translate }}</span>
         </div>
       </div>
 
       <div class="alert-message success" *ngIf="successMessage">
         <mat-icon>check_circle</mat-icon>
-        <span>{{ successMessage }}</span>
+        <span>{{ successMessage | translate }}</span>
       </div>
 
       <div class="alert-message error" *ngIf="errorMessage">
         <mat-icon>error</mat-icon>
-        <span>{{ errorMessage }}</span>
+        <span>{{ errorMessage | translate }}</span>
       </div>
 
       <div class="form-actions">
         <button type="button" class="cancel-button" (click)="closeCard()" [disabled]="isLoading">
-          Cancelar
+          {{ 'common.cancel' | translate }}
         </button>
         <button type="submit" class="save-button" [disabled]="isLoading || personalInfoForm.invalid">
-          <span *ngIf="!isLoading">Guardar cambios</span>
-          <span *ngIf="isLoading">Guardando...</span>
+          <span *ngIf="!isLoading">{{ 'user.settings.saveChanges' | translate }}</span>
+          <span *ngIf="isLoading">{{ 'user.personalInfo.saving' | translate }}</span>
         </button>
       </div>
     </form>

@@ -102,9 +102,20 @@
     padding: 1.25rem;
   }
 
+  /* Las 4 métricas pasan a 2 columnas: en 390 px ya no desbordan el documento. */
   .stats-container {
     width: 100%;
-    justify-content: space-around;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  .user-stats {
+    box-sizing: border-box;
+  }
+
+  .user-name {
+    overflow-wrap: anywhere;
   }
 
   .stat-value {

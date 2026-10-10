@@ -9,16 +9,6 @@
   <div class="card-content">
     <ng-container *ngIf="user$ | async as user">
       <div class="security-section">
-        <h3>{{ 'user.security.verificationStatus' | translate }}</h3>
-        <div class="verification-status">
-          <div class="status-badge" [style.background-color]="getVerificationStatusColor(user.verificationStatus)">
-            <mat-icon>verified</mat-icon>
-            <span>{{ getVerificationStatusText(user.verificationStatus) }}</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="security-section">
         <h3>{{ 'user.security.securityInfo' | translate }}</h3>
         <div class="security-items">
           <div class="security-item">
@@ -38,12 +28,20 @@
             </div>
             <div class="security-info">
               <span class="security-label">{{ 'user.security.phone' | translate }}</span>
-              <span class="security-value">{{ user.phone }}</span>
+              @if (editing === 'phone') {
+                <input class="security-input" type="tel" [(ngModel)]="draft" (keyup.enter)="save(user)" [attr.aria-label]="'user.security.phone' | translate" maxlength="20">
+              } @else {
+                <span class="security-value">{{ user.phone || ('user.security.notConfigured' | translate) }}</span>
+              }
             </div>
-            <button class="security-action" type="button">
-              <mat-icon>edit</mat-icon>
-              {{ 'common.edit' | translate }}
-            </button>
+            @if (editing === 'phone') {
+              <ng-container *ngTemplateOutlet="editActions; context: { user: user }"></ng-container>
+            } @else {
+              <button class="security-action" type="button" (click)="startEdit('phone', user)">
+                <mat-icon>edit</mat-icon>
+                {{ 'common.edit' | translate }}
+              </button>
+            }
           </div>
 
           <div class="security-item">
@@ -52,12 +50,8 @@
             </div>
             <div class="security-info">
               <span class="security-label">{{ 'user.security.email' | translate }}</span>
-              <span class="security-value">{{ user.email }}</span>
+              <span class="security-value">{{ email }}</span>
             </div>
-            <button class="security-action" type="button">
-              <mat-icon>edit</mat-icon>
-              {{ 'common.edit' | translate }}
-            </button>
           </div>
 
           <div class="security-item">
@@ -66,15 +60,33 @@
             </div>
             <div class="security-info">
               <span class="security-label">{{ 'user.security.emergencyContact' | translate }}</span>
-              <span class="security-value">{{ user.emergencyContact || ('user.security.notConfigured' | translate) }}</span>
+              @if (editing === 'emergencyContact') {
+                <input class="security-input" type="text" [(ngModel)]="draft" (keyup.enter)="save(user)" [attr.aria-label]="'user.security.emergencyContact' | translate" maxlength="100">
+              } @else {
+                <span class="security-value">{{ user.emergencyContact || ('user.security.notConfigured' | translate) }}</span>
+              }
             </div>
-            <button class="security-action" type="button">
-              <mat-icon>edit</mat-icon>
-              {{ 'user.security.configure' | translate }}
-            </button>
+            @if (editing === 'emergencyContact') {
+              <ng-container *ngTemplateOutlet="editActions; context: { user: user }"></ng-container>
+            } @else {
+              <button class="security-action" type="button" (click)="startEdit('emergencyContact', user)">
+                <mat-icon>edit</mat-icon>
+                {{ 'user.security.configure' | translate }}
+              </button>
+            }
           </div>
         </div>
+        @if (error) {
+          <p class="security-error" role="alert">{{ error | translate }}</p>
+        }
       </div>
+
+      <ng-template #editActions let-user="user">
+        <div class="edit-actions">
+          <button class="security-action" type="button" (click)="save(user)" [disabled]="saving">{{ 'common.save' | translate }}</button>
+          <button class="security-action" type="button" (click)="cancelEdit()" [disabled]="saving">{{ 'common.cancel' | translate }}</button>
+        </div>
+      </ng-template>
 
       <div class="security-section">
         <h3>{{ 'user.security.privacyPreferences' | translate }}</h3>

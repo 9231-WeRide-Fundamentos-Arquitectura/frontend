@@ -197,3 +197,22 @@
   }
 }
 
+
+.security-input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 0.95rem;
+}
+
+.edit-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.security-error {
+  color: #b91c1c;
+  margin: 0.5rem 0 0;
+  font-size: 0.875rem;
+}

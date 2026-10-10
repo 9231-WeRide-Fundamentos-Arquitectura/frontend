@@ -55,21 +55,16 @@
     <div class="help-section">
       <h3>{{ 'user.help.resources' | translate }}</h3>
       <div class="resources-list">
-        <button class="resource-item" type="button">
-          <mat-icon>menu_book</mat-icon>
-          <span>{{ 'user.help.userGuide' | translate }}</span>
-          <mat-icon>open_in_new</mat-icon>
-        </button>
-        <button class="resource-item" type="button">
-          <mat-icon>video_library</mat-icon>
-          <span>{{ 'user.help.videoTutorials' | translate }}</span>
-          <mat-icon>open_in_new</mat-icon>
-        </button>
-        <button class="resource-item" type="button">
+        <a class="resource-item" routerLink="/terms" target="_blank">
           <mat-icon>description</mat-icon>
           <span>{{ 'user.help.termsAndConditions' | translate }}</span>
           <mat-icon>open_in_new</mat-icon>
-        </button>
+        </a>
+        <a class="resource-item" routerLink="/privacy" target="_blank">
+          <mat-icon>privacy_tip</mat-icon>
+          <span>{{ 'auth.login.privacyPolicy' | translate }}</span>
+          <mat-icon>open_in_new</mat-icon>
+        </a>
       </div>
     </div>
   </div>

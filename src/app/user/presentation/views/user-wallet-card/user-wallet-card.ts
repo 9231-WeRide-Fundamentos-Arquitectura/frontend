@@ -44,7 +44,8 @@ export class UserWalletCard implements OnInit {
   }
 
   formatCurrency(amount: number, currency: string = 'USD'): string {
-    return new Intl.NumberFormat('es-PE', {
+    // Siempre «$1.35»: el locale es-PE mostraba «US$ 1.35» y rompía la consistencia de moneda.
+    return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: currency
     }).format(amount);
