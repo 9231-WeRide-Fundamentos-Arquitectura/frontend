@@ -248,3 +248,10 @@
   background: #d1d5db;
   cursor: not-allowed;
 }
+
+.field-error {
+  display: block;
+  margin-top: 4px;
+  color: #b91c1c;
+  font-size: 0.8125rem;
+}

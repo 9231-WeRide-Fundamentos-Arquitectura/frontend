@@ -12,13 +12,19 @@
           [placeholder]="'plans.payment.cardNumberPlaceholder' | translate"
           [(ngModel)]="cardNumber"
           (input)="onCardNumberInput($event)"
+          (blur)="touched.card = true"
           maxlength="19"
+          inputmode="numeric"
+          autocomplete="cc-number"
           class="card-input"
         />
         <mat-icon class="input-icon success" *ngIf="isCardNumberValid()">
           check_circle
         </mat-icon>
       </div>
+      @if (touched.card && !isCardNumberValid()) {
+        <span class="field-error" role="alert">{{ 'plans.payment.errors.card' | translate }}</span>
+      }
     </div>
 
     <div class="form-row">
@@ -29,9 +35,15 @@
           [placeholder]="'plans.payment.expiryDatePlaceholder' | translate"
           [(ngModel)]="expiryDate"
           (input)="onExpiryDateInput($event)"
+          (blur)="touched.expiry = true"
           maxlength="5"
+          inputmode="numeric"
+          autocomplete="cc-exp"
           class="date-input"
         />
+        @if (touched.expiry && !isExpiryValid()) {
+          <span class="field-error" role="alert">{{ 'plans.payment.errors.expiry' | translate }}</span>
+        }
       </div>
 
       <div class="form-group">
@@ -41,11 +53,18 @@
             type="password"
             [placeholder]="'plans.payment.cvvPlaceholder' | translate"
             [(ngModel)]="cvv"
+            (input)="onCvvInput($event)"
+            (blur)="touched.cvv = true"
             maxlength="4"
+            inputmode="numeric"
+            autocomplete="cc-csc"
             class="cvv-input"
           />
           <mat-icon class="input-icon lock">lock</mat-icon>
         </div>
+        @if (touched.cvv && !isCvvValid()) {
+          <span class="field-error" role="alert">{{ 'plans.payment.errors.cvv' | translate }}</span>
+        }
       </div>
     </div>
 
@@ -63,8 +82,12 @@
             type="text"
             [placeholder]="'plans.payment.billingAddressPlaceholder' | translate"
             [(ngModel)]="billingAddress"
+            (blur)="touched.address = true"
             class="address-input"
           />
+          @if (touched.address && !isAddressValid()) {
+            <span class="field-error" role="alert">{{ 'plans.payment.errors.address' | translate }}</span>
+          }
         </div>
       </div>
     </div>
@@ -72,15 +95,15 @@
     <div class="price-summary">
       <div class="price-row">
         <span>{{ 'plans.payment.total' | translate }} :</span>
-        <span class="price">$/ {{ subtotal.toFixed(2) }}</span>
+        <span class="price">$ {{ subtotal.toFixed(2) }}</span>
       </div>
       <div class="price-row discount-row">
         <span>{{ 'plans.payment.discounts' | translate }}:</span>
-        <span class="price">$/ {{ discount.toFixed(2) }}</span>
+        <span class="price">$ {{ discount.toFixed(2) }}</span>
       </div>
       <div class="price-row total-row">
         <span>{{ 'plans.payment.total' | translate }}:</span>
-        <span class="price total">$/ {{ total.toFixed(2) }}</span>
+        <span class="price total">$ {{ total.toFixed(2) }}</span>
       </div>
     </div>
 
@@ -91,11 +114,11 @@
 
     <div class="payment-total">
       <p class="payment-total-label">{{ 'plans.payment.paymentTotal' | translate }}</p>
-      <p class="payment-total-amount">$/ {{ total.toFixed(2) }}</p>
+      <p class="payment-total-amount">$ {{ total.toFixed(2) }}</p>
       <p class="payment-terms">
         {{ 'plans.payment.termsText' | translate }}
-        <a href="/terms">{{ 'plans.payment.termsOfUse' | translate }}</a> {{ 'common.and' | translate }}
-        <a href="/privacy">{{ 'plans.payment.privacyPolicy' | translate }}</a>.
+        <a routerLink="/terms">{{ 'plans.payment.termsOfUse' | translate }}</a> {{ 'common.and' | translate }}
+        <a routerLink="/privacy">{{ 'plans.payment.privacyPolicy' | translate }}</a>.
       </p>
     </div>
 
@@ -104,7 +127,7 @@
       [disabled]="!isFormValid()"
       (click)="endPayment()"
     >
-      {{ 'plans.payment.finalizePayment' | translate }} $/ {{ total.toFixed(2) }}
+      {{ 'plans.payment.finalizePayment' | translate }} $ {{ total.toFixed(2) }}
     </button>
   </div>
 </div>

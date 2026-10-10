@@ -1,7 +1,7 @@
 import {Component, inject, OnDestroy, OnInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute, Router, RouterLink} from '@angular/router';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
 import {MatButtonModule} from '@angular/material/button';
@@ -24,6 +24,7 @@ import {takeUntil} from 'rxjs/operators';
     MatButtonModule,
     MatSlideToggleModule,
     MatIconModule,
+    RouterLink,
     TranslateModule
   ],
   templateUrl: './plan-payment.html',
@@ -44,6 +45,8 @@ export class PlanPayment implements OnInit, OnDestroy {
   cvv = '';
   saveCard = false;
   billingAddress = '';
+  // Los errores se muestran bajo cada campo una vez que el usuario lo tocó.
+  touched = { card: false, expiry: false, cvv: false, address: false };
 
   subtotal = 0;
   discount = 0;
@@ -84,13 +87,37 @@ export class PlanPayment implements OnInit, OnDestroy {
   }
 
   isCardNumberValid(): boolean {
-    return this.cardNumber.replace(/\s/g, '').length === 16;
+    return /^\d{16}$/.test(this.cardNumber.replace(/\s/g, ''));
   }
 
   onCardNumberInput(event: any): void {
-    let value = event.target.value.replace(/\s/g, '');
+    // Solo dígitos, agrupados de 4 en 4.
+    let value = event.target.value.replace(/\D/g, '').slice(0, 16);
     value = value.match(/.{1,4}/g)?.join(' ') || '';
     this.cardNumber = value;
+  }
+
+  onCvvInput(event: any): void {
+    this.cvv = event.target.value.replace(/\D/g, '').slice(0, 4);
+  }
+
+  // Vencimiento MM/AA con mes 01–12 y no vencido (vale hasta el último día del mes indicado).
+  isExpiryValid(): boolean {
+    const match = /^(\d{2})\/(\d{2})$/.exec(this.expiryDate);
+    if (!match) return false;
+    const month = Number(match[1]);
+    if (month < 1 || month > 12) return false;
+    const now = new Date();
+    const year = 2000 + Number(match[2]);
+    return year > now.getFullYear() || (year === now.getFullYear() && month >= now.getMonth() + 1);
+  }
+
+  isCvvValid(): boolean {
+    return /^\d{3,4}$/.test(this.cvv);
+  }
+
+  isAddressValid(): boolean {
+    return this.billingAddress.trim().length > 0;
   }
 
   onExpiryDateInput(event: any): void {
@@ -106,12 +133,7 @@ export class PlanPayment implements OnInit, OnDestroy {
   }
 
   isFormValid(): boolean {
-    return !!(
-      this.cardNumber.replace(/\s/g, '').length === 16 &&
-      this.expiryDate.length === 5 &&
-      this.cvv.length >= 3 &&
-      this.billingAddress
-    );
+    return this.isCardNumberValid() && this.isExpiryValid() && this.isCvvValid() && this.isAddressValid();
   }
 
   endPayment(): void {
