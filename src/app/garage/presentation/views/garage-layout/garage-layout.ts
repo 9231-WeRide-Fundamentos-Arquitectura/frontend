@@ -38,6 +38,8 @@ import { FavoriteStore } from '../../../application/favorite.store';
 export class GarageLayout implements OnInit {
   vehicles: Vehicle[] = [];
   filteredVehicles: Vehicle[] = [];
+  // Último filtro aplicado: al cambiar de pestaña se reaplica en vez de borrarse.
+  private currentFilter: VehicleFilter = {};
   isLoading = false;
   error: string | null = null;
   currentView: 'all' | 'favorites' = 'all';
@@ -93,6 +95,7 @@ export class GarageLayout implements OnInit {
   }
 
   async applyFilter(filter: VehicleFilter) {
+    this.currentFilter = filter;
     this.isLoading = true;
     try {
       // Apply showFavoritesOnly based on current view
@@ -115,7 +118,7 @@ export class GarageLayout implements OnInit {
     // Apply persisted favorites before filtering the selected tab.
     this.updateFavoriteStatus();
     // Then reapply current filters with new view
-    this.applyFilter({});
+    this.applyFilter(this.currentFilter);
   }
 
   get favoritesCount(): number {

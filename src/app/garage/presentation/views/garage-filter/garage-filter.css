@@ -41,3 +41,20 @@
   }
 }
 
+
+.slider-field {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-top: 4px;
+}
+
+.slider-label {
+  font-size: 0.875rem;
+  color: #444;
+}
+
+.slider-field mat-slider {
+  width: 100%;
+  margin: 0;
+}

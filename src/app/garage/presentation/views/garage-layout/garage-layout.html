@@ -21,7 +21,7 @@
     </mat-tab>
   </mat-tab-group>
 
-  <app-garage-filter (filterChange)="applyFilter($event)"></app-garage-filter>
+  <app-garage-filter [vehicles]="vehicles" (filterChange)="applyFilter($event)"></app-garage-filter>
 
   @if (isLoading) {
   <div class="loading">

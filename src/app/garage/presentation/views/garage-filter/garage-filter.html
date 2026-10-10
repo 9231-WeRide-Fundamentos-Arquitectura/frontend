@@ -3,7 +3,7 @@
   <div class="filters">
     <mat-form-field appearance="outline">
       <mat-label>{{ 'garage.vehicleType' | translate }}</mat-label>
-      <mat-select [(ngModel)]="selectedType">
+      <mat-select [(ngModel)]="selectedType" (selectionChange)="applyFilters()">
         <mat-option value="">{{ 'garage.all' | translate }}</mat-option>
         <mat-option value="electric_scooter">{{ 'garage.vehicle.types.electric_scooter' | translate }}</mat-option>
         <mat-option value="bike">{{ 'garage.vehicle.types.bike' | translate }}</mat-option>
@@ -13,44 +13,54 @@
 
     <mat-form-field appearance="outline">
       <mat-label>{{ 'garage.status' | translate }}</mat-label>
-      <mat-select [(ngModel)]="selectedStatus">
+      <mat-select [(ngModel)]="selectedStatus" (selectionChange)="applyFilters()">
         <mat-option value="">{{ 'garage.all' | translate }}</mat-option>
         <mat-option value="available">{{ 'garage.vehicle.statuses.available' | translate }}</mat-option>
-        <mat-option value="reserved">{{ 'garage.vehicle.statuses.reserved' | translate }}</mat-option>
         <mat-option value="maintenance">{{ 'garage.vehicle.statuses.maintenance' | translate }}</mat-option>
-        <mat-option value="in_use">{{ 'garage.vehicle.statuses.in_use' | translate }}</mat-option>
+        <mat-option value="unavailable">{{ 'garage.vehicle.statuses.unavailable' | translate }}</mat-option>
       </mat-select>
     </mat-form-field>
 
     <mat-form-field appearance="outline">
       <mat-label>{{ 'garage.brand' | translate }}</mat-label>
-      <input matInput type="text" [(ngModel)]="brand" [placeholder]="'garage.brandPlaceholder' | translate">
+      <mat-select [(ngModel)]="brand" (selectionChange)="applyFilters()">
+        <mat-option value="">{{ 'garage.allBrands' | translate }}</mat-option>
+        @for (b of brands; track b) {
+          <mat-option [value]="b">{{ b }}</mat-option>
+        }
+      </mat-select>
     </mat-form-field>
 
-    <mat-form-field appearance="outline">
-      <mat-label>{{ 'garage.minPrice' | translate }}</mat-label>
-      <input matInput type="number" [(ngModel)]="minPrice" min="0" step="0.1">
-    </mat-form-field>
+    <div class="slider-field">
+      <span class="slider-label">
+        {{ 'garage.priceRange' | translate }}:
+        <strong>$ {{ minPrice | number:'1.2-2' }} – $ {{ maxPrice | number:'1.2-2' }}</strong>
+      </span>
+      <mat-slider [min]="priceBounds.min" [max]="priceBounds.max" step="0.05">
+        <input matSliderStartThumb [(ngModel)]="minPrice" (change)="applyFilters(true)" [attr.aria-label]="'garage.minPrice' | translate">
+        <input matSliderEndThumb [(ngModel)]="maxPrice" (change)="applyFilters(true)" [attr.aria-label]="'garage.maxPrice' | translate">
+      </mat-slider>
+    </div>
 
-    <mat-form-field appearance="outline">
-      <mat-label>{{ 'garage.maxPrice' | translate }}</mat-label>
-      <input matInput type="number" [(ngModel)]="maxPrice" min="0" step="0.1">
-    </mat-form-field>
+    <div class="slider-field">
+      <span class="slider-label">
+        {{ 'garage.minBattery' | translate }}: <strong>{{ minBattery }}%</strong>
+      </span>
+      <mat-slider min="0" max="100" step="5">
+        <input matSliderThumb [(ngModel)]="minBattery" (change)="applyFilters()" [attr.aria-label]="'garage.minBattery' | translate">
+      </mat-slider>
+    </div>
 
-    <mat-form-field appearance="outline">
-      <mat-label>{{ 'garage.minRating' | translate }}</mat-label>
-      <input matInput type="number" [(ngModel)]="minRating" min="0" max="5" step="0.1">
-    </mat-form-field>
-
-    <mat-form-field appearance="outline">
-      <mat-label>{{ 'garage.minBattery' | translate }}</mat-label>
-      <input matInput type="number" [(ngModel)]="minBattery" min="0" max="100">
-    </mat-form-field>
+    <div class="slider-field">
+      <span class="slider-label">
+        {{ 'garage.minRating' | translate }}: <strong>{{ minRating | number:'1.1-1' }}</strong>
+      </span>
+      <mat-slider min="0" max="5" step="0.5">
+        <input matSliderThumb [(ngModel)]="minRating" (change)="applyFilters()" [attr.aria-label]="'garage.minRating' | translate">
+      </mat-slider>
+    </div>
 
     <div class="filter-actions">
-      <button mat-raised-button color="primary" (click)="applyFilters()">
-        {{ 'garage.applyFilters' | translate }}
-      </button>
       <button mat-button (click)="resetFilters()">
         {{ 'garage.clear' | translate }}
       </button>
