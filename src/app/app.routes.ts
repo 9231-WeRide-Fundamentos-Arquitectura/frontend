@@ -6,8 +6,12 @@ import { PLAN_ROUTES } from './plans/presentation/views/plan.routes';
 import { GARAGE_ROUTES } from './garage/garage.routes';
 import { USER_ROUTES } from './user/user.routes';
 import { authGuard } from './core/services/auth.service';
+import { VEHICLE_LIST_PROVIDERS } from './garage/garage.providers';
 
 export const routes: Routes = [
+  // Páginas públicas de texto: enlazadas desde registro, pago, ayuda y el pie de /vehicle-status.
+  { path: 'terms', data: { legal: 'terms' }, loadComponent: () => import('./public/components/legal/legal').then(m => m.LegalComponent) },
+  { path: 'privacy', data: { legal: 'privacy' }, loadComponent: () => import('./public/components/legal/legal').then(m => m.LegalComponent) },
   { path: 'auth/login', loadComponent: () => import('./public/components/auth/login').then(m => m.LoginComponent) },
   { path: 'auth/email-login', loadComponent: () => import('./public/components/auth/auth').then(m => m.AuthComponent) },
   { path: 'auth/register', data: { register: true }, loadComponent: () => import('./public/components/auth/auth').then(m => m.AuthComponent) },
@@ -32,6 +36,7 @@ export const routes: Routes = [
       },
       {
         path: 'schedule-unlock',
+        providers: VEHICLE_LIST_PROVIDERS,
         loadComponent: () => import('./booking/presentation/views/schedule-unlock/schedule-unlock').then(m => m.ScheduleUnlockComponent)
       },
       {

@@ -98,7 +98,9 @@
       "signIn": "Iniciar Sesión",
       "errorTitle": "Ocurrio un Error",
       "invalidCredentials": "Email o contraseña incorrectos.",
-      "connectionError": "No pudimos conectar con el servidor. Revisa tu conexión e inténtalo de nuevo."
+      "connectionError": "No pudimos conectar con el servidor. Revisa tu conexión e inténtalo de nuevo.",
+      "timeout": "El servidor tardó demasiado en responder. Inténtalo de nuevo.",
+      "waking": "El servidor está arrancando; puede tardar hasta un minuto. No cierres esta página."
     },
     "register": {
       "title": "Introduce tus datos",
@@ -234,7 +236,8 @@
       "title": "Reportar un problema",
       "category": "Señala la categoría del problema:",
       "categories": {
-        "brakes": "Frenos", "damage": "Daño físico",
+        "brakes": "Frenos",
+        "damage": "Daño físico",
         "mechanical": "Falla mecánica",
         "tires": "Neumáticos",
         "gps": "GPS",
@@ -289,7 +292,8 @@
       "personalInfo": "Información Personal",
       "deleteAccount": "Eliminar Cuenta",
       "deleteAccountDescription": "Elimina permanentemente tu cuenta y todos tus datos",
-      "saveChanges": "Guardar Cambios"
+      "saveChanges": "Guardar Cambios",
+      "saved": "Preferencias guardadas"
     },
     "profile": {
       "user": "Usuario",
@@ -314,7 +318,11 @@
       "privacyPreferences": "Preferencias de Privacidad",
       "notifications": "Notificaciones",
       "enabled": "Activadas",
-      "disabled": "Desactivadas"
+      "disabled": "Desactivadas",
+      "invalidPhone": "Ingresa un teléfono válido (7 a 20 dígitos; puede incluir +, espacios o guiones).",
+      "tooLong": "El texto es demasiado largo (máximo 100 caracteres).",
+      "saved": "Datos actualizados",
+      "saveError": "No se pudo guardar. Inténtalo de nuevo."
     },
     "history": {
       "title": "Historial",
@@ -358,9 +366,43 @@
         "answer": "Puedes usar el correo de soporte que aparece abajo. El chat aún no está disponible."
       },
       "hours": "Lunes a Viernes: 9:00 AM - 6:00 PM"
+    },
+    "menu": {
+      "wallet": "Cartera",
+      "history": "Historial",
+      "security": "Centro de seguridad",
+      "help": "Ayuda",
+      "settings": "Ajustes"
+    },
+    "personalInfo": {
+      "photo": "Foto de perfil",
+      "changePhoto": "Cambiar foto",
+      "photoTooBig": "La foto no puede superar 1 MB",
+      "fixErrors": "Por favor, corrige los errores en el formulario",
+      "userNotLoaded": "No se pudo cargar el usuario",
+      "saved": "Información actualizada correctamente",
+      "saveError": "No se pudo guardar la información. Intenta nuevamente.",
+      "fullName": "Nombre completo",
+      "fullNamePlaceholder": "Ingresa tu nombre completo",
+      "nameRequired": "El nombre es obligatorio",
+      "nameMin": "El nombre debe tener al menos 2 caracteres",
+      "phone": "Número de celular",
+      "phoneRequired": "El número de celular es obligatorio",
+      "phoneFormat": "El formato del número no es válido. Usa el formato internacional (ej: +51987654321)",
+      "phoneHint": "Formato internacional: +51987654321",
+      "saving": "Guardando..."
     }
   },
   "booking": {
+    "form": {
+      "loadError": "No se pudieron cargar los vehículos. Intenta de nuevo.",
+      "createError": "No se pudo crear la reserva. Intenta de nuevo.",
+      "pastDate": "La fecha y hora deben ser futuras.",
+      "selectVehicle": "Selecciona un vehículo primero.",
+      "draftSaved": "Borrador guardado",
+      "draftError": "No se pudo guardar el borrador.",
+      "editUnsupported": "Por ahora no se puede modificar una reserva existente. Cancélala y crea una nueva."
+    },
     "destination": {
       "titleStart": "¿A dónde vas?",
       "titleChange": "Cambiar destino",
@@ -460,28 +502,40 @@
     },
     "activeBooking": {
       "title": "Reserva activa",
-      "message": "Tu reserva ha comenzado. Tienes **{minutes} min** para iniciar tu viaje",
+      "message": "Tu reserva ha comenzado. Tienes **{{minutes}} min** para iniciar tu viaje",
       "understand": "Entiendo."
     },
     "bookingEnding": {
       "title": "¡Tu reserva está por finalizar!",
-      "message": "Te quedan **{minutes} minutos** antes de que termine tu tiempo",
-      "extendTime": "Extender tiempo (s/.{cost})",
+      "message": "Te quedan **{{minutes}} minutos** antes de que termine tu tiempo",
+      "extendTime": "Extender tiempo ($ {{cost}})",
       "endReservation": "Finalizar reserva"
     },
     "notifications": {
       "started": {
         "title": "Reserva Iniciada",
-        "message": "Tu reserva #{bookingId} ha comenzado. Ahora puedes desbloquear tu vehículo e iniciar tu viaje."
+        "message": "Tu reserva #{{bookingId}} ha comenzado. Ahora puedes desbloquear tu vehículo e iniciar tu viaje."
       },
       "expiring": {
         "title": "Reserva Por Expirar",
-        "message": "Tu reserva expirará en {minutes} minutos. Inicia tu viaje ahora o extiende tu tiempo."
+        "message": "Tu reserva expirará en {{minutes}} minutos. Inicia tu viaje ahora o extiende tu tiempo."
       },
       "expired": {
         "title": "Reserva Expirada",
         "message": "Tu reserva ha expirado sin iniciar un viaje. El vehículo ha sido liberado automáticamente."
       }
+    },
+    "list": {
+      "searchByVehicle": "Buscar por vehículo",
+      "vehiclePlaceholder": "Nombre del vehículo",
+      "sortBy": "Ordenar por",
+      "sortDate": "Fecha",
+      "sortVehicle": "Vehículo",
+      "sortStatus": "Estado",
+      "order": "Orden",
+      "newest": "Más recientes",
+      "oldest": "Más antiguos",
+      "clearFilters": "Limpiar filtros"
     }
   },
   "trip": {
@@ -493,7 +547,8 @@
       "cost": "Costo final",
       "route": "Ruta guardada",
       "noRoute": "No se registró una ruta GPS para este viaje.",
-      "receiptPending": "Comprobante pendiente de habilitar"
+      "receiptPending": "Comprobante pendiente de habilitar",
+      "downloadReceipt": "Descargar comprobante"
     },
     "title": "Viajes",
     "activeTrip": "Viaje Activo",
@@ -547,7 +602,9 @@
         "gps": "GPS",
         "battery": "Batería",
         "lock": "Bloqueo",
-        "other": "Otro (señalar)"
+        "other": "Otro (señalar)",
+        "brakes": "Frenos",
+        "damage": "Daño físico"
       },
       "description": "Descríbenos tu problema:",
       "descriptionPlaceholder": "Descripción opcional...",
@@ -559,6 +616,14 @@
     "vehicleInfo": {
       "battery": "Batería",
       "brand": "Marca"
+    },
+    "receipt": {
+      "title": "Comprobante de viaje",
+      "route": "Origen → Destino",
+      "tripCost": "Costo del viaje",
+      "changeFees": "Cargos por cambio de destino",
+      "total": "Total",
+      "note": "Para guardarlo como PDF, elige «Guardar como PDF» en el diálogo de impresión."
     }
   },
   "plans": {
@@ -599,7 +664,13 @@
       "finalizePayment": "Finalizar Pago",
       "termsText": "Al finalizar la compra, acepta nuestros",
       "termsOfUse": "términos de uso",
-      "privacyPolicy": "Política de privacidad"
+      "privacyPolicy": "Política de privacidad",
+      "errors": {
+        "card": "Ingresa los 16 dígitos de tu tarjeta (solo números).",
+        "expiry": "Usa el formato MM/AA con un mes válido y una fecha no vencida.",
+        "cvv": "El CVV debe tener 3 o 4 dígitos.",
+        "address": "Ingresa tu dirección de facturación."
+      }
     }
   },
   "home": {
@@ -657,7 +728,10 @@
       "active": "Activo",
       "bookingId": "Reserva",
       "remaining": "Tiempo restante",
-      "viewDetails": "Ver detalles"
+      "viewDetails": "Ver detalles",
+      "pending": "Pendiente",
+      "vehicle": "Vehículo",
+      "loadingVehicle": "Cargando…"
     },
     "theme": {
       "toggle": "Cambiar tema",
@@ -689,5 +763,101 @@
     "pattern": "El formato no es válido",
     "min": "El valor mínimo es {{min}}",
     "max": "El valor máximo es {{max}}"
+  },
+  "legal": {
+    "updated": "Última actualización: octubre de 2026",
+    "terms": {
+      "title": "Términos de uso",
+      "use": {
+        "title": "1. Uso del servicio",
+        "body": "WeRide ofrece el alquiler de vehículos de micromovilidad eléctrica. Al usar la aplicación aceptas utilizar el servicio de forma responsable, respetando las normas de tránsito y la señalización de cada zona."
+      },
+      "account": {
+        "title": "2. Tu cuenta",
+        "body": "Eres responsable de la información de tu cuenta y de mantener tu contraseña en reserva. Debes avisarnos si sospechas de un uso no autorizado."
+      },
+      "rides": {
+        "title": "3. Reservas y viajes",
+        "body": "Cada reserva se asocia a un vehículo y a una estación. El viaje comienza al desbloquear el vehículo y marcar el destino, y termina cuando lo finalizas en la aplicación. Cambiar el destino durante el viaje puede tener un cargo."
+      },
+      "payments": {
+        "title": "4. Pagos",
+        "body": "El monto de un viaje depende de la tarifa por minuto del vehículo y de la duración real. Los importes mostrados antes del viaje son estimados."
+      },
+      "liability": {
+        "title": "5. Responsabilidad",
+        "body": "Debes devolver el vehículo en buen estado y reportar cualquier problema desde la aplicación. WeRide no se responsabiliza por el uso indebido del servicio."
+      }
+    },
+    "privacy": {
+      "title": "Política de privacidad",
+      "data": {
+        "title": "1. Datos que recopilamos",
+        "body": "Recopilamos los datos de tu cuenta (correo y perfil), tus reservas y viajes, y la ubicación necesaria para mostrar vehículos cercanos y registrar la ruta de tu viaje."
+      },
+      "purpose": {
+        "title": "2. Para qué los usamos",
+        "body": "Usamos tus datos para prestar el servicio, calcular el costo de los viajes, mostrar tu historial y mejorar la aplicación."
+      },
+      "sharing": {
+        "title": "3. Con quién los compartimos",
+        "body": "No vendemos tus datos. Solo se comparten con los proveedores necesarios para operar el servicio, como el mapa y el alojamiento."
+      },
+      "rights": {
+        "title": "4. Tus derechos",
+        "body": "Puedes consultar y editar tu perfil desde la aplicación y solicitar la eliminación de tu cuenta desde Ajustes."
+      }
+    }
+  },
+  "vehicleStatus": {
+    "title": "Estado de desbloqueo del vehículo",
+    "subtitle": "Monitorea el estado de desbloqueo de tu vehículo en tiempo real",
+    "connectionError": "Error de conexión",
+    "fetchProblem": "Hubo un problema al obtener el estado del vehículo",
+    "currentStatus": "Estado actual",
+    "refresh": "Actualizar",
+    "you": "Tú",
+    "vehicleId": "ID vehículo",
+    "brandModel": "Marca y modelo",
+    "plate": "Placa",
+    "battery": "Batería",
+    "bookingInfo": "Información de la reserva",
+    "startTime": "Hora de inicio",
+    "endTime": "Hora de fin",
+    "elapsed": "Tiempo transcurrido",
+    "remaining": "Tiempo restante",
+    "bookingStatus": "Estado de reserva",
+    "goToTrip": "Ir al viaje para finalizar",
+    "unlock": "Desbloquear vehículo",
+    "recentActivity": "Actividad reciente",
+    "noActivity": "No hay actividad reciente",
+    "loading": "Cargando estado del vehículo...",
+    "noTrip": "Aún no tienes un viaje en curso en este momento, quizás deseas...",
+    "bookNow": "Reservar un vehículo ahora",
+    "schedule": "Programar una reserva",
+    "history": "Historial de viajes",
+    "copyright": "© 2026 WeRide. Todos los derechos reservados.",
+    "unlockFetchError": "Error de conexión al obtener el estado de desbloqueo",
+    "loadError": "Error al cargar el estado del vehículo",
+    "timeUp": "Tiempo agotado",
+    "activity": {
+      "unlocked": "Vehículo desbloqueado exitosamente",
+      "requested": "Solicitud de desbloqueo iniciada",
+      "failed": "Error en el desbloqueo - reintento intentado",
+      "booking": "Reserva"
+    },
+    "states": {
+      "unlocked": "Desbloqueado",
+      "locked": "Bloqueado",
+      "pending": "En proceso",
+      "error": "Error",
+      "unknown": "Desconocido"
+    },
+    "ago": {
+      "now": "Justo ahora",
+      "minutes": "Hace {{count}} min",
+      "hours": "Hace {{count}} h",
+      "days": "Hace {{count}} d"
+    }
   }
 }

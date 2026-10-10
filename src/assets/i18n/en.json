@@ -98,7 +98,9 @@
       "signIn": "Sign In",
       "errorTitle": "An Error Occurred",
       "invalidCredentials": "Incorrect email or password.",
-      "connectionError": "We could not reach the server. Check your connection and try again."
+      "connectionError": "We could not reach the server. Check your connection and try again.",
+      "timeout": "The server took too long to respond. Please try again.",
+      "waking": "The server is starting up; this can take up to a minute. Please keep this page open."
     },
     "register": {
       "title": "Enter your information",
@@ -234,7 +236,8 @@
       "title": "Report a problem",
       "category": "Indicate the problem category:",
       "categories": {
-        "brakes": "Brakes", "damage": "Physical damage",
+        "brakes": "Brakes",
+        "damage": "Physical damage",
         "mechanical": "Mechanical failure",
         "tires": "Tires",
         "gps": "GPS",
@@ -289,7 +292,8 @@
       "personalInfo": "Personal Information",
       "deleteAccount": "Delete Account",
       "deleteAccountDescription": "Permanently delete your account and all your data",
-      "saveChanges": "Save Changes"
+      "saveChanges": "Save Changes",
+      "saved": "Preferences saved"
     },
     "profile": {
       "user": "User",
@@ -314,7 +318,11 @@
       "privacyPreferences": "Privacy Preferences",
       "notifications": "Notifications",
       "enabled": "Enabled",
-      "disabled": "Disabled"
+      "disabled": "Disabled",
+      "invalidPhone": "Enter a valid phone number (7 to 20 digits; may include +, spaces or hyphens).",
+      "tooLong": "The text is too long (100 characters max).",
+      "saved": "Details updated",
+      "saveError": "Could not save. Please try again."
     },
     "history": {
       "title": "History",
@@ -358,9 +366,43 @@
         "answer": "You can use the support email below. Chat is not available yet."
       },
       "hours": "Monday to Friday: 9:00 AM - 6:00 PM"
+    },
+    "menu": {
+      "wallet": "Wallet",
+      "history": "History",
+      "security": "Security center",
+      "help": "Help",
+      "settings": "Settings"
+    },
+    "personalInfo": {
+      "photo": "Profile picture",
+      "changePhoto": "Change photo",
+      "photoTooBig": "The photo can't exceed 1 MB",
+      "fixErrors": "Please fix the errors in the form",
+      "userNotLoaded": "Could not load the user",
+      "saved": "Information updated successfully",
+      "saveError": "Could not save the information. Please try again.",
+      "fullName": "Full name",
+      "fullNamePlaceholder": "Enter your full name",
+      "nameRequired": "Name is required",
+      "nameMin": "Name must be at least 2 characters",
+      "phone": "Mobile number",
+      "phoneRequired": "Mobile number is required",
+      "phoneFormat": "The number format is not valid. Use the international format (e.g. +51987654321)",
+      "phoneHint": "International format: +51987654321",
+      "saving": "Saving..."
     }
   },
   "booking": {
+    "form": {
+      "loadError": "Could not load vehicles. Please try again.",
+      "createError": "Could not create the booking. Please try again.",
+      "pastDate": "Date and time must be in the future.",
+      "selectVehicle": "Select a vehicle first.",
+      "draftSaved": "Draft saved",
+      "draftError": "Could not save the draft.",
+      "editUnsupported": "An existing booking can't be modified yet. Cancel it and create a new one."
+    },
     "destination": {
       "titleStart": "Where are you going?",
       "titleChange": "Change destination",
@@ -450,7 +492,8 @@
         "smsReminder": "SMS reminder 30 min before",
         "emailConfirmation": "Email confirmation",
         "pushNotification": "Push notification when unlocking"
-      }
+      },
+      "minutes": "minutes"
     },
     "confirmBooking": {
       "title": "Confirm reservation of this vehicle?",
@@ -459,28 +502,40 @@
     },
     "activeBooking": {
       "title": "Active reservation",
-      "message": "Your reservation has started. You have **{minutes} min** to start your trip",
+      "message": "Your reservation has started. You have **{{minutes}} min** to start your trip",
       "understand": "Understood."
     },
     "bookingEnding": {
       "title": "Your reservation is about to end!",
-      "message": "You have **{minutes} minutes** left before your time ends",
-      "extendTime": "Extend time (s/.{cost})",
+      "message": "You have **{{minutes}} minutes** left before your time ends",
+      "extendTime": "Extend time ($ {{cost}})",
       "endReservation": "End reservation"
     },
     "notifications": {
       "started": {
         "title": "Reservation Started",
-        "message": "Your reservation #{bookingId} has started. You can now unlock your vehicle and begin your trip."
+        "message": "Your reservation #{{bookingId}} has started. You can now unlock your vehicle and begin your trip."
       },
       "expiring": {
         "title": "Reservation About to Expire",
-        "message": "Your reservation will expire in {minutes} minutes. Start your trip now or extend your time."
+        "message": "Your reservation will expire in {{minutes}} minutes. Start your trip now or extend your time."
       },
       "expired": {
         "title": "Reservation Expired",
         "message": "Your reservation has expired without starting a trip. The vehicle has been released automatically."
       }
+    },
+    "list": {
+      "searchByVehicle": "Search by vehicle",
+      "vehiclePlaceholder": "Vehicle name",
+      "sortBy": "Sort by",
+      "sortDate": "Date",
+      "sortVehicle": "Vehicle",
+      "sortStatus": "Status",
+      "order": "Order",
+      "newest": "Most recent",
+      "oldest": "Oldest",
+      "clearFilters": "Clear filters"
     }
   },
   "trip": {
@@ -492,7 +547,8 @@
       "cost": "Final cost",
       "route": "Saved route",
       "noRoute": "No GPS route was recorded for this ride.",
-      "receiptPending": "Receipt download is not available yet"
+      "receiptPending": "Receipt download is not available yet",
+      "downloadReceipt": "Download receipt"
     },
     "title": "Trips",
     "activeTrip": "Active Trip",
@@ -546,7 +602,9 @@
         "gps": "GPS",
         "battery": "Battery",
         "lock": "Lock",
-        "other": "Other (specify)"
+        "other": "Other (specify)",
+        "brakes": "Brakes",
+        "damage": "Physical damage"
       },
       "description": "Describe your problem:",
       "descriptionPlaceholder": "Optional description...",
@@ -558,6 +616,14 @@
     "vehicleInfo": {
       "battery": "Battery",
       "brand": "Brand"
+    },
+    "receipt": {
+      "title": "Trip receipt",
+      "route": "Origin → Destination",
+      "tripCost": "Trip cost",
+      "changeFees": "Destination change fees",
+      "total": "Total",
+      "note": "To save it as a PDF, choose \"Save as PDF\" in the print dialog."
     }
   },
   "plans": {
@@ -598,7 +664,13 @@
       "finalizePayment": "Finalize Payment",
       "termsText": "By completing the purchase, you accept our",
       "termsOfUse": "terms of use",
-      "privacyPolicy": "Privacy Policy"
+      "privacyPolicy": "Privacy Policy",
+      "errors": {
+        "card": "Enter the 16 digits of your card (numbers only).",
+        "expiry": "Use MM/YY with a valid month and a date that has not expired.",
+        "cvv": "CVV must be 3 or 4 digits.",
+        "address": "Enter your billing address."
+      }
     }
   },
   "home": {
@@ -656,7 +728,10 @@
       "active": "Active",
       "bookingId": "Booking",
       "remaining": "Time remaining",
-      "viewDetails": "View details"
+      "viewDetails": "View details",
+      "pending": "Pending",
+      "vehicle": "Vehicle",
+      "loadingVehicle": "Loading…"
     },
     "theme": {
       "toggle": "Toggle theme",
@@ -688,5 +763,101 @@
     "pattern": "The format is not valid",
     "min": "Minimum value is {{min}}",
     "max": "Maximum value is {{max}}"
+  },
+  "legal": {
+    "updated": "Last updated: October 2026",
+    "terms": {
+      "title": "Terms of use",
+      "use": {
+        "title": "1. Use of the service",
+        "body": "WeRide offers rentals of electric micromobility vehicles. By using the app you agree to use the service responsibly and to follow traffic rules and local signage."
+      },
+      "account": {
+        "title": "2. Your account",
+        "body": "You are responsible for your account information and for keeping your password private. Tell us if you suspect unauthorized use."
+      },
+      "rides": {
+        "title": "3. Bookings and rides",
+        "body": "Each booking is tied to a vehicle and a station. A ride starts when you unlock the vehicle and set your destination, and ends when you finish it in the app. Changing the destination during a ride may carry a fee."
+      },
+      "payments": {
+        "title": "4. Payments",
+        "body": "A ride's amount depends on the vehicle's per-minute rate and the actual duration. Amounts shown before the ride are estimates."
+      },
+      "liability": {
+        "title": "5. Liability",
+        "body": "You must return the vehicle in good condition and report any problem through the app. WeRide is not liable for misuse of the service."
+      }
+    },
+    "privacy": {
+      "title": "Privacy policy",
+      "data": {
+        "title": "1. Data we collect",
+        "body": "We collect your account data (email and profile), your bookings and rides, and the location needed to show nearby vehicles and record your ride route."
+      },
+      "purpose": {
+        "title": "2. How we use it",
+        "body": "We use your data to provide the service, calculate ride costs, show your history and improve the app."
+      },
+      "sharing": {
+        "title": "3. Who we share it with",
+        "body": "We do not sell your data. It is only shared with providers needed to run the service, such as maps and hosting."
+      },
+      "rights": {
+        "title": "4. Your rights",
+        "body": "You can view and edit your profile in the app and request deletion of your account from Settings."
+      }
+    }
+  },
+  "vehicleStatus": {
+    "title": "Vehicle unlock status",
+    "subtitle": "Monitor your vehicle's unlock status in real time",
+    "connectionError": "Connection error",
+    "fetchProblem": "There was a problem getting the vehicle status",
+    "currentStatus": "Current status",
+    "refresh": "Refresh",
+    "you": "You",
+    "vehicleId": "Vehicle ID",
+    "brandModel": "Brand and model",
+    "plate": "Plate",
+    "battery": "Battery",
+    "bookingInfo": "Booking information",
+    "startTime": "Start time",
+    "endTime": "End time",
+    "elapsed": "Elapsed time",
+    "remaining": "Time remaining",
+    "bookingStatus": "Booking status",
+    "goToTrip": "Go to the trip to finish",
+    "unlock": "Unlock vehicle",
+    "recentActivity": "Recent activity",
+    "noActivity": "No recent activity",
+    "loading": "Loading vehicle status...",
+    "noTrip": "You don't have a trip in progress right now. Perhaps you'd like to...",
+    "bookNow": "Book a vehicle now",
+    "schedule": "Schedule a booking",
+    "history": "Trip history",
+    "copyright": "© 2026 WeRide. All rights reserved.",
+    "unlockFetchError": "Connection error while getting the unlock status",
+    "loadError": "Error loading the vehicle status",
+    "timeUp": "Time is up",
+    "activity": {
+      "unlocked": "Vehicle unlocked successfully",
+      "requested": "Unlock request started",
+      "failed": "Unlock failed - retry attempted",
+      "booking": "Booking"
+    },
+    "states": {
+      "unlocked": "Unlocked",
+      "locked": "Locked",
+      "pending": "In progress",
+      "error": "Error",
+      "unknown": "Unknown"
+    },
+    "ago": {
+      "now": "Just now",
+      "minutes": "{{count}} min ago",
+      "hours": "{{count}} h ago",
+      "days": "{{count}} d ago"
+    }
   }
 }

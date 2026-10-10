@@ -111,3 +111,54 @@ body {
 .custom-snackbar .mat-mdc-button {
   color: white !important;
 }
+
+/* Diálogo oculto mientras otro se muestra encima (p. ej. desbloqueo bajo el modal de destino). */
+.dialog-hidden {
+  display: none !important;
+}
+
+/* Comprobante de viaje: solo visible al imprimir (window.print) y sin el resto de la página. */
+.print-receipt {
+  display: none;
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  .print-receipt,
+  .print-receipt * {
+    visibility: visible;
+  }
+
+  .print-receipt {
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    padding: 24px;
+    color: #000;
+    background: #fff;
+  }
+
+  .print-receipt table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+  }
+
+  .print-receipt th,
+  .print-receipt td {
+    text-align: left;
+    padding: 8px;
+    border-bottom: 1px solid #ccc;
+  }
+
+  .print-receipt .total th,
+  .print-receipt .total td {
+    font-size: 1.15em;
+    font-weight: 700;
+  }
+}
