@@ -50,11 +50,27 @@
         <p>{{ 'trip.tripId' | translate }}: {{ trip.id }}</p>
       </div>
       <div class="trip-actions">
-        <button type="button" disabled [attr.title]="'trip.history.receiptPending' | translate">{{ 'trip.printReceipt' | translate }}</button>
-        <small>{{ 'trip.history.receiptPending' | translate }}</small>
+        <button type="button" (click)="printReceipt(trip)">{{ 'trip.history.downloadReceipt' | translate }}</button>
         <button type="button" (click)="viewDetails(trip)" [disabled]="!!detailLoadingId" [attr.aria-expanded]="selectedTrip?.id === trip.id" aria-controls="trip-history-details">{{ 'trip.viewDetails' | translate }}</button>
       </div>
     </div>
+  }
+  @if (receiptTrip; as r) {
+    <section class="print-receipt" aria-hidden="true">
+      <h1>WeRide — {{ 'trip.receipt.title' | translate }}</h1>
+      <table>
+        <tr><th>{{ 'trip.tripId' | translate }}</th><td>{{ r.id }}</td></tr>
+        <tr><th>{{ 'trip.vehicle' | translate }}</th><td>{{ r.vehicleName }}</td></tr>
+        <tr><th>{{ 'trip.receipt.route' | translate }}</th><td>{{ destinationLabel(r) }}</td></tr>
+        <tr><th>{{ 'trip.dateAndTime' | translate }}</th><td>{{ formatDate(r.startedAt) }} → {{ formatDate(r.endedAt) }}</td></tr>
+        <tr><th>{{ 'trip.tripDuration' | translate }}</th><td>{{ r.duration ?? '—' }} min</td></tr>
+        <tr><th>{{ 'trip.distanceTraveled' | translate }}</th><td>{{ r.distance ?? '—' }} km</td></tr>
+        <tr><th>{{ 'trip.receipt.tripCost' | translate }}</th><td>{{ baseCost(r) == null ? '—' : (baseCost(r) | currency:'USD') }}</td></tr>
+        <tr><th>{{ 'trip.receipt.changeFees' | translate }}</th><td>{{ (r.destinationChangeFees ?? 0) | currency:'USD' }}</td></tr>
+        <tr class="total"><th>{{ 'trip.receipt.total' | translate }}</th><td>{{ r.finalCost == null ? '—' : (r.finalCost | currency:'USD') }}</td></tr>
+      </table>
+      <p>{{ 'trip.receipt.note' | translate }}</p>
+    </section>
   }
   @if (hasMore) { <button type="button" class="see-more-btn" (click)="seeMore()" [disabled]="loading">{{ 'trip.seeMore' | translate }}</button> }
 </div>

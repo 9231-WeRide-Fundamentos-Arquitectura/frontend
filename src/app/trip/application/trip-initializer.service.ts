@@ -76,9 +76,17 @@ export class TripInitializerService {
 
   // Abre el modal compartido de destino. Devuelve la reserva con el destino guardado, o null si el usuario cancela.
   private async askDestination(booking: Booking, mode: 'start' | 'change'): Promise<Booking | null> {
-    return await firstValueFrom(this.dialog.open(DestinationModal, {
-      data: { booking, mode }, width: '560px', maxWidth: '95vw', autoFocus: false
-    }).afterClosed()) ?? null;
+    // Los diálogos de desbloqueo (placa/QR) siguen abiertos debajo: se ocultan mientras se elige el destino
+    // y reaparecen si el usuario cancela (para que vea el aviso y pueda reintentar).
+    const below = [...this.dialog.openDialogs];
+    below.forEach(ref => ref.addPanelClass('dialog-hidden'));
+    try {
+      return await firstValueFrom(this.dialog.open(DestinationModal, {
+        data: { booking, mode }, width: '560px', maxWidth: '95vw', autoFocus: false
+      }).afterClosed()) ?? null;
+    } finally {
+      below.forEach(ref => ref.removePanelClass('dialog-hidden'));
+    }
   }
 
   private syncBooking(booking: Booking): void {

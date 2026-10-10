@@ -1,4 +1,4 @@
-import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { Component, DestroyRef, HostListener, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
@@ -26,6 +26,8 @@ export class TripHistory implements OnInit {
   selectedTrip: CompletedTrip | null = null;
   detailLoadingId = '';
   detailErrorId = '';
+  // Viaje cuyo comprobante se está imprimiendo; se limpia al cerrar el diálogo de impresión.
+  receiptTrip: CompletedTrip | null = null;
 
   ngOnInit() {
     this.loadTrips();
@@ -65,6 +67,27 @@ export class TripHistory implements OnInit {
       next: trip => { this.selectedTrip = trip; this.detailLoadingId = ''; },
       error: () => { this.detailErrorId = id; this.detailLoadingId = ''; }
     });
+  }
+
+  // Comprobante generado en el navegador: se renderiza la hoja de impresión y se abre window.print()
+  // para que el usuario lo guarde como PDF. Los estilos @media print están en styles.css.
+  printReceipt(trip: CompletedTrip) {
+    this.receiptTrip = trip;
+    setTimeout(() => window.print());
+  }
+
+  @HostListener('window:afterprint')
+  clearReceipt() {
+    this.receiptTrip = null;
+  }
+
+  destinationLabel(trip: CompletedTrip): string {
+    const origin = trip.route.split(' → ')[0];
+    return trip.destinationAddress ? `${origin} → ${trip.destinationAddress}` : trip.route;
+  }
+
+  baseCost(trip: CompletedTrip): number | null {
+    return trip.finalCost == null ? null : trip.finalCost - (trip.destinationChangeFees ?? 0);
   }
 
   seeMore() { this.loadTrips(false); }
