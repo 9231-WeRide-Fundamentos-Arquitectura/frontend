@@ -35,7 +35,15 @@ export function toDomainBooking(raw: BackendBookingResponse): Booking {
     response.duration,
     response.averageSpeed,
     response.rating,
-    response.issues
+    response.issues,
+    undefined, undefined, undefined, undefined, undefined,
+    response.destinationLat ?? null,
+    response.destinationLng ?? null,
+    response.destinationAddress ?? null,
+    response.estimatedDistance ?? null,
+    response.estimatedDuration ?? null,
+    response.estimatedCost ?? null,
+    response.destinationChangeFees ?? null
   );
 }
 

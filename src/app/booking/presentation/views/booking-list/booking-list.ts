@@ -107,7 +107,8 @@ export class BookingListComponent implements OnInit {
             vehicleId: booking.vehicleId,
             vehicleName: vehicle ? `${vehicle.brand} ${vehicle.model}` : 'Unknown Vehicle',
             startLocationName: startLocation?.name || 'Unknown',
-            endLocationName: endLocation?.name || 'Unknown',
+            // Reservas con destino libre muestran su dirección; las antiguas siguen mostrando la estación.
+            endLocationName: booking.destinationAddress || endLocation?.name || 'Unknown',
             startDate: new Date(booking.startDate),
             duration: booking.duration,
             finalCost: booking.finalCost,

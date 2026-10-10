@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
-import { BookingResponse, BackendBookingResponse } from './bookings-response';
+import { BookingResponse, BackendBookingResponse, DestinationQuote } from './bookings-response';
 import { normalizeBookingResponse } from './booking-assembler';
 import { environment } from '../../../environments/environment';
 
@@ -40,6 +40,16 @@ export class BookingsApiEndpoint {
 
   start(id: string): Observable<BookingResponse> {
     return this.http.put<BackendBookingResponse>(`${this.baseUrl}/${id}/start`, null).pipe(map(normalizeBookingResponse));
+  }
+
+  // Cotiza el destino sin guardarlo
+  quoteDestination(id: string, point: { lat: number; lng: number }): Observable<DestinationQuote> {
+    return this.http.post<DestinationQuote>(`${this.baseUrl}/${encodeURIComponent(id)}/destination/quote`, point);
+  }
+
+  // Fija (reserved) o cambia (in_progress, con cargo) el destino
+  setDestination(id: string, destination: { lat: number; lng: number; address?: string }): Observable<BookingResponse> {
+    return this.http.put<BackendBookingResponse>(`${this.baseUrl}/${encodeURIComponent(id)}/destination`, destination).pipe(map(normalizeBookingResponse));
   }
 
   complete(id: string, metrics: Pick<BookingResponse, 'totalCost' | 'discount' | 'distance' | 'duration' | 'averageSpeed' | 'rating'> & { routeCoordinates?: { lat: number; lng: number }[]; routeSource?: 'gps' | 'simulated' }): Observable<BookingResponse> {

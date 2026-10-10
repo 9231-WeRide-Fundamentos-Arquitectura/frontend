@@ -175,7 +175,15 @@ export class BookingStorageService {
       data.duration,
       data.averageSpeed,
       data.rating,
-      data.issues || []
+      data.issues || [],
+      undefined, undefined, undefined, undefined, undefined,
+      data.destinationLat ?? null,
+      data.destinationLng ?? null,
+      data.destinationAddress ?? null,
+      data.estimatedDistance ?? null,
+      data.estimatedDuration ?? null,
+      data.estimatedCost ?? null,
+      data.destinationChangeFees ?? null
     );
   }
 }

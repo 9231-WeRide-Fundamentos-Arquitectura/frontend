@@ -31,6 +31,13 @@ export class Booking {
     public isActivated?: boolean,
     public activatedAt?: Date,
     public qrCode?: string,
-    public unlockCode?: string
+    public unlockCode?: string,
+    public destinationLat: number | null = null,
+    public destinationLng: number | null = null,
+    public destinationAddress: string | null = null,
+    public estimatedDistance: number | null = null,
+    public estimatedDuration: number | null = null,
+    public estimatedCost: number | null = null,
+    public destinationChangeFees: number | null = null
   ) {}
 }

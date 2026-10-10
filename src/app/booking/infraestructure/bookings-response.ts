@@ -21,6 +21,25 @@ export interface BookingResponse {
   averageSpeed: number | null;
   rating: { score: number; comment: string } | null;
   issues: string[];
+  // Destino libre marcado en el mapa; null en reservas antiguas.
+  destinationLat?: number | null;
+  destinationLng?: number | null;
+  destinationAddress?: string | null;
+  estimatedDistance?: number | null;
+  estimatedDuration?: number | null;
+  estimatedCost?: number | null;
+  destinationChangeFees?: number | null;
+}
+
+// Cotización calculada por el backend para un punto de destino
+export interface DestinationQuote {
+  distanceKm: number;
+  durationMinutes: number;
+  pricePerMinute: number;
+  estimatedCost: number;
+  discount: number;
+  changeFee: number;
+  total: number;
 }
 
 // Respuesta de la API para listado de reservas
