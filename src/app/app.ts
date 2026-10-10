@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { BookingNotificationService } from './booking/application/booking-notification.service';
 import { AuthService } from './core/services/auth.service';
+import { PreferencesService } from './core/services/preferences.service';
 
 @Component({
   selector: 'app-root',
@@ -16,6 +17,7 @@ export class App implements OnInit, OnDestroy {
   private translate = inject(TranslateService);
   private bookingNotificationService = inject(BookingNotificationService);
   private auth = inject(AuthService);
+  private preferences = inject(PreferencesService);
 
   constructor() {
     effect(() => {
@@ -26,13 +28,14 @@ export class App implements OnInit, OnDestroy {
 
   ngOnInit() {
     const defaultLang = 'es';
-    const browserLang = navigator.language.split('-')[0];
-    const lang = ['en', 'es'].includes(browserLang) ? browserLang : defaultLang;
+    // Idioma y tema guardados en este navegador; si no hay, el idioma del navegador.
+    const lang = this.preferences.initialLanguage();
 
     this.translate.setDefaultLang(defaultLang);
 
     this.translate.use(lang).subscribe(() => {
     });
+    this.preferences.apply({ theme: this.preferences.load()?.theme });
   }
 
   ngOnDestroy() {

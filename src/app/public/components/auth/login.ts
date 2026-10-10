@@ -18,7 +18,11 @@ import { TranslateModule } from '@ngx-translate/core';
         </div>
 
         <div class="terms">
-          <p>{{ 'auth.login.termsLine' | translate }}</p>
+          <p>{{ 'auth.login.terms' | translate }}
+            <a routerLink="/privacy" target="_blank">{{ 'auth.login.privacyPolicy' | translate }}</a>
+            {{ 'common.and' | translate }}
+            <a routerLink="/terms" target="_blank">{{ 'auth.login.termsOfUse' | translate }}</a>
+            {{ 'auth.login.ofWeRide' | translate }}.</p>
         </div>
       </div>
 

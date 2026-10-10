@@ -159,14 +159,14 @@ describe('Pre-deploy backend contracts', () => {
     const store = TestBed.inject(BookingStore); TestBed.tick();
     store.addBooking(toDomainBooking(reserved));
     const dialog = TestBed.inject(MatDialog);
+    // Una reserva existente va directo al método de desbloqueo (sin «¿Cómo deseas reservar?»).
     (dialog.open as jasmine.Spy).and.returnValues(
-      { afterClosed: () => of({ action: 'book_now' }) },
       { afterClosed: () => of({ method: 'manual' }) },
       { afterClosed: () => of({ cancelled: true }) }
     );
     await list.activateBooking({ id: reserved.id, vehicleId: '7', status: 'pending' } as any);
     http.expectOne(api + '/vehicles').flush([{ id: 7, location: 3, companyId: 2 }]);
-    expect((dialog.open as jasmine.Spy).calls.count()).toBe(3);
+    expect((dialog.open as jasmine.Spy).calls.count()).toBe(2);
     const data = (dialog.open as jasmine.Spy).calls.mostRecent().args[1].data;
     expect(data.booking.id).toBe(reserved.id);
     expect(data.vehicle.id).toBe('7');

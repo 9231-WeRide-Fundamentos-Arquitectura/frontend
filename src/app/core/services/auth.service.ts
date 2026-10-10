@@ -1,8 +1,11 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient, HttpInterceptorFn } from '@angular/common/http';
 import { CanActivateFn, Router } from '@angular/router';
-import { catchError, tap, throwError } from 'rxjs';
+import { catchError, tap, throwError, timeout } from 'rxjs';
 import { environment } from '../../../environments/environment';
+
+// El backend gratuito de Render se duerme y puede tardar en despertar: se espera hasta este límite antes de fallar.
+export const AUTH_TIMEOUT_MS = 45000;
 
 interface Session { id: string; token: string; username: string; }
 
@@ -19,6 +22,7 @@ export class AuthService {
 
   signIn(username: string, password: string) {
     return this.http.post<{ id: number; token: string }>(`${environment.apiUrl}/authentication/sign-in`, { username, password }).pipe(
+      timeout(AUTH_TIMEOUT_MS),
       tap(response => {
         if (!response.id || !response.token) throw new Error('Respuesta de autenticación inválida');
         const session = { id: String(response.id), token: response.token, username };
@@ -29,7 +33,7 @@ export class AuthService {
   }
 
   signUp(username: string, password: string) {
-    return this.http.post(`${environment.apiUrl}/authentication/sign-up`, { username, password });
+    return this.http.post(`${environment.apiUrl}/authentication/sign-up`, { username, password }).pipe(timeout(AUTH_TIMEOUT_MS));
   }
 
   logout(): void {
