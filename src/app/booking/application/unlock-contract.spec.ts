@@ -29,7 +29,7 @@ describe('Unlock server contract', () => {
     expect((await failed).success).toBeFalse();
     expect(store.getBookingById(booking.id)?.status).toBe('pending');
     http.expectNone(environment.apiUrl + '/bookings/booking-id/start');
-    const retry = store.unlockVehicleManually('', 'XM007', booking, 'request-id');
+    const retry = store.unlockVehicleManually('', 'K7M2QX', booking, 'request-id');
     http.expectOne(environment.apiUrl + '/unlockRequests/request-id').flush({ id: 'request-id', status: 'unlocked' });
     await firstValueFrom(timer(0));
     http.expectOne(environment.apiUrl + '/bookings').flush([{ ...resource, status: 'in_progress', actualStartDate: resource.startDate }]);

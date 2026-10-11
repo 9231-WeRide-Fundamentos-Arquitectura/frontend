@@ -76,27 +76,6 @@ export class BookingStorageService {
   }
 
   /**
-   * Delete a booking permanently
-   */
-  deleteBooking(id: string): boolean {
-    try {
-      const bookings = this.getBookings();
-      const filtered = bookings.filter(b => b.id !== id);
-      
-      if (filtered.length === bookings.length) {
-        console.error('Booking not found:', id);
-        return false;
-      }
-
-      this.saveToStorage(filtered);
-      return true;
-    } catch (error) {
-      console.error('Error deleting booking:', error);
-      return false;
-    }
-  }
-
-  /**
    * Cancel a booking (change status to cancelled)
    */
   cancelBooking(id: string): boolean {

@@ -9,7 +9,9 @@ export class BookingFilterService {
     filter: BookingFilter,
     filterOptions?: FilterOptions
   ): any[] {
-    let filtered = [...bookings];
+    // «Archivado» muestra solo las archivadas; el resto de vistas las oculta.
+    const archivedView = filter.sortBy === 'archived';
+    let filtered = bookings.filter(booking => !!booking.archived === archivedView);
 
     if (filter.vehicleName) {
       const searchTerm = filter.vehicleName.toLowerCase();
@@ -56,6 +58,7 @@ export class BookingFilterService {
 
       switch (sortBy) {
         case 'date':
+        case 'archived':
           comparison = new Date(a.startDate).getTime() - new Date(b.startDate).getTime();
           break;
         case 'vehicle':

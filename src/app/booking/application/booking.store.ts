@@ -7,6 +7,10 @@ import { BookingsApiEndpoint } from '../infraestructure/bookings-api-endpoint';
 import { UnlockRequestsApiEndpoint } from '../infraestructure/unlockRequests-api-endpoint';
 import { ActiveBookingService } from './active-booking.service';
 import { toDomainBooking } from '../infraestructure/booking-assembler';
+import { toDomainUnlockRequest } from '../infraestructure/unlockRequest-assembler';
+import { UnlockRequest } from '../domain/model/unlockRequest.entity';
+
+const MAX_CODE_ATTEMPTS = 5;
 
 @Injectable({ providedIn: 'root' })
 export class BookingStore {
@@ -46,14 +50,6 @@ export class BookingStore {
     this.bookingsSubject.next(updatedList);
     // Persist to localStorage
     this.storageService.updateBooking(updated.id, updated);
-  }
-
-  deleteBooking(id: string): void {
-    const current = this.bookingsSubject.getValue();
-    const filteredList = current.filter(b => b.id !== id);
-    this.bookingsSubject.next(filteredList);
-    // Remove from localStorage
-    this.storageService.deleteBooking(id);
   }
 
   selectBooking(id: string): void {
@@ -112,19 +108,12 @@ export class BookingStore {
     try {
       const booking = selected || this.activeBookingSubject.getValue() || this.activeBookingService.getActiveBooking();
       if (!booking) return { success: false, error: 'No hay reserva activa' };
+      if (!requestId && method === 'manual') requestId = (await this.ensureManualRequest(booking)).request.id;
       if (!requestId) {
         const previous = await firstValueFrom(this.unlockRequestsApi.getByBookingId(booking.id));
         requestId = previous[0]?.id;
       }
-      if (!requestId) {
-        const request = await firstValueFrom(this.unlockRequestsApi.create({
-          userId: booking.userId, vehicleId: booking.vehicleId, bookingId: booking.id,
-          requestedAt: new Date().toISOString(), scheduledUnlockTime: (booking.startDate || new Date()).toISOString(),
-          actualUnlockTime: null, status: 'pending', method, location: { lat: 0, lng: 0 },
-          unlockCode: '', attempts: 0, errorMessage: null
-        }));
-        requestId = request.id;
-      }
+      if (!requestId) requestId = (await this.createUnlockRequest(booking, method)).id;
       this.activeBookingService.setActiveBooking(booking);
       const request = await firstValueFrom(this.unlockRequestsApi.update(requestId, { method, unlockCode }));
       if (request.status !== 'unlocked') return { success: false, error: request.errorMessage || 'Código incorrecto' };
@@ -137,6 +126,30 @@ export class BookingStore {
     } catch (error: any) {
       return { success: false, error: error?.error?.message || error?.error?.detail || error?.message || 'Error al desbloquear' };
     }
+  }
+
+  // Un código sirve si su solicitud sigue pendiente, no caducó y le quedan intentos.
+  isCodeUsable(request: UnlockRequest | null | undefined): request is UnlockRequest {
+    return !!request && request.status === 'pending' && !!request.accessCode && !!request.codeExpiresAt
+      && request.codeExpiresAt.getTime() > Date.now() && request.attempts < MAX_CODE_ATTEMPTS;
+  }
+
+  // Devuelve la solicitud manual más reciente si aún sirve; si no, crea una nueva (código nuevo).
+  async ensureManualRequest(booking: Booking): Promise<{ request: UnlockRequest; issued: boolean }> {
+    const previous = await firstValueFrom(this.unlockRequestsApi.getByBookingId(booking.id));
+    const latest = previous[0] ? toDomainUnlockRequest(previous[0]) : null;
+    if (this.isCodeUsable(latest)) return { request: latest, issued: false };
+    return { request: await this.createUnlockRequest(booking, 'manual'), issued: true };
+  }
+
+  private async createUnlockRequest(booking: Booking, method: 'manual' | 'qr_code'): Promise<UnlockRequest> {
+    const response = await firstValueFrom(this.unlockRequestsApi.create({
+      userId: booking.userId, vehicleId: booking.vehicleId, bookingId: booking.id,
+      requestedAt: new Date().toISOString(), scheduledUnlockTime: (booking.startDate || new Date()).toISOString(),
+      actualUnlockTime: null, status: 'pending', method, location: { lat: 0, lng: 0 },
+      unlockCode: '', attempts: 0, errorMessage: null
+    }));
+    return toDomainUnlockRequest(response);
   }
 
   async getBookingByIdAsync(bookingId: string): Promise<Booking> {
