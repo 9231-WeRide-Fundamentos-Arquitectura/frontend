@@ -34,5 +34,7 @@ export const GARAGE_PROVIDERS: Provider[] = [
 // Lo mínimo que necesita una pantalla fuera del garaje para listar vehículos (p. ej. programar reserva).
 export const VEHICLE_LIST_PROVIDERS: Provider[] = [
   VehicleApiService,
+  // Es providedIn: 'root'; sin listarlo aquí se crea en el inyector raíz, que no conoce VehicleRepository.
+  GetVehiclesUseCase,
   { provide: VehicleRepository, useClass: VehicleRepositoryImpl }
 ];

@@ -1,6 +1,6 @@
 <div class="manual-unlock-modal">
   <div class="modal-header">
-    <h2 mat-dialog-title>Desbloqueo Manual</h2>
+    <h2 mat-dialog-title>{{ 'booking.unlockCode.title' | translate }}</h2>
     <button mat-icon-button (click)="onClose()" class="close-button">
       <mat-icon>close</mat-icon>
     </button>
@@ -9,29 +9,39 @@
   <div mat-dialog-content class="modal-content">
     <div class="instructions">
       <mat-icon>info_outline</mat-icon>
-      <p>
-        Ingresa la placa alfanumérica impresa en el vehículo
-      </p>
+      <p>{{ 'booking.unlockCode.instructions' | translate }}</p>
     </div>
+
+    @if (issuedCode) {
+      <div class="instructions">
+        <mat-icon>vpn_key</mat-icon>
+        <p>
+          {{ 'booking.unlockCode.newCode' | translate }}
+          <strong>{{ issuedCode }}</strong>
+          <button mat-icon-button type="button" (click)="copyCode()" [attr.aria-label]="'booking.unlockCode.copy' | translate">
+            <mat-icon>{{ copied ? 'check' : 'content_copy' }}</mat-icon>
+          </button>
+        </p>
+      </div>
+    }
 
     <form [formGroup]="unlockForm" (ngSubmit)="onSubmit()">
       <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Código de Desbloqueo</mat-label>
+        <mat-label>{{ 'booking.unlockCode.label' | translate }}</mat-label>
         <input
           matInput
           formControlName="unlockCode"
           type="text"
-          placeholder="XM001"
+          placeholder="K7M2QX"
+          autocomplete="one-time-code"
           [disabled]="isUnlocking"
         />
         <mat-icon matPrefix>lock_open</mat-icon>
         <mat-error *ngIf="unlockCodeControl?.hasError('required')">
-          El código es requerido
+          {{ 'booking.unlockCode.required' | translate }}
         </mat-error>
-        <mat-error
-          *ngIf="unlockCodeControl?.hasError('minlength') || unlockCodeControl?.hasError('maxlength')"
-        >
-          El código debe tener entre 4 y 8 caracteres
+        <mat-error *ngIf="unlockCodeControl?.hasError('minlength')">
+          {{ 'booking.unlockCode.length' | translate }}
         </mat-error>
       </mat-form-field>
 
@@ -44,7 +54,7 @@
 
   <div mat-dialog-actions class="modal-actions">
     <button mat-stroked-button (click)="onClose()" [disabled]="isUnlocking">
-      Cancelar
+      {{ 'common.cancel' | translate }}
     </button>
     <button
       mat-raised-button
@@ -58,8 +68,8 @@
         diameter="20"
         class="button-spinner"
       ></mat-spinner>
-      <span *ngIf="!isUnlocking">Desbloquear</span>
-      <span *ngIf="isUnlocking">Desbloqueando...</span>
+      <span *ngIf="!isUnlocking">{{ 'booking.unlockCode.unlock' | translate }}</span>
+      <span *ngIf="isUnlocking">{{ 'booking.unlockCode.unlocking' | translate }}</span>
     </button>
   </div>
 </div>

@@ -52,7 +52,7 @@ export interface UnlockMethodSelectionData {
             <mat-icon>lock</mat-icon>
             <div class="button-text">
               <strong>Desbloqueo Manual</strong>
-              <span>Ingresa la placa del vehículo</span>
+              <span>Ingresa el código de tu reserva</span>
             </div>
           </button>
 

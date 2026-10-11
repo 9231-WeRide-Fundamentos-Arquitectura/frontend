@@ -15,6 +15,8 @@ import { BookingStore } from '../../../application/booking.store';
 import { UnlockMethodSelectionModal } from '../unlock-method-selection-modal/unlock-method-selection-modal';
 import { UnlockRequestsApiEndpoint } from '../../../infraestructure/unlockRequests-api-endpoint';
 import { UnlockRequest } from '../../../domain/model/unlockRequest.entity';
+import { toDomainUnlockRequest } from '../../../infraestructure/unlockRequest-assembler';
+import { UnlockCodeToast } from '../unlock-code-toast/unlock-code-toast';
 import { firstValueFrom } from 'rxjs';
 import { ManualUnlockModal } from '../../../../garage/presentation/views/manual-unlock-modal/manual-unlock-modal';
 import { QrScannerModal } from '../../../../garage/presentation/views/qr-scanner-modal/qr-scanner-modal';
@@ -256,22 +258,7 @@ export class ScheduleUnlockComponent implements OnInit {
 
       const response = await firstValueFrom(this.unlockRequestsApi.create(unlockRequestData));
 
-      // Convertir a dominio
-      return new UnlockRequest(
-        response.id,
-        response.userId,
-        response.vehicleId,
-        response.bookingId,
-        new Date(response.requestedAt),
-        new Date(response.scheduledUnlockTime),
-        response.actualUnlockTime ? new Date(response.actualUnlockTime) : null,
-        response.status,
-        response.method,
-        response.location,
-        response.unlockCode,
-        response.attempts,
-        response.errorMessage
-      );
+      return toDomainUnlockRequest(response);
     } catch (error) {
       console.error('Error creating unlock request:', error);
       throw error;
@@ -308,7 +295,13 @@ export class ScheduleUnlockComponent implements OnInit {
           }
 
           // Abrir el modal correspondiente según el método
-          if (result.method === 'manual') {
+          if (result.method === 'manual' && unlockRequest.accessCode) {
+            // El código lo genera el servidor: se ofrece en un toast y el usuario decide cuándo activarlo.
+            this.snackBar.openFromComponent(UnlockCodeToast, {
+              data: { code: unlockRequest.accessCode, expiresAt: unlockRequest.codeExpiresAt },
+              horizontalPosition: 'end', verticalPosition: 'bottom', duration: 20000
+            }).onAction().subscribe(() => this.openManualUnlockModal(booking, unlockRequest));
+          } else if (result.method === 'manual') {
             this.openManualUnlockModal(booking, unlockRequest);
           } else {
             this.openQrScannerModal(booking, unlockRequest);

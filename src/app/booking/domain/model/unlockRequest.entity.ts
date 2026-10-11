@@ -12,6 +12,9 @@ export class UnlockRequest {
     public location: { lat: number; lng: number },
     public unlockCode: string,
     public attempts: number,
-    public errorMessage: string | null
+    public errorMessage: string | null,
+    // Código generado por el servidor; null en solicitudes antiguas (se tratan como caducadas).
+    public accessCode: string | null = null,
+    public codeExpiresAt: Date | null = null
   ) {}
 }

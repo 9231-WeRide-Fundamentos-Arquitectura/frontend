@@ -16,7 +16,9 @@ export function toDomainUnlockRequest(response: UnlockRequestResponse): UnlockRe
     response.location,
     response.unlockCode,
     response.attempts,
-    response.errorMessage
+    response.errorMessage,
+    response.accessCode ?? null,
+    response.codeExpiresAt ? new Date(response.codeExpiresAt) : null
   );
 }
 
@@ -34,6 +36,8 @@ export function toInfraUnlockRequest(unlockRequest: UnlockRequest): Omit<UnlockR
     location: unlockRequest.location,
     unlockCode: unlockRequest.unlockCode,
     attempts: unlockRequest.attempts,
-    errorMessage: unlockRequest.errorMessage
+    errorMessage: unlockRequest.errorMessage,
+    accessCode: unlockRequest.accessCode,
+    codeExpiresAt: unlockRequest.codeExpiresAt ? unlockRequest.codeExpiresAt.toISOString() : null
   };
 }

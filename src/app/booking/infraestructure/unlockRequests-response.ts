@@ -13,6 +13,8 @@ export interface UnlockRequestResponse {
   unlockCode: string;
   attempts: number;
   errorMessage: string | null;
+  accessCode?: string | null;
+  codeExpiresAt?: string | null;
 }
 
 // Respuesta de la API para listado de solicitudes de desbloqueo
