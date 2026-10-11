@@ -4,7 +4,7 @@
       <mat-icon>menu</mat-icon>
     </button>
     <div class="logo-container">
-      <img src="/WeRideLogo.png" alt="WeRide Logo" class="logo" />
+      <img src="/WeRideAlternative.png" alt="WeRide Logo" class="logo" />
     </div>
   </div>
 
@@ -14,6 +14,7 @@
     <button
       mat-icon-button
       class="notification-btn"
+      [class.has-unread]="unreadCount() > 0"
       [matMenuTriggerFor]="notificationMenu"
       (menuOpened)="onNotificationMenuOpened()"
       [matBadge]="unreadCount()"
@@ -51,7 +52,7 @@
       mat-menu-item
       class="notification-item"
       [class.unread]="!notification.isRead"
-      (click)="markAsRead(notification, $event)"
+      (click)="openNotification(notification, $event)"
     >
       <div class="notification-content">
         <div class="notification-icon">
@@ -64,6 +65,12 @@
         <div class="notification-text">
           <div class="notification-title">{{ notification.title }}</div>
           <div class="notification-message">{{ notification.message }}</div>
+          @if (unlockCodeOf(notification); as code) {
+            <button mat-button type="button" (click)="copyUnlockCode(code, $event)">
+              <mat-icon>content_copy</mat-icon>
+              {{ 'booking.unlockCode.copy' | translate }}
+            </button>
+          }
           <div class="notification-time">
             {{ getNotificationTime(notification) }}
           </div>

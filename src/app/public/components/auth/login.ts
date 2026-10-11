@@ -1,14 +1,21 @@
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
+import { LanguageSwitcher } from '../language-switcher/language-switcher';
+
+// Único punto de referencia del logo: para cambiarlo, sustituir public/WeRideLogo.png.
+const LOGO_SRC = '/WeRideLogo.png';
 
 @Component({
   selector: 'app-login',
-  imports: [RouterLink, TranslateModule],
+  imports: [RouterLink, TranslateModule, LanguageSwitcher],
   styleUrl: './login.css',
   template: `
     <div class="login-container">
+      <app-language-switcher class="lang"></app-language-switcher>
       <div class="login-card">
+        <img class="logo" [src]="logo" alt="WeRide" />
+        <h2 class="welcome">{{ 'auth.login.welcome' | translate }}</h2>
         <h1 class="title">{{ 'auth.login.title' | translate }}</h1>
         <p class="subtitle">{{ 'auth.login.subtitle' | translate }}</p>
 
@@ -25,10 +32,8 @@ import { TranslateModule } from '@ngx-translate/core';
             {{ 'auth.login.ofWeRide' | translate }}.</p>
         </div>
       </div>
-
-      <div class="illustration">
-        <img src="assets/auth/weride-loginscreen.png" alt="" />
-      </div>
     </div>`
 })
-export class LoginComponent {}
+export class LoginComponent {
+  readonly logo = LOGO_SRC;
+}

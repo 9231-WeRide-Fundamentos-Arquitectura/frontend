@@ -67,6 +67,31 @@
   color: white !important;
 }
 
+/* Punto rojo con la cantidad de notificaciones sin leer */
+::ng-deep .notification-btn .mat-badge-content {
+  background-color: #e53935 !important;
+  font-weight: 700;
+}
+
+/* La campana «suena» mientras haya notificaciones sin leer */
+.notification-btn.has-unread mat-icon {
+  transform-origin: 50% 10%;
+  animation: bell-ring 2.4s ease-in-out infinite;
+}
+
+@keyframes bell-ring {
+  0%, 60%, 100% { transform: rotate(0); }
+  5% { transform: rotate(14deg); }
+  15% { transform: rotate(-12deg); }
+  25% { transform: rotate(9deg); }
+  35% { transform: rotate(-6deg); }
+  45% { transform: rotate(3deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .notification-btn.has-unread mat-icon { animation: none; }
+}
+
 ::ng-deep .notification-menu {
   max-width: 400px;
   min-width: 320px;

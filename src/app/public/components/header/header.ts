@@ -1,4 +1,6 @@
-import { Component, Output, EventEmitter, inject, signal, OnInit, computed } from '@angular/core';
+import { Component, Output, EventEmitter, inject, signal, OnInit, computed, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { timer } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -39,8 +41,11 @@ export class HeaderComponent implements OnInit {
   notifications = signal<Notification[]>([]);
   unreadCount = computed(() => this.notifications().filter(n => !n.isRead).length);
 
+  private destroyRef = inject(DestroyRef);
+
   ngOnInit() {
-    this.loadNotifications();
+    // El servidor crea notificaciones sin avisar al cliente: se consulta cada 15 s para que la campana se entere.
+    timer(0, 15000).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => this.loadNotifications());
   }
 
   toggleSidebar() {
@@ -63,6 +68,19 @@ export class HeaderComponent implements OnInit {
     this.loadNotifications();
   }
 
+  // Al pulsar una notificación se marca como leída y, si tiene destino, se navega a él.
+  openNotification(notification: Notification, event: Event) {
+    const target = ['unlock_request', 'booking'].includes(notification.relatedEntityType ?? '') ? '/booking/list' : null;
+    if (!target) { this.markAsRead(notification, event); return; }
+    if (!notification.isRead) {
+      this.notificationsApi.markAsRead(notification.id).subscribe({
+        next: () => this.loadNotifications(),
+        error: (error) => console.error('Error marking notification as read:', error)
+      });
+    }
+    void this.router.navigate([target]);
+  }
+
   markAsRead(notification: Notification, event: Event) {
     event.stopPropagation();
     if (!notification.isRead) {
@@ -73,6 +91,17 @@ export class HeaderComponent implements OnInit {
         error: (error) => console.error('Error marking notification as read:', error)
       });
     }
+  }
+
+  // Las notificaciones de solicitudes de desbloqueo traen el código de 6 caracteres en el mensaje.
+  unlockCodeOf(notification: Notification): string | null {
+    if (notification.relatedEntityType !== 'unlock_request') return null;
+    return /\b[A-HJ-NP-Z2-9]{6}\b/.exec(notification.message)?.[0] ?? null;
+  }
+
+  copyUnlockCode(code: string, event: Event): void {
+    event.stopPropagation();
+    void navigator.clipboard?.writeText(code);
   }
 
   getNotificationTime(notification: Notification): string {
