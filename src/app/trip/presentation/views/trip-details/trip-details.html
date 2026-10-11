@@ -109,36 +109,31 @@
   } @if (!isLoading() && !isActiveTrip() && !relatedBooking()) {
   <mat-card class="no-trip-card">
     <div class="no-trip-content">
-      <mat-icon class="empty-icon">event_busy</mat-icon>
-      <h2>Aún no tienes un viaje en curso en este momento, quizás deseas...</h2>
+      <span class="empty-badge" aria-hidden="true"><mat-icon>electric_scooter</mat-icon></span>
+      <h2>{{ 'trip.empty.title' | translate }}</h2>
+      <p class="empty-subtitle">{{ 'trip.empty.subtitle' | translate }}</p>
 
-      <div class="no-trip-actions">
-        <button
-          mat-raised-button
-          color="primary"
-          class="primary-action-btn"
-          (click)="goToGarage()"
-        >
-          <mat-icon>directions_bike</mat-icon>
-          Reservar un vehículo ahora
+      <button type="button" class="empty-primary" (click)="goToGarage()">
+        <mat-icon aria-hidden="true">directions_bike</mat-icon>
+        {{ 'trip.empty.bookNow' | translate }}
+      </button>
+
+      <div class="empty-options">
+        <button type="button" class="empty-option" (click)="goToScheduleBooking()">
+          <mat-icon aria-hidden="true">schedule</mat-icon>
+          <span class="empty-option-text">
+            <span class="empty-option-title">{{ 'trip.empty.scheduleTitle' | translate }}</span>
+            <span class="empty-option-hint">{{ 'trip.empty.scheduleHint' | translate }}</span>
+          </span>
+          <mat-icon class="empty-option-chevron" aria-hidden="true">chevron_right</mat-icon>
         </button>
-
-        <button
-          mat-stroked-button
-          class="secondary-action-btn"
-          (click)="goToScheduleBooking()"
-        >
-          <mat-icon>schedule</mat-icon>
-          Programar una reserva
-        </button>
-
-        <button
-          mat-stroked-button
-          class="secondary-action-btn"
-          (click)="goToHistory()"
-        >
-          <mat-icon>history</mat-icon>
-          Historial de Viajes
+        <button type="button" class="empty-option" (click)="goToHistory()">
+          <mat-icon aria-hidden="true">history</mat-icon>
+          <span class="empty-option-text">
+            <span class="empty-option-title">{{ 'trip.empty.historyTitle' | translate }}</span>
+            <span class="empty-option-hint">{{ 'trip.empty.historyHint' | translate }}</span>
+          </span>
+          <mat-icon class="empty-option-chevron" aria-hidden="true">chevron_right</mat-icon>
         </button>
       </div>
     </div>

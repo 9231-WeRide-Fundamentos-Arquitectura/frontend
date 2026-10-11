@@ -93,4 +93,5 @@ export class TripHistory implements OnInit {
   seeMore() { this.loadTrips(false); }
   retry() { this.loadTrips(this.trips.length === 0); }
   goBack() { this.router.navigate(['/trip']); }
+  goToGarage() { this.router.navigate(['/garage']); }
 }

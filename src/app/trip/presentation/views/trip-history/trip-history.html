@@ -1,59 +1,103 @@
 <div class="trip-history-container">
   <div class="header">
     <button mat-icon-button class="back-btn" (click)="goBack()" [attr.aria-label]="'common.back' | translate">
-      <span style="font-size: 24px;">←</span>
+      <mat-icon>arrow_back</mat-icon>
     </button>
     <h2>{{ 'trip.tripHistory' | translate }}</h2>
   </div>
-  @if (loading) { <p role="status">{{ 'trip.history.loading' | translate }}</p> }
+  @if (loading) { <p class="status-line" role="status">{{ 'trip.history.loading' | translate }}</p> }
   @if (error) {
-    <p role="alert">{{ error | translate }}</p>
-    <button type="button" (click)="retry()" [disabled]="loading">{{ 'common.retry' | translate }}</button>
+    <div class="notice" role="alert">
+      <mat-icon aria-hidden="true">error_outline</mat-icon>
+      <span>{{ error | translate }}</span>
+      <button type="button" class="btn-quiet" (click)="retry()" [disabled]="loading">{{ 'common.retry' | translate }}</button>
+    </div>
   }
-  @if (!loading && !error && trips.length === 0) { <p>{{ 'trip.history.empty' | translate }}</p> }
-  @if (detailLoadingId) { <p role="status">{{ 'trip.history.loading' | translate }}</p> }
+  @if (!loading && !error && trips.length === 0) {
+    <div class="empty">
+      <span class="empty-badge" aria-hidden="true"><mat-icon>history</mat-icon></span>
+      <p>{{ 'trip.history.empty' | translate }}</p>
+      <button type="button" class="btn-primary" (click)="goToGarage()">
+        <mat-icon aria-hidden="true">directions_bike</mat-icon>
+        {{ 'trip.empty.bookNow' | translate }}
+      </button>
+    </div>
+  }
+  @if (detailLoadingId) { <p class="status-line" role="status">{{ 'trip.history.loading' | translate }}</p> }
   @if (detailErrorId) {
-    <p role="alert">{{ 'trip.history.error' | translate }}</p>
-    <button type="button" (click)="loadDetails(detailErrorId)">{{ 'common.retry' | translate }}</button>
+    <div class="notice" role="alert">
+      <mat-icon aria-hidden="true">error_outline</mat-icon>
+      <span>{{ 'trip.history.error' | translate }}</span>
+      <button type="button" class="btn-quiet" (click)="loadDetails(detailErrorId)">{{ 'common.retry' | translate }}</button>
+    </div>
   }
   @if (selectedTrip; as trip) {
-    <section class="trip-card" id="trip-history-details" aria-labelledby="trip-history-detail-title">
-      <div class="trip-info">
+    <section class="detail-panel" id="trip-history-details" aria-labelledby="trip-history-detail-title">
+      <div class="detail-header">
         <h3 id="trip-history-detail-title">{{ 'trip.viewDetails' | translate }}: {{ trip.route }}</h3>
-        <p>{{ 'trip.tripId' | translate }}: {{ trip.id }}</p>
-        <p>{{ 'trip.vehicle' | translate }}: {{ trip.vehicleName }}</p>
-        <p>{{ 'trip.dateAndTime' | translate }}: {{ formatDate(trip.startedAt) }} → {{ formatDate(trip.endedAt) }}</p>
-        <p>{{ 'trip.tripDuration' | translate }}: {{ trip.duration ?? '—' }} min</p>
-        <p>{{ 'trip.distanceTraveled' | translate }}: {{ trip.distance ?? '—' }} km</p>
-        <p>{{ 'trip.history.averageSpeed' | translate }}: {{ trip.averageSpeed ?? '—' }} km/h</p>
-        <p>{{ 'trip.history.cost' | translate }}: {{ trip.finalCost == null ? '—' : (trip.finalCost | currency:'USD') }}</p>
-        <p>{{ 'trip.history.route' | translate }}</p>
-        @if (trip.routeCoordinates.length) {
-          <ol class="route-coordinates">
-            @for (point of trip.routeCoordinates; track $index) { <li>{{ point.lat | number:'1.4-6' }}, {{ point.lng | number:'1.4-6' }}</li> }
-          </ol>
-        } @else { <p>{{ 'trip.history.noRoute' | translate }}</p> }
+        <button mat-icon-button type="button" (click)="selectedTrip = null" [attr.aria-label]="'common.close' | translate">
+          <mat-icon>close</mat-icon>
+        </button>
       </div>
-      <button type="button" (click)="selectedTrip = null">{{ 'common.close' | translate }}</button>
+      <dl class="detail-grid">
+        <dt>{{ 'trip.vehicle' | translate }}</dt>
+        <dd>{{ trip.vehicleName }}</dd>
+        <dt>{{ 'trip.dateAndTime' | translate }}</dt>
+        <dd>{{ formatDate(trip.startedAt) }} → {{ formatDate(trip.endedAt) }}</dd>
+        <dt>{{ 'trip.tripDuration' | translate }}</dt>
+        <dd>{{ trip.duration ?? '—' }} min</dd>
+        <dt>{{ 'trip.distanceTraveled' | translate }}</dt>
+        <dd>{{ trip.distance == null ? '—' : (trip.distance | number:'1.0-2') }} km</dd>
+        <dt>{{ 'trip.history.averageSpeed' | translate }}</dt>
+        <dd>{{ trip.averageSpeed == null ? '—' : (trip.averageSpeed | number:'1.0-1') }} km/h</dd>
+        <dt>{{ 'trip.history.cost' | translate }}</dt>
+        <dd>{{ trip.finalCost == null ? '—' : (trip.finalCost | currency:'USD') }}</dd>
+        <dt>{{ 'trip.tripId' | translate }}</dt>
+        <dd class="trip-id">{{ trip.id }}</dd>
+        <dt>{{ 'trip.history.route' | translate }}</dt>
+        <dd>
+          @if (trip.routeCoordinates.length) {
+            <ol class="route-coordinates">
+              @for (point of trip.routeCoordinates; track $index) { <li>{{ point.lat | number:'1.4-6' }}, {{ point.lng | number:'1.4-6' }}</li> }
+            </ol>
+          } @else { {{ 'trip.history.noRoute' | translate }} }
+        </dd>
+      </dl>
     </section>
   }
   @for (trip of trips; track trip.id) {
-    <div class="trip-card">
+    <article class="trip-card" [class.selected]="selectedTrip?.id === trip.id">
       @if (trip.image) { <img [src]="trip.image" [alt]="trip.vehicleName" class="vehicle-img" /> }
       <div class="trip-info">
-        <h3>{{ 'trip.trip' | translate }} ({{ trip.route }})</h3>
-        <p>{{ 'trip.dateAndTime' | translate }}: {{ formatDate(trip.startedAt) }}</p>
-        <p>{{ 'trip.vehicle' | translate }}: {{ trip.vehicleName }}</p>
-        <p>{{ 'trip.tripDuration' | translate }}: {{ trip.duration ?? '—' }} min</p>
-        <p>{{ 'trip.distanceTraveled' | translate }}: {{ trip.distance ?? '—' }} km</p>
-        <p>{{ 'trip.history.cost' | translate }}: {{ trip.finalCost == null ? '—' : (trip.finalCost | currency:'USD') }}</p>
-        <p>{{ 'trip.tripId' | translate }}: {{ trip.id }}</p>
+        <h3>{{ trip.route }}</h3>
+        <p class="trip-meta">{{ trip.vehicleName }} · {{ formatDate(trip.startedAt) }}</p>
+        <dl class="trip-metrics">
+          <div>
+            <dt>{{ 'trip.tripDuration' | translate }}</dt>
+            <dd>{{ trip.duration ?? '—' }} min</dd>
+          </div>
+          <div>
+            <dt>{{ 'trip.distanceTraveled' | translate }}</dt>
+            <dd>{{ trip.distance == null ? '—' : (trip.distance | number:'1.0-2') }} km</dd>
+          </div>
+          <div>
+            <dt>{{ 'trip.history.cost' | translate }}</dt>
+            <dd class="cost">{{ trip.finalCost == null ? '—' : (trip.finalCost | currency:'USD') }}</dd>
+          </div>
+        </dl>
+        <p class="trip-id">{{ 'trip.tripId' | translate }}: {{ trip.id }}</p>
       </div>
       <div class="trip-actions">
-        <button type="button" (click)="printReceipt(trip)">{{ 'trip.history.downloadReceipt' | translate }}</button>
-        <button type="button" (click)="viewDetails(trip)" [disabled]="!!detailLoadingId" [attr.aria-expanded]="selectedTrip?.id === trip.id" aria-controls="trip-history-details">{{ 'trip.viewDetails' | translate }}</button>
+        <button type="button" class="btn-tonal" (click)="viewDetails(trip)" [disabled]="!!detailLoadingId" [attr.aria-expanded]="selectedTrip?.id === trip.id" aria-controls="trip-history-details">
+          <mat-icon aria-hidden="true">{{ selectedTrip?.id === trip.id ? 'expand_less' : 'receipt_long' }}</mat-icon>
+          {{ 'trip.viewDetails' | translate }}
+        </button>
+        <button type="button" class="btn-quiet" (click)="printReceipt(trip)">
+          <mat-icon aria-hidden="true">download</mat-icon>
+          {{ 'trip.history.downloadReceipt' | translate }}
+        </button>
       </div>
-    </div>
+    </article>
   }
   @if (receiptTrip; as r) {
     <section class="print-receipt" aria-hidden="true">
@@ -72,5 +116,5 @@
       <p>{{ 'trip.receipt.note' | translate }}</p>
     </section>
   }
-  @if (hasMore) { <button type="button" class="see-more-btn" (click)="seeMore()" [disabled]="loading">{{ 'trip.seeMore' | translate }}</button> }
+  @if (hasMore) { <button type="button" class="btn-tonal see-more-btn" (click)="seeMore()" [disabled]="loading">{{ 'trip.seeMore' | translate }}</button> }
 </div>
