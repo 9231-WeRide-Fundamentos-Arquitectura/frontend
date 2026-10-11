@@ -43,7 +43,8 @@ export function toDomainBooking(raw: BackendBookingResponse): Booking {
     response.estimatedDistance ?? null,
     response.estimatedDuration ?? null,
     response.estimatedCost ?? null,
-    response.destinationChangeFees ?? null
+    response.destinationChangeFees ?? null,
+    response.archived ?? false
   );
 }
 

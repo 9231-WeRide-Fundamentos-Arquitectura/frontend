@@ -1,0 +1,139 @@
+<div class="header">
+  <h2 mat-dialog-title>{{ 'booking.details.title' | translate }}</h2>
+  <button mat-icon-button mat-dialog-close [attr.aria-label]="'common.close' | translate"><mat-icon>close</mat-icon></button>
+</div>
+
+<mat-dialog-content>
+  @if (loading()) {
+    <div class="loading"><mat-spinner diameter="40"></mat-spinner></div>
+  } @else if (error()) {
+    <app-error-state message="booking.details.error" (retry)="load()"></app-error-state>
+  } @else if (details(); as d) {
+    <div class="vehicle">
+      @if (d.vehicle?.image) { <img [src]="d.vehicle!.image" alt="" /> }
+      <div>
+        @if (d.vehicle; as v) {
+          <h3>{{ v.brand }} {{ v.model }}</h3>
+          <p>{{ 'garage.vehicle.types.' + v.type | translate }}</p>
+        } @else {
+          <h3>{{ 'booking.details.vehicleUnavailable' | translate }}</h3>
+        }
+        <span class="status">{{ 'booking.status.' + d.booking.status | translate }}</span>
+      </div>
+    </div>
+
+    <section>
+      <dl>
+        <dt><mat-icon aria-hidden="true">trip_origin</mat-icon>{{ 'booking.details.origin' | translate }}</dt>
+        <dd>{{ d.startLocation?.name ?? ('booking.details.stationUnavailable' | translate) }}</dd>
+        <dt><mat-icon aria-hidden="true">place</mat-icon>{{ 'booking.details.destination' | translate }}</dt>
+        <dd>{{ d.endLocation?.name ?? ('booking.details.stationUnavailable' | translate) }}</dd>
+        @if (d.booking.destinationAddress) {
+          <dt><mat-icon aria-hidden="true">map</mat-icon>{{ 'booking.details.destinationAddress' | translate }}</dt>
+          <dd>{{ d.booking.destinationAddress }}</dd>
+        }
+        <dt><mat-icon aria-hidden="true">event_available</mat-icon>{{ 'booking.details.reservedAt' | translate }}</dt>
+        <dd>{{ d.booking.reservedAt | date:'medium' }}</dd>
+        @if (d.booking.startDate) {
+          <dt><mat-icon aria-hidden="true">schedule</mat-icon>{{ 'booking.details.scheduledStart' | translate }}</dt>
+          <dd>{{ d.booking.startDate | date:'medium' }}</dd>
+        }
+        @if (d.booking.endDate) {
+          <dt><mat-icon aria-hidden="true">event_busy</mat-icon>{{ 'booking.details.scheduledEnd' | translate }}</dt>
+          <dd>{{ d.booking.endDate | date:'medium' }}</dd>
+        }
+      </dl>
+    </section>
+
+    @if (live) {
+      <section>
+        <h4>{{ 'booking.details.live' | translate }}</h4>
+        <dl>
+          @if (d.vehicle?.currentBattery != null) {
+            <dt><mat-icon aria-hidden="true">battery_charging_full</mat-icon>{{ 'booking.details.currentBattery' | translate }}</dt>
+            <dd>{{ d.vehicle!.currentBattery }}%</dd>
+          }
+          @if (d.booking.estimatedCost != null) {
+            <dt><mat-icon aria-hidden="true">payments</mat-icon>{{ 'booking.details.estimatedCost' | translate }}</dt>
+            <dd>{{ d.booking.estimatedCost | currency }}</dd>
+          }
+          @if (d.unlock?.accessCode; as code) {
+            <dt><mat-icon aria-hidden="true">lock_open</mat-icon>{{ 'booking.details.unlockCode' | translate }}</dt>
+            <dd>
+              <span class="code">{{ code }}</span>
+              <button mat-icon-button type="button" (click)="copyCode()" [attr.aria-label]="'booking.unlockCode.copy' | translate">
+                <mat-icon>{{ copied() ? 'check' : 'content_copy' }}</mat-icon>
+              </button>
+            </dd>
+            <dt><mat-icon aria-hidden="true">timer</mat-icon>{{ 'booking.details.codeExpires' | translate }}</dt>
+            <dd [class.expired]="codeExpired">
+              @if (codeExpired) { {{ 'booking.details.codeExpired' | translate }} }
+              @else { {{ d.unlock!.codeExpiresAt | date:'medium' }} }
+            </dd>
+          }
+        </dl>
+      </section>
+    }
+
+    @if (d.booking.status === 'completed') {
+      <section>
+        <h4>{{ 'booking.details.trip' | translate }}</h4>
+        <dl>
+          @if (d.booking.actualStartDate) {
+            <dt><mat-icon aria-hidden="true">play_circle</mat-icon>{{ 'booking.details.actualStart' | translate }}</dt>
+            <dd>{{ d.booking.actualStartDate | date:'medium' }}</dd>
+          }
+          @if (d.booking.actualEndDate) {
+            <dt><mat-icon aria-hidden="true">stop_circle</mat-icon>{{ 'booking.details.actualEnd' | translate }}</dt>
+            <dd>{{ d.booking.actualEndDate | date:'medium' }}</dd>
+          }
+          @if (d.booking.distance != null) {
+            <dt><mat-icon aria-hidden="true">straighten</mat-icon>{{ 'booking.details.distance' | translate }}</dt>
+            <dd>{{ d.booking.distance }} km</dd>
+          }
+          @if (d.booking.duration != null) {
+            <dt><mat-icon aria-hidden="true">timelapse</mat-icon>{{ 'booking.details.duration' | translate }}</dt>
+            <dd>{{ d.booking.duration }} {{ 'booking.minutes' | translate }}</dd>
+          }
+          @if (d.booking.averageSpeed != null) {
+            <dt><mat-icon aria-hidden="true">speed</mat-icon>{{ 'booking.details.averageSpeed' | translate }}</dt>
+            <dd>{{ d.booking.averageSpeed }} km/h</dd>
+          }
+          @if (d.booking.rating) {
+            <dt><mat-icon aria-hidden="true">star</mat-icon>{{ 'booking.details.rating' | translate }}</dt>
+            <dd>{{ d.booking.rating.score }}/5@if (d.booking.rating.comment) { — {{ d.booking.rating.comment }} }</dd>
+          }
+        </dl>
+      </section>
+      <section>
+        <h4>{{ 'booking.details.charge' | translate }}</h4>
+        <dl>
+          @if (d.booking.totalCost != null) {
+            <dt><mat-icon aria-hidden="true">receipt_long</mat-icon>{{ 'booking.details.total' | translate }}</dt>
+            <dd>{{ d.booking.totalCost | currency }}</dd>
+          }
+          @if (d.booking.discount) {
+            <dt><mat-icon aria-hidden="true">sell</mat-icon>{{ 'booking.details.discount' | translate }}</dt>
+            <dd>-{{ d.booking.discount | currency }}</dd>
+          }
+          @if (d.booking.destinationChangeFees) {
+            <dt><mat-icon aria-hidden="true">alt_route</mat-icon>{{ 'booking.details.changeFee' | translate }}</dt>
+            <dd>{{ d.booking.destinationChangeFees | currency }}</dd>
+          }
+          @if (d.booking.finalCost != null) {
+            <dt><mat-icon aria-hidden="true">payments</mat-icon>{{ 'booking.details.finalCost' | translate }}</dt>
+            <dd>{{ d.booking.finalCost | currency }}</dd>
+          }
+          @if (d.booking.paymentMethod) {
+            <dt><mat-icon aria-hidden="true">credit_card</mat-icon>{{ 'booking.details.paymentMethod' | translate }}</dt>
+            <dd>{{ d.booking.paymentMethod }}</dd>
+          }
+          @if (d.booking.paymentStatus) {
+            <dt><mat-icon aria-hidden="true">verified</mat-icon>{{ 'booking.details.paymentStatus' | translate }}</dt>
+            <dd>{{ d.booking.paymentStatus }}</dd>
+          }
+        </dl>
+      </section>
+    }
+  }
+</mat-dialog-content>

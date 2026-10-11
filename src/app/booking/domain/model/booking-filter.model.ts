@@ -1,4 +1,4 @@
-export type BookingSortBy = 'date' | 'vehicle' | 'status';
+export type BookingSortBy = 'date' | 'vehicle' | 'status' | 'archived';
 export type SortOrder = 'asc' | 'desc';
 
 export interface BookingFilter {

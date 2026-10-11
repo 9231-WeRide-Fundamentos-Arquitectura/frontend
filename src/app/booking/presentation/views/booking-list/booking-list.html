@@ -10,8 +10,12 @@
   <div class="filters" *ngIf="!isLoading">
     <mat-form-field appearance="outline" class="search-field">
       <mat-label>{{ 'booking.list.searchByVehicle' | translate }}</mat-label>
-      <input matInput [(ngModel)]="searchTerm" (ngModelChange)="onSearchChange()" [placeholder]="'booking.list.vehiclePlaceholder' | translate">
-      <mat-icon matPrefix>search</mat-icon>
+      <mat-select [(ngModel)]="searchTerm" (ngModelChange)="onSearchChange()">
+        <mat-option value="">{{ 'booking.list.allVehicles' | translate }}</mat-option>
+        @for (name of vehicleOptions; track name) {
+          <mat-option [value]="name">{{ name }}</mat-option>
+        }
+      </mat-select>
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="sort-field">
@@ -20,6 +24,7 @@
         <mat-option value="date">{{ 'booking.list.sortDate' | translate }}</mat-option>
         <mat-option value="vehicle">{{ 'booking.list.sortVehicle' | translate }}</mat-option>
         <mat-option value="status">{{ 'booking.list.sortStatus' | translate }}</mat-option>
+        <mat-option value="archived">{{ 'booking.list.sortArchived' | translate }}</mat-option>
       </mat-select>
     </mat-form-field>
 
@@ -78,6 +83,15 @@
       </div>
       <div class="booking-actions">
         <button
+          type="button"
+          class="btn-details"
+          (click)="openDetails(booking.id)"
+          [title]="'booking.details.open' | translate"
+          [attr.aria-label]="'booking.details.open' | translate"
+        >
+          <mat-icon>arrow_outward</mat-icon>
+        </button>
+        <button
           class="btn-activate"
           (click)="activateBooking(booking)"
           *ngIf="booking.status === 'pending' || booking.status === 'confirmed'"
@@ -104,14 +118,15 @@
           {{ 'booking.cancel' | translate }}
         </button>
         }
+        @if ((booking.status === 'completed' || booking.status === 'cancelled') && !booking.archived) {
         <button
           class="btn-danger-outline"
-          (click)="deleteBooking(booking.id)"
-          [disabled]="booking.status === 'active'"
+          (click)="archiveBooking(booking.id)"
         >
-          <mat-icon>delete</mat-icon>
-          {{ 'booking.delete' | translate }}
+          <mat-icon>archive</mat-icon>
+          {{ 'booking.archive' | translate }}
         </button>
+        }
       </div>
     </div>
   </div>

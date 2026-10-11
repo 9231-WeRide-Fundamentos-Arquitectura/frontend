@@ -15,6 +15,10 @@ import { VehicleResponse } from '../../../infraestructure/vehicle-response';
 import { LocationsApiEndpoint } from '../../../infraestructure/locations-api-endpoint';
 import { LocationResponse } from '../../../infraestructure/locations-response';
 import { AuthService } from '../../../../core/services/auth.service';
+import { MatDialog } from '@angular/material/dialog';
+import { Booking } from '../../../domain/model/booking.entity';
+import { UnlockCodeToast } from '../unlock-code-toast/unlock-code-toast';
+import { ManualUnlockModal } from '../../../../garage/presentation/views/manual-unlock-modal/manual-unlock-modal';
 
 @Component({
   selector: 'app-booking-form',
@@ -35,6 +39,7 @@ export class BookingFormComponent implements OnInit {
   private snackBar = inject(MatSnackBar);
   private translate = inject(TranslateService);
   private auth = inject(AuthService);
+  private dialog = inject(MatDialog);
 
   // Edit mode properties
   isEditMode = false;
@@ -178,8 +183,10 @@ export class BookingFormComponent implements OnInit {
         endDate: endDate.toISOString(),
         totalCost: this.calculateCost()
       }));
-      this.bookingStore.addBooking(toDomainBooking(response));
-      this.showSuccessMessage('booking.createSuccess');
+      const booking = toDomainBooking(response);
+      this.bookingStore.addBooking(booking);
+      // Crear la solicitud hace que el servidor genere el código y la notificación.
+      if (!await this.offerUnlockCode(booking, vehicle)) this.showSuccessMessage('booking.createSuccess');
       this.showSummary = true;
       setTimeout(() => this.router.navigate(['/booking/list']), 2000);
     } catch (error: any) {
@@ -188,6 +195,25 @@ export class BookingFormComponent implements OnInit {
       else this.showErrorMessage('booking.form.createError');
     } finally {
       this.saving = false;
+    }
+  }
+
+  // Crea la solicitud de desbloqueo y ofrece el código en un toast. Devuelve false si no hubo código que mostrar.
+  private async offerUnlockCode(booking: Booking, vehicle: VehicleResponse): Promise<boolean> {
+    try {
+      const { request } = await this.bookingStore.ensureManualRequest(booking);
+      if (!request.accessCode) return false;
+      this.snackBar.openFromComponent(UnlockCodeToast, {
+        data: { code: request.accessCode, expiresAt: request.codeExpiresAt },
+        horizontalPosition: 'end', verticalPosition: 'bottom', duration: 20000
+      }).onAction().subscribe(() => this.dialog.open(ManualUnlockModal, {
+        width: '600px', maxWidth: '95vw', autoFocus: false,
+        data: { vehicle, booking, unlockRequest: request }
+      }));
+      return true;
+    } catch {
+      // La reserva ya existe: el código se podrá pedir desde «Activar» en Mis Reservas.
+      return false;
     }
   }
 

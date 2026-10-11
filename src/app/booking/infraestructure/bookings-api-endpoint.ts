@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
-import { BookingResponse, BackendBookingResponse, DestinationQuote } from './bookings-response';
+import { BookingResponse, BackendBookingResponse, BookingDetailsResponse, DestinationQuote } from './bookings-response';
 import { normalizeBookingResponse } from './booking-assembler';
 import { environment } from '../../../environments/environment';
 
@@ -56,9 +56,15 @@ export class BookingsApiEndpoint {
     return this.http.post<BackendBookingResponse>(`${this.baseUrl}/${id}/complete`, metrics).pipe(map(normalizeBookingResponse));
   }
 
-  // Eliminar una reserva
-  delete(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}/${id}`);
+  // Detalle de solo lectura: reserva, vehículo, estaciones y código de desbloqueo
+  getDetails(id: string): Observable<BookingDetailsResponse> {
+    return this.http.get<BookingDetailsResponse & { booking: BackendBookingResponse }>(`${this.baseUrl}/${encodeURIComponent(id)}/details`)
+      .pipe(map(details => ({ ...details, booking: normalizeBookingResponse(details.booking) })));
+  }
+
+  // Archivar una reserva completada o cancelada (no se puede desarchivar)
+  archive(id: string): Observable<BookingResponse> {
+    return this.http.put<BackendBookingResponse>(`${this.baseUrl}/${encodeURIComponent(id)}/archive`, null).pipe(map(normalizeBookingResponse));
   }
 
   // Obtener reservas por userId

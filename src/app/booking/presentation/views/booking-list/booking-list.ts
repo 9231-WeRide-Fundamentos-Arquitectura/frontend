@@ -23,6 +23,7 @@ import { BookingFilter } from '../../../domain/model/booking-filter.model';
 import { ManualUnlockModal } from '../../../../garage/presentation/views/manual-unlock-modal/manual-unlock-modal';
 import { QrScannerModal } from '../../../../garage/presentation/views/qr-scanner-modal/qr-scanner-modal';
 import { forkJoin } from 'rxjs';
+import { BookingDetailsModal } from '../booking-details-modal/booking-details-modal';
 
 interface BookingView {
   id: string;
@@ -34,6 +35,7 @@ interface BookingView {
   duration: number | null;
   finalCost: number | null;
   status: 'draft' | 'pending' | 'confirmed' | 'active' | 'completed' | 'cancelled';
+  archived: boolean;
 }
 
 @Component({
@@ -61,7 +63,8 @@ export class BookingListComponent implements OnInit {
   isActivating = false;
   
   searchTerm = '';
-  sortBy: 'date' | 'vehicle' | 'status' = 'date';
+  vehicleOptions: string[] = [];
+  sortBy: 'date' | 'vehicle' | 'status' | 'archived' = 'date';
   sortOrder: 'asc' | 'desc' = 'desc';
   
   currentFilter: BookingFilter = this.filterService.getDefaultFilter();
@@ -96,6 +99,8 @@ export class BookingListComponent implements OnInit {
           new Map(allBookings.map(b => [b.id, b])).values()
         );
         
+        this.vehicleOptions = [...new Set(vehicles.map(v => `${v.brand} ${v.model}`))].sort((a, b) => a.localeCompare(b));
+
         this.bookings = uniqueBookings.map(booking => {
           const vehicle = vehicles.find(v => v.id === booking.vehicleId);
           const startLocation = locations.find(l => l.id === booking.startLocationId);
@@ -111,7 +116,8 @@ export class BookingListComponent implements OnInit {
             startDate: this.effectiveStart(booking),
             duration: booking.duration,
             finalCost: booking.finalCost,
-            status: booking.status
+            status: booking.status,
+            archived: !!booking.archived
           };
         });
         this.applyFilters();
@@ -136,7 +142,8 @@ export class BookingListComponent implements OnInit {
       startDate: this.effectiveStart(booking),
       duration: booking.duration,
       finalCost: booking.finalCost,
-      status: booking.status
+      status: booking.status,
+      archived: !!booking.archived
     }));
     this.applyFilters();
     this.isLoading = false;
@@ -184,6 +191,10 @@ export class BookingListComponent implements OnInit {
     this.applyFilters();
   }
 
+  openDetails(id: string): void {
+    this.dialog.open(BookingDetailsModal, { width: '700px', maxWidth: '95vw', autoFocus: false, data: { bookingId: id } });
+  }
+
   editBooking(id: string): void {
     // Navigate to booking form with the booking ID
     this.router.navigate(['/booking/form', id]);
@@ -212,36 +223,21 @@ export class BookingListComponent implements OnInit {
     }
   }
 
-  deleteBooking(id: string): void {
-    // Show confirmation dialog
-    const message = this.translate.instant('booking.confirmDeleteMessage');
-    const confirmText = this.translate.instant('common.confirm');
-    
-    if (confirm(message)) {
-      // Delete from localStorage
-      const success = this.bookingStorage.deleteBooking(id);
-      
-      if (success) {
-        // Remove from local view
-        this.bookings = this.bookings.filter(b => b.id !== id);
-        
-        // Update store
-        this.bookingStore.deleteBooking(id);
-        
-        // Try to delete from API as well (optional)
-        this.bookingsApi.delete(id).subscribe({
-          next: () => {
-            this.showSuccessMessage('booking.deleteSuccess');
-          },
-          error: (error) => {
-            console.error('Error deleting booking from API:', error);
-            // Still show success since localStorage was updated
-            this.showSuccessMessage('booking.deleteSuccess');
-          }
-        });
-      } else {
-        this.showErrorMessage('booking.deleteError');
-      }
+  archiveBooking(id: string): void {
+    const booking = this.bookings.find(b => b.id === id);
+    if (!booking || (booking.status !== 'completed' && booking.status !== 'cancelled')) return;
+
+    if (confirm(this.translate.instant('booking.confirmArchiveMessage'))) {
+      // El servidor es la fuente de verdad: solo se actualiza la vista con la reserva que devuelve.
+      this.bookingsApi.archive(id).subscribe({
+        next: response => {
+          this.bookingStore.updateBooking(toDomainBooking(response));
+          booking.archived = true;
+          this.applyFilters();
+          this.showSuccessMessage('booking.archiveSuccess');
+        },
+        error: () => this.showErrorMessage('booking.archiveError')
+      });
     }
   }
 

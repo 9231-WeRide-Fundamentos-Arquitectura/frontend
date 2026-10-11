@@ -29,6 +29,7 @@ export interface BookingResponse {
   estimatedDuration?: number | null;
   estimatedCost?: number | null;
   destinationChangeFees?: number | null;
+  archived?: boolean;
 }
 
 // Cotización calculada por el backend para un punto de destino
@@ -46,6 +47,17 @@ export interface DestinationQuote {
 export interface BookingsListResponse {
   bookings: BookingResponse[];
 }
+// GET /bookings/{id}/details: reserva con vehículo, estaciones y solicitud de desbloqueo vigente.
+// currentBattery y unlock solo vienen en reservas reserved / in_progress.
+export interface BookingDetailsResponse {
+  booking: BookingResponse;
+  vehicle: { id: string; brand: string; model: string; type: string; image: string | null; color: string | null;
+    pricePerMinute: number; currentBattery: number | null } | null;
+  startLocation: { id: string; name: string; address: string | null } | null;
+  endLocation: { id: string; name: string; address: string | null } | null;
+  unlock: { id: string; status: string; accessCode: string | null; codeExpiresAt: string | null } | null;
+}
+
 export type BackendBookingResponse = Omit<BookingResponse, 'status'> & {
   status: BookingResponse['status'] | 'reserved' | 'in_progress';
 };

@@ -38,6 +38,7 @@ export class Booking {
     public estimatedDistance: number | null = null,
     public estimatedDuration: number | null = null,
     public estimatedCost: number | null = null,
-    public destinationChangeFees: number | null = null
+    public destinationChangeFees: number | null = null,
+    public archived: boolean = false
   ) {}
 }
