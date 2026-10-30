@@ -19,7 +19,7 @@ export class BookingsApiEndpoint {
   // Crear una nueva reserva
   create(booking: Pick<BookingResponse, 'userId' | 'vehicleId' | 'startLocationId' | 'endLocationId'> & Partial<Pick<BookingResponse, 'startDate' | 'endDate' | 'totalCost'>>): Observable<BookingResponse> {
     const { userId, vehicleId, startLocationId, endLocationId, startDate, endDate, totalCost } = booking;
-    return this.http.post<BackendBookingResponse>(this.baseUrl, { userId, vehicleId, startLocationId, endLocationId, startDate, endDate, totalCost }).pipe(map(normalizeBookingResponse));
+    return this.http.post<BackendBookingResponse>(this.baseUrl, { userId, vehicleId, startLocationId, endLocationId, startDate, endDate, totalCost }, { headers: { 'Idempotency-Key': crypto.randomUUID() } }).pipe(map(normalizeBookingResponse));
   }
 
   // Disponibilidad del vehículo frente a las reservas de todos los usuarios

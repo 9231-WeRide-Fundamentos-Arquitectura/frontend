@@ -98,11 +98,11 @@ export class BookingNotificationService implements OnDestroy {
    * Scenario 2: Notify when booking is about to expire
    */
   private checkBookingExpiring(booking: Booking, now: Date): void {
-    if (!booking.endDate || this.state.notifiedExpiringIds.has(booking.id)) {
+    if (this.state.notifiedExpiringIds.has(booking.id)) {
       return;
     }
 
-    const endTime = new Date(booking.endDate);
+    const endTime = new Date(new Date(booking.startDate).getTime() + 15 * 60_000);
     const timeUntilEndMinutes = (endTime.getTime() - now.getTime()) / (1000 * 60);
 
     // Trigger if less than 5 minutes remaining
@@ -119,11 +119,11 @@ export class BookingNotificationService implements OnDestroy {
    * Scenario 3: Notify when booking has expired without starting trip
    */
   private checkBookingExpired(booking: Booking, now: Date): void {
-    if (!booking.endDate || this.state.notifiedExpiredIds.has(booking.id)) {
+    if (this.state.notifiedExpiredIds.has(booking.id)) {
       return;
     }
 
-    const endTime = new Date(booking.endDate);
+    const endTime = new Date(new Date(booking.startDate).getTime() + 15 * 60_000);
     const hasExpired = now.getTime() > endTime.getTime();
 
     // Trigger if expired and trip was never started
@@ -245,7 +245,7 @@ export class BookingNotificationService implements OnDestroy {
   ): Promise<void> {
     try {
       await firstValueFrom(this.notificationsApi.create({
-        userId: this.auth.session()!.username,
+        userId: this.auth.userId,
         title,
         message,
         type,

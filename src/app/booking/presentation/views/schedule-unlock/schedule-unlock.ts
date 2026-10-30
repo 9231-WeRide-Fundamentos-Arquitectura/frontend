@@ -161,14 +161,14 @@ export class ScheduleUnlockComponent implements OnInit {
   get dateError(): string | null {
     if (!this.selectedDate || !this.unlockTime) return null;
     if (!this.validateDateTime()) {
-      return 'La fecha debe ser futura';
+      return this.translate.instant('scheduleUnlock.futureDate');
     }
     return null;
   }
 
   formatDateTime(): string {
     if (!this.selectedDate || !this.unlockTime) {
-      return 'Select date and time';
+      return this.translate.instant('scheduleUnlock.selectDateTime');
     }
 
     const date = this.localDate();
@@ -215,7 +215,7 @@ export class ScheduleUnlockComponent implements OnInit {
    */
   private async checkVehicleAvailability(startDate: Date, endDate: Date): Promise<{ available: boolean; message?: string }> {
     if (!this.selectedVehicle) {
-      return { available: false, message: 'Vehículo no seleccionado' };
+      return { available: false, message: this.translate.instant('scheduleUnlock.noVehicleSelected') };
     }
 
     try {
@@ -223,8 +223,10 @@ export class ScheduleUnlockComponent implements OnInit {
       if (result.available) return { available: true };
       // Sugerencia: la primera hora libre posterior al inicio pedido (US22 esc. 2).
       const nextFree = result.busySlots.map(s => new Date(s.endDate)).filter(d => d > startDate).sort((x, y) => x.getTime() - y.getTime())[0];
-      const hint = nextFree ? ` Prueba a partir de las ${nextFree.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}.` : ' Prueba con otro vehículo.';
-      return { available: false, message: `El vehículo no está disponible en ese horario.${hint}` };
+      const hint = nextFree
+          ? this.translate.instant('scheduleUnlock.tryFrom', { time: nextFree.toLocaleTimeString(this.translate.currentLang, { hour: '2-digit', minute: '2-digit' }) })
+          : this.translate.instant('scheduleUnlock.tryOther');
+      return { available: false, message: `${this.translate.instant('scheduleUnlock.unavailableAtTime')} ${hint}` };
     } catch (error) {
       console.error('Error checking vehicle availability:', error);
       // En caso de error se permite continuar: el backend vuelve a validar al crear la reserva (409).
@@ -291,7 +293,7 @@ export class ScheduleUnlockComponent implements OnInit {
           );
 
           if (!unlockRequest) {
-            throw new Error('No se pudo crear la solicitud de desbloqueo');
+            throw new Error(this.translate.instant('scheduleUnlock.unlockRequestFailed'));
           }
 
           // Abrir el modal correspondiente según el método
@@ -308,7 +310,7 @@ export class ScheduleUnlockComponent implements OnInit {
           }
         } catch (error) {
           console.error('Error creating unlock request:', error);
-          this.snackBar.open('Error al crear la solicitud de desbloqueo. Intenta de nuevo.', 'Cerrar', {
+          this.snackBar.open(this.translate.instant('scheduleUnlock.unlockRequestError'), this.translate.instant('common.close'), {
             duration: 4000,
             horizontalPosition: 'end',
             verticalPosition: 'top',
@@ -400,23 +402,23 @@ export class ScheduleUnlockComponent implements OnInit {
     }
     // Validar campos requeridos
     if (!this.selectedVehicle || !this.selectedDate || !this.unlockTime) {
-      this.snackBar.open('Por favor completa todos los campos requeridos', 'Cerrar', {
+      this.snackBar.open(this.translate.instant('scheduleUnlock.requiredFields'), this.translate.instant('common.close'), {
         duration: 3000,
         horizontalPosition: 'end',
         verticalPosition: 'top'
       });
-      this.availabilityError = 'Completa todos los campos requeridos';
+      this.availabilityError = this.translate.instant('scheduleUnlock.requiredFields');
       return;
     }
 
     // Validar fecha y hora futura
     if (!this.validateDateTime()) {
-      this.snackBar.open('La fecha y hora deben ser futuras', 'Cerrar', {
+      this.snackBar.open(this.translate.instant('scheduleUnlock.futureDateTime'), this.translate.instant('common.close'), {
         duration: 3000,
         horizontalPosition: 'end',
         verticalPosition: 'top'
       });
-      this.availabilityError = 'La fecha y hora deben ser futuras';
+      this.availabilityError = this.translate.instant('scheduleUnlock.futureDateTime');
       return;
     }
 
@@ -433,13 +435,13 @@ export class ScheduleUnlockComponent implements OnInit {
     const availability = await this.checkVehicleAvailability(startDate, endDate);
 
     if (!availability.available) {
-      this.snackBar.open(availability.message || 'El vehículo no está disponible en el horario seleccionado', 'Cerrar', {
+      this.snackBar.open(availability.message || this.translate.instant('scheduleUnlock.unavailableAtTime'), this.translate.instant('common.close'), {
         duration: 5000,
         horizontalPosition: 'end',
         verticalPosition: 'top',
         panelClass: ['error-snackbar']
       });
-      this.availabilityError = availability.message || 'Vehículo no disponible';
+      this.availabilityError = availability.message || this.translate.instant('scheduleUnlock.unavailable');
       return;
     }
 
@@ -483,10 +485,10 @@ export class ScheduleUnlockComponent implements OnInit {
 
         // Show success message
         const message = this.isImmediate
-          ? 'Reserva confirmada. ¡Disfruta tu viaje!'
-          : 'Reserva programada exitosamente';
+          ? this.translate.instant('scheduleUnlock.confirmed')
+          : this.translate.instant('scheduleUnlock.scheduled');
 
-        this.snackBar.open(message, 'Cerrar', {
+        this.snackBar.open(message, this.translate.instant('common.close'), {
           duration: 2000,
           horizontalPosition: 'end',
           verticalPosition: 'top',
@@ -498,18 +500,18 @@ export class ScheduleUnlockComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error creating booking:', error);
-        let errorMessage = 'Error al crear la reserva. Intenta de nuevo.';
+        let errorMessage = this.translate.instant('scheduleUnlock.bookingError');
 
         // Mensajes de error más específicos
         if (error.status === 409) {
           errorMessage = error.error?.message === 'Batería crítica'
             ? this.translate.instant('garage.vehicle.criticalBattery')
-            : 'El vehículo ya está reservado en ese horario. Por favor, selecciona otro horario.';
+            : this.translate.instant('scheduleUnlock.alreadyBooked');
         } else if (error.status === 400) {
-          errorMessage = 'Los datos de la reserva no son válidos. Verifica la información.';
+          errorMessage = this.translate.instant('scheduleUnlock.invalidBooking');
         }
 
-        this.snackBar.open(errorMessage, 'Cerrar', {
+        this.snackBar.open(errorMessage, this.translate.instant('common.close'), {
           duration: 4000,
           horizontalPosition: 'end',
           verticalPosition: 'top',
@@ -522,7 +524,7 @@ export class ScheduleUnlockComponent implements OnInit {
 
   async saveDraft() {
     if (!this.selectedVehicle) {
-      this.snackBar.open('Selecciona un vehículo primero', 'Cerrar', {
+      this.snackBar.open(this.translate.instant('scheduleUnlock.selectVehicleFirst'), this.translate.instant('common.close'), {
         duration: 3000
       });
       return;
@@ -543,7 +545,7 @@ export class ScheduleUnlockComponent implements OnInit {
 
     this.draftService.saveDraft(draftData).subscribe({
       next: () => {
-        this.snackBar.open('Borrador guardado exitosamente', 'Ver borradores', {
+        this.snackBar.open(this.translate.instant('scheduleUnlock.draftSaved'), this.translate.instant('scheduleUnlock.viewDrafts'), {
           duration: 4000,
           horizontalPosition: 'end',
           verticalPosition: 'top',
@@ -554,7 +556,7 @@ export class ScheduleUnlockComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error saving draft:', error);
-        this.snackBar.open('Error al guardar borrador', 'Cerrar', {
+        this.snackBar.open(this.translate.instant('scheduleUnlock.draftSaveError'), this.translate.instant('common.close'), {
           duration: 3000,
           panelClass: ['error-snackbar']
         });
@@ -579,22 +581,22 @@ export class ScheduleUnlockComponent implements OnInit {
     this.availabilityError = '';
     this.selectedDate = draft.selectedDate;
     this.unlockTime = draft.unlockTime;
-    this.duration = draft.duration;
+    this.duration = Math.ceil(draft.duration);
     this.smsReminder = draft.smsReminder;
     this.emailConfirmation = draft.emailConfirmation;
     this.pushNotification = draft.pushNotification;
     
-    this.snackBar.open('Borrador cargado', 'Cerrar', { duration: 2000 });
+    this.snackBar.open(this.translate.instant('scheduleUnlock.draftLoaded'), this.translate.instant('common.close'), { duration: 2000 });
   }
 
   deleteDraft(draftId: string) {
     this.draftService.deleteDraft(draftId).subscribe({
       next: () => {
-        this.snackBar.open('Borrador eliminado', 'Cerrar', { duration: 2000 });
+        this.snackBar.open(this.translate.instant('scheduleUnlock.draftDeleted'), this.translate.instant('common.close'), { duration: 2000 });
       },
       error: (error) => {
         console.error('Error deleting draft:', error);
-        this.snackBar.open('Error al eliminar borrador', 'Cerrar', { duration: 3000 });
+        this.snackBar.open(this.translate.instant('scheduleUnlock.draftDeleteError'), this.translate.instant('common.close'), { duration: 3000 });
       }
     });
   }

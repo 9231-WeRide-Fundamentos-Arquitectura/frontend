@@ -1,9 +1,11 @@
+import { componentTestProviders } from '../testing/component-test-providers';
 import { TestBed } from '@angular/core/testing';
 import { App } from './app';
 
 describe('App', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      providers: componentTestProviders(),
       imports: [App],
     }).compileComponents();
   });
@@ -14,10 +16,10 @@ describe('App', () => {
     expect(app).toBeTruthy();
   });
 
-  it('should render title', () => {
+  it('renders its route outlet', () => {
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, Frontend-WeRide');
+    expect(compiled.querySelector('router-outlet')).not.toBeNull();
   });
 });

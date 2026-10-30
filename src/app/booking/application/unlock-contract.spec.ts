@@ -32,7 +32,7 @@ describe('Unlock server contract', () => {
     const retry = store.unlockVehicleManually('', 'K7M2QX', booking, 'request-id');
     http.expectOne(environment.apiUrl + '/unlockRequests/request-id').flush({ id: 'request-id', status: 'unlocked' });
     await firstValueFrom(timer(0));
-    http.expectOne(environment.apiUrl + '/bookings').flush([{ ...resource, status: 'in_progress', actualStartDate: resource.startDate }]);
+    http.expectOne(environment.apiUrl + '/bookings/booking-id').flush({ ...resource, status: 'in_progress', actualStartDate: resource.startDate });
     expect((await retry).success).toBeTrue();
     expect(store.getBookingById(booking.id)?.status).toBe('active');
     http.expectNone(environment.apiUrl + '/bookings/booking-id/start');

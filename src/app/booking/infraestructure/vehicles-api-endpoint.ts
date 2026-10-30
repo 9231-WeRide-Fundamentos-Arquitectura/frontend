@@ -24,7 +24,7 @@ export class VehiclesApiEndpoint {
   }
 
   update(id: string, vehicle: Partial<VehicleResponse>): Observable<VehicleResponse> {
-    return this.http.patch<VehicleResponse>(`${this.baseUrl}/${id}`, vehicle).pipe(map(response => normalizeVehicleResponse(response)));
+    return this.http.put<VehicleResponse>(`${this.baseUrl}/${id}`, vehicle).pipe(map(response => normalizeVehicleResponse(response)));
   }
 
   delete(id: string): Observable<void> {

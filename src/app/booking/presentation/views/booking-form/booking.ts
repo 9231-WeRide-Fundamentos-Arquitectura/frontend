@@ -246,7 +246,8 @@ export class BookingFormComponent implements OnInit {
         vehicleId: vehicle.id,
         selectedDate: this.selectedDate,
         unlockTime: this.unlockTime,
-        duration: this.duration,
+        // El borrador se guarda en horas (0,25 a 24) y este formulario trabaja en minutos.
+        duration: Math.min(24, Math.max(0.25, this.duration / 60)),
         smsReminder: this.smsReminder,
         emailConfirmation: this.emailConfirmation,
         pushNotification: this.pushNotification

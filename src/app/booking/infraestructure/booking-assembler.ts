@@ -6,7 +6,7 @@ export function normalizeBookingResponse(response: BackendBookingResponse): Book
     ...response,
     id: String(response.id), userId: String(response.userId), vehicleId: String(response.vehicleId),
     startLocationId: String(response.startLocationId), endLocationId: response.endLocationId == null ? '' : String(response.endLocationId),
-    status: response.status === 'reserved' ? 'pending' : response.status === 'in_progress' ? 'active' : response.status,
+    status: response.status === 'reserved' || response.status === 'starting' ? 'pending' : ['in_progress', 'completing', 'cancelling', 'paused'].includes(response.status) ? 'active' : response.status as BookingResponse['status'],
     issues: response.issues ?? []
   };
 }

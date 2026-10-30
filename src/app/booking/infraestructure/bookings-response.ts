@@ -59,5 +59,5 @@ export interface BookingDetailsResponse {
 }
 
 export type BackendBookingResponse = Omit<BookingResponse, 'status'> & {
-  status: BookingResponse['status'] | 'reserved' | 'in_progress';
+  status: BookingResponse['status'] | 'reserved' | 'in_progress' | 'starting' | 'completing' | 'cancelling' | 'paused';
 };
