@@ -1,3 +1,4 @@
+import { componentTestProviders } from '../../../../../testing/component-test-providers';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { GarageFilter } from './garage-filter';
@@ -8,6 +9,7 @@ describe('GarageFilter', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      providers: componentTestProviders(),
       imports: [GarageFilter]
     })
     .compileComponents();

@@ -129,7 +129,7 @@ export class ManualUnlockModal implements OnInit {
         const booking = await this.bookingStore.getBookingByIdAsync(unlockResult.bookingId!);
         // El desbloqueo no inicia el viaje: primero se marca el destino y luego se inicia.
         if (!await this.tripInitializer.startTripWithDestination(booking)) {
-          throw new Error('El vehículo se desbloqueó. Vuelve a abrir el mapa para cargar el viaje.');
+          throw new Error(this.translate.instant('unlock.reopenMap'));
         }
 
         this.snackBar.open(

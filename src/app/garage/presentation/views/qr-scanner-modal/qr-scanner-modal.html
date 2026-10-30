@@ -19,7 +19,7 @@
       <div class="vehicle-details">
         <p class="vehicle-name">{{ vehicle.brand }} {{ vehicle.model }}</p>
         <p *ngIf="unlockRequest" class="unlock-code">
-          Código: {{ unlockRequest.unlockCode }}
+          {{ 'unlock.code' | translate }}: {{ unlockRequest.unlockCode }}
         </p>
       </div>
     </div>
@@ -29,19 +29,19 @@
       <p class="placeholder-text">
         {{ 'garage.qrScanner.scanHere' | translate }}
       </p>
-      <label for="qr-content">Contenido del QR (simulación)</label>
+      <label for="qr-content">{{ 'unlock.qrContent' | translate }}</label>
       <input id="qr-content" [(ngModel)]="scannedCode" placeholder="weride:vehicle:1" [disabled]="isScanning" />
       <ng-container *ngIf="vehicle">
         <p class="placeholder-text">{{ 'garage.qrScanner.codeHint' | translate }}: <code>{{ qrContent }}</code></p>
         <button mat-stroked-button type="button" (click)="simulateScan()" [disabled]="isScanning">{{ 'garage.qrScanner.simulateScan' | translate }}</button>
       </ng-container>
       <p *ngIf="errorMessage" role="alert">{{ errorMessage }}</p>
-      <p *ngIf="isScanning" class="scanning-text">Escaneando...</p>
+      <p *ngIf="isScanning" class="scanning-text">{{ 'unlock.scanning' | translate }}</p>
     </div>
   </div>
 
   <div mat-dialog-actions class="modal-actions">
-    <button mat-button (click)="openManual()" [disabled]="isScanning">Ingresar código manualmente</button>
+    <button mat-button (click)="openManual()" [disabled]="isScanning">{{ 'unlock.enterManually' | translate }}</button>
     <button
       mat-raised-button
       (click)="onOK()"
@@ -49,7 +49,7 @@
       class="ok-button"
     >
       <span *ngIf="!isScanning">{{ 'garage.qrScanner.ok' | translate }}</span>
-      <span *ngIf="isScanning">Escaneando...</span>
+      <span *ngIf="isScanning">{{ 'unlock.scanning' | translate }}</span>
     </button>
   </div>
 </div>

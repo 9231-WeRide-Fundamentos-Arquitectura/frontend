@@ -1,3 +1,4 @@
+import { componentTestProviders } from '../../../../../testing/component-test-providers';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { GarageLayout } from './garage-layout';
@@ -8,6 +9,7 @@ describe('GarageLayout', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      providers: componentTestProviders(),
       imports: [GarageLayout]
     })
     .compileComponents();

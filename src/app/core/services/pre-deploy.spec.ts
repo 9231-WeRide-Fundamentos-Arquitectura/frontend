@@ -44,7 +44,7 @@ describe('Pre-deploy backend contracts', () => {
     auth.session.set({ id: '42', token: 'test-token', username: 'test-user' });
   });
 
-  afterEach(() => { http.verify(); auth.logout(); localStorage.removeItem('weride_bookings'); });
+  afterEach(() => { auth.logout(); http.match(api + '/accounts/me/sessions/logout').forEach(request => request.flush(null, {status:204,statusText:'No Content'})); http.verify(); localStorage.removeItem('weride_bookings'); });
 
   it('stores sign-in identity, scopes Bearer headers and clears an unauthorized session', () => {
     auth.signIn('test-user', 'test-password').subscribe();
@@ -79,7 +79,7 @@ describe('Pre-deploy backend contracts', () => {
     expect(complete.request.method).toBe('POST'); expect(complete.request.body).toEqual(metrics);
     complete.flush({ ...reserved, status: 'completed' });
     bookings.getById(reserved.id).subscribe(b => expect(b.status).toBe('pending'));
-    http.expectOne(api + '/bookings').flush([reserved]);
+    http.expectOne(api + '/bookings/' + reserved.id).flush(reserved);
     bookings.cancel(reserved.id).subscribe();
     const cancel = http.expectOne(api + '/bookings/' + reserved.id);
     expect(cancel.request.method).toBe('PATCH'); expect(cancel.request.body).toBeNull(); cancel.flush({ ...reserved, status: 'cancelled' });
@@ -95,7 +95,7 @@ describe('Pre-deploy backend contracts', () => {
   it('uses accountId for profiles and sends only supported update fields', () => {
     const profiles = TestBed.inject(UserApiEndpoint);
     profiles.getAll().subscribe(users => {
-      expect(users[0].id).toBe(42);
+      expect(users[0].id).toBe('42');
       profiles.update(users[0].id, users[0]).subscribe();
     });
     http.expectOne(api + '/profiles/42').flush({ id: 900, accountId: 42, name: 'Test', phone: '+51999999999' });
@@ -129,6 +129,7 @@ describe('Pre-deploy backend contracts', () => {
     TestBed.tick();
     const failed = initializer.reserveAndStart('7', '3');
     http.expectOne(api + '/bookings').flush([]); await firstValueFrom(timer(0));
+    http.expectOne(api + '/vehicles/7').flush({id:7,location:3,type:'electric_scooter',battery:90}); await firstValueFrom(timer(0));
     http.expectOne(api + '/location').flush([{ id: 3, coordinates: { lat: -12, lng: -77 } }]);
     await firstValueFrom(timer(0));
     const create = http.expectOne(api + '/bookings'); expect(create.request.method).toBe('POST');

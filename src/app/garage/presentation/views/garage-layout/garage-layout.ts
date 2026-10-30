@@ -161,6 +161,10 @@ export class GarageLayout implements OnInit {
   }
 
   openReportProblemModal(vehicle: Vehicle) {
+    if (this.activeBookingService.getActiveBooking()?.vehicleId !== String(vehicle.id)) {
+      this.snackBar.open(this.translate.instant('garage.reportProblem.needsBooking'), this.translate.instant('common.close'), { duration: 4000 });
+      return;
+    }
     const reportDialog = this.dialog.open(ReportProblemModal, {
       data: vehicle,
       width: '900px',
@@ -182,8 +186,8 @@ export class GarageLayout implements OnInit {
 
     if (activeBooking) {
       const snackBarRef = this.snackBar.open(
-        'Ya tienes una reserva activa',
-        'Ver Reserva',
+        this.translate.instant('garage.activeBooking.message'),
+        this.translate.instant('garage.activeBooking.view'),
         {
           duration: 5000,
           horizontalPosition: 'end',

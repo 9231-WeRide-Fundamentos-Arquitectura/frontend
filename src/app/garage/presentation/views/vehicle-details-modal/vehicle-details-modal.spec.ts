@@ -1,3 +1,4 @@
+import { componentTestProviders } from '../../../../../testing/component-test-providers';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { VehicleDetailsModal } from './vehicle-details-modal';
@@ -35,7 +36,7 @@ describe('VehicleDetailsModal', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [VehicleDetailsModal],
-      providers: [
+      providers: [...componentTestProviders(), 
         { provide: MAT_DIALOG_DATA, useValue: mockVehicle },
         { provide: MatDialogRef, useValue: { close: jasmine.createSpy('close') } }
       ]

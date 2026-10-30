@@ -4,7 +4,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { UsersApiEndpoint } from '../../../infraestructure/users-api-endpoint';
 import { UserResponse } from '../../../infraestructure/users-response';
 
@@ -16,6 +16,7 @@ import { UserResponse } from '../../../infraestructure/users-response';
 })
 export class UserList implements OnInit {
   private usersApi = inject(UsersApiEndpoint);
+  private router=inject(Router);
 
   users: UserResponse[] = [];
   isLoading = true;
@@ -52,13 +53,6 @@ export class UserList implements OnInit {
   }
 
   deleteUser(id: string): void {
-    if (confirm('¿Estás seguro de eliminar este usuario?')) {
-      this.usersApi.delete(id).subscribe({
-        next: () => {
-          this.users = this.users.filter(u => u.id !== id);
-        },
-        error: (error) => console.error('Error deleting user:', error)
-      });
-    }
+    void this.router.navigate(['/user']);
   }
 }

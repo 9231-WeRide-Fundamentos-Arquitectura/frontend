@@ -3,7 +3,7 @@ import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/materia
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { Vehicle } from '../../../domain/model/vehicle.model';
@@ -35,6 +35,7 @@ export interface QrScannerModalData {
   styleUrl: './qr-scanner-modal.css'
 })
 export class QrScannerModal {
+  private translate = inject(TranslateService);
   isScanning = false;
   scannedCode = '';
   errorMessage = '';
@@ -85,12 +86,12 @@ export class QrScannerModal {
         const booking = await this.bookingStore.getBookingByIdAsync(unlockResult.bookingId!);
         // El desbloqueo no inicia el viaje: primero se marca el destino y luego se inicia.
         if (!await this.tripInitializer.startTripWithDestination(booking)) {
-          throw new Error('El vehículo se desbloqueó. Vuelve a abrir el mapa para cargar el viaje.');
+          throw new Error(this.translate.instant('unlock.reopenMap'));
         }
 
         this.snackBar.open(
-          'Vehículo desbloqueado con éxito',
-          'Cerrar',
+          this.translate.instant('unlock.success'),
+          this.translate.instant('common.close'),
           { duration: 3000, panelClass: ['success-snackbar'] }
         );
 
@@ -100,16 +101,16 @@ export class QrScannerModal {
           queryParams: { activeTrip: true }
         });
       } else {
-        throw new Error(unlockResult.error || 'Error al desbloquear');
+        throw new Error(unlockResult.error || this.translate.instant('unlock.error'));
       }
     } catch (error) {
       this.errorMessage = error instanceof Error
         ? error.message
-        : 'Error al escanear el código QR';
+        : this.translate.instant('unlock.scanError');
 
       this.snackBar.open(
         this.errorMessage,
-        'Reintentar',
+        this.translate.instant('common.retry'),
         { duration: 5000, panelClass: ['error-snackbar'] }
       );
       this.isScanning = false;

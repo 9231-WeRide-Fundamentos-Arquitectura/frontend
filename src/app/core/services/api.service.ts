@@ -2,6 +2,7 @@ import { normalizeVehicleResponse } from '../../booking/infraestructure/vehicle-
 import { normalizeLocationResponse } from '../../booking/infraestructure/location-assembler';
 import { toDomainTrip } from '../../trip/infrastructure/trip-assembler';
 import { Injectable } from '@angular/core';
+import { AuthService } from './auth.service';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { environment } from '../../../environments/environment';
@@ -164,14 +165,20 @@ export class ApiService {
   private readonly baseUrl = environment.apiUrl;
   private readonly endpoints = environment.endpoints;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private auth: AuthService) {}
 
   getUsers(): Observable<User[]> {
-    return this.http.get<User[]>(`${this.baseUrl}${this.endpoints.users}`);
+    return this.getUserById(this.auth.userId).pipe(map(user => [user]));
   }
 
   getUserById(id: string): Observable<User> {
-    return this.http.get<User>(`${this.baseUrl}${this.endpoints.users}/${id}`);
+    return this.http.get<any>(`${this.baseUrl}${this.endpoints.users}/${encodeURIComponent(id)}`).pipe(map(p => ({
+      id: String(p.accountId ?? p.id), name: p.name ?? '', email: this.auth.session()?.username ?? '', phone: p.phone ?? '',
+      membershipPlanId: '', isActive: true, profilePicture: p.profilePicture ?? '', dateOfBirth: p.dateOfBirth ?? '', address: p.address ?? '',
+      emergencyContact: p.emergencyContact ?? '', verificationStatus: '', registrationDate: '',
+      preferences: { language: p.language ?? 'es', notifications: p.notifications ?? true, theme: p.theme ?? 'light' },
+      statistics: { totalTrips: 0, totalDistance: 0, totalSpent: 0, averageRating: 0 }
+    })));
   }
 
   getVehicles(): Observable<Vehicle[]> {
@@ -179,7 +186,7 @@ export class ApiService {
   }
 
   getAvailableVehicles(): Observable<Vehicle[]> {
-    return this.http.get<Vehicle[]>(`${this.baseUrl}${this.endpoints.vehicles}?status=available`).pipe(map(responses => responses.map(normalizeVehicleResponse)));
+    return this.getVehicles().pipe(map(vehicles => vehicles.filter(vehicle => vehicle.status === 'available')));
   }
 
   getPlans(): Observable<Plan[]> {
