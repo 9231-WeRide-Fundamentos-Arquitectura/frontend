@@ -54,7 +54,9 @@
   "navbar": {
     "notifications": {
       "title": "Notifications",
-      "markAllRead": "Mark all as read"
+      "markAllRead": "Mark all as read",
+      "empty": "No notifications",
+      "emptySubtext": "You're all caught up"
     },
     "userMenu": {
       "subtitle": "Welcome!",
@@ -248,7 +250,12 @@
       },
       "description": "Describe your problem:",
       "descriptionPlaceholder": "Optional description...",
-      "submit": "Send report"
+      "submit": "Send report",
+      "needsBooking": "You can only report a problem on a vehicle you have booked"
+    },
+    "activeBooking": {
+      "message": "You already have an active booking",
+      "view": "View Booking"
     }
   },
   "user": {
@@ -590,6 +597,17 @@
       "finalCost": "Final cost",
       "paymentMethod": "Payment method",
       "paymentStatus": "Payment status"
+    },
+    "success": {
+      "title": "Vehicle booked successfully",
+      "battery": "Battery:",
+      "price": "Price:",
+      "details": "Booking details",
+      "date": "Date:",
+      "startTime": "Start time:",
+      "estimatedDuration": "Estimated duration:",
+      "endDate": "End date:",
+      "continue": "Continue to trip"
     }
   },
   "trip": {
@@ -687,6 +705,50 @@
       "changeFees": "Destination change fees",
       "total": "Total",
       "note": "To save it as a PDF, choose \"Save as PDF\" in the print dialog."
+    },
+    "active": {
+      "title": "Trip in Progress",
+      "finish": "Finish",
+      "status": "Trip in progress",
+      "battery": "Battery",
+      "elapsed": "Elapsed time",
+      "remaining": "Remaining time",
+      "estimatedDistance": "Estimated distance",
+      "origin": "Origin",
+      "destination": "Destination",
+      "finishing": "Finishing trip…",
+      "simulate": "Simulate and finish",
+      "simulateHint": "Generates a simulated route to your destination and saves it to your history.",
+      "connectionError": "Connection error - Information may be out of date"
+    },
+    "detailsView": {
+      "loading": "Loading trip details...",
+      "bookingStatus": "Booking Status",
+      "activated": "Activated",
+      "activateNow": "Activate Booking Now",
+      "activeInUse": "Your booking is active and in use"
+    },
+    "map": {
+      "start": "Start",
+      "connectionError": "Connection Error",
+      "vehiclesError": "Could not load vehicle information. Please check your internet connection.",
+      "nearby": "Nearby Vehicles",
+      "noVehicles": "No vehicles available near this location",
+      "alternatives": "Alternative locations with vehicles:",
+      "activeBookingError": "Could not check your active booking",
+      "vehicleLocationError": "Could not find the vehicle location",
+      "startError": "Could not start the booking",
+      "noGeolocation": "Your browser does not support geolocation",
+      "noActiveToFinish": "There is no active booking to finish",
+      "simulationError": "Could not generate the simulated route",
+      "finishError": "Could not finish the trip. Your booking is still active; try again.",
+      "noActiveToChange": "There is no active booking to change the destination of"
+    },
+    "init": {
+      "alreadyBooked": "You already have a booking. Continue from your bookings.",
+      "invalidLocation": "This vehicle has no valid location and cannot be booked right now.",
+      "unlockLater": "The booking is saved. You can unlock it from My Bookings.",
+      "retryUnlock": "The booking is saved. Retry the unlock from My Bookings."
     }
   },
   "plans": {
@@ -807,7 +869,8 @@
       "unknown": "An unexpected error occurred.",
       "maxRetries": "Maximum retry attempts reached.",
       "retry": "Retry"
-    }
+    },
+    "bookFirst": "Book a vehicle first"
   },
   "errors": {
     "generic": "An error has occurred. Please try again.",
@@ -922,5 +985,48 @@
       "hours": "{{count}} h ago",
       "days": "{{count}} d ago"
     }
+  },
+  "scheduleUnlock": {
+    "draftRestoreError": "This draft can no longer be restored",
+    "locationsError": "Could not load the stations",
+    "stationUnavailable": "This station is not available",
+    "savedDrafts": "Saved Drafts",
+    "selectDate": "Select date",
+    "selectTime": "Select time",
+    "selectDuration": "Select duration",
+    "unavailable": "Vehicle unavailable",
+    "available": "Vehicle available for the selected date",
+    "futureDate": "The date must be in the future",
+    "selectDateTime": "Select date and time",
+    "noVehicleSelected": "No vehicle selected",
+    "tryFrom": "Try from {{time}}.",
+    "tryOther": "Try another vehicle.",
+    "unavailableAtTime": "The vehicle is not available at that time.",
+    "unlockRequestFailed": "Could not create the unlock request",
+    "unlockRequestError": "Error creating the unlock request. Try again.",
+    "requiredFields": "Please complete all required fields",
+    "futureDateTime": "Date and time must be in the future",
+    "confirmed": "Booking confirmed. Enjoy your ride!",
+    "scheduled": "Booking scheduled successfully",
+    "bookingError": "Error creating the booking. Try again.",
+    "alreadyBooked": "The vehicle is already booked at that time. Please choose another time.",
+    "invalidBooking": "The booking data is not valid. Check the information.",
+    "selectVehicleFirst": "Select a vehicle first",
+    "draftSaved": "Draft saved successfully",
+    "viewDrafts": "View drafts",
+    "draftSaveError": "Error saving the draft",
+    "draftLoaded": "Draft loaded",
+    "draftDeleted": "Draft deleted",
+    "draftDeleteError": "Error deleting the draft"
+  },
+  "unlock": {
+    "code": "Code",
+    "qrContent": "QR content (simulation)",
+    "scanning": "Scanning...",
+    "enterManually": "Enter code manually",
+    "reopenMap": "The vehicle was unlocked. Reopen the map to load the trip.",
+    "success": "Vehicle unlocked successfully",
+    "error": "Error unlocking the vehicle",
+    "scanError": "Error scanning the QR code"
   }
 }

@@ -54,7 +54,9 @@
   "navbar": {
     "notifications": {
       "title": "Notificaciones",
-      "markAllRead": "Marcar todas como leídas"
+      "markAllRead": "Marcar todas como leídas",
+      "empty": "Sin notificaciones",
+      "emptySubtext": "Estás al día"
     },
     "userMenu": {
       "subtitle": "¡Bienvenido!",
@@ -248,7 +250,12 @@
       },
       "description": "Descríbenos tu problema:",
       "descriptionPlaceholder": "Descripción opcional...",
-      "submit": "Enviar reporte"
+      "submit": "Enviar reporte",
+      "needsBooking": "Solo puedes reportar un problema en un vehículo que tengas reservado"
+    },
+    "activeBooking": {
+      "message": "Ya tienes una reserva activa",
+      "view": "Ver reserva"
     }
   },
   "user": {
@@ -590,6 +597,17 @@
       "finalCost": "Costo final",
       "paymentMethod": "Método de pago",
       "paymentStatus": "Estado del pago"
+    },
+    "success": {
+      "title": "Vehículo reservado satisfactoriamente",
+      "battery": "Batería:",
+      "price": "Precio:",
+      "details": "Detalles de la reserva",
+      "date": "Fecha:",
+      "startTime": "Hora de inicio:",
+      "estimatedDuration": "Duración estimada:",
+      "endDate": "Fecha de fin:",
+      "continue": "Continuar al viaje"
     }
   },
   "trip": {
@@ -687,6 +705,50 @@
       "changeFees": "Cargos por cambio de destino",
       "total": "Total",
       "note": "Para guardarlo como PDF, elige «Guardar como PDF» en el diálogo de impresión."
+    },
+    "active": {
+      "title": "Viaje en curso",
+      "finish": "Finalizar",
+      "status": "Viaje en progreso",
+      "battery": "Batería",
+      "elapsed": "Tiempo transcurrido",
+      "remaining": "Tiempo restante",
+      "estimatedDistance": "Distancia estimada",
+      "origin": "Origen",
+      "destination": "Destino",
+      "finishing": "Finalizando viaje…",
+      "simulate": "Simular y finalizar",
+      "simulateHint": "Genera un recorrido simulado hasta tu destino y lo guarda en el historial.",
+      "connectionError": "Error de conexión - La información puede no estar actualizada"
+    },
+    "detailsView": {
+      "loading": "Cargando detalles del viaje...",
+      "bookingStatus": "Estado de reserva",
+      "activated": "Activada",
+      "activateNow": "Activar reserva ahora",
+      "activeInUse": "Tu reserva está activa y en uso"
+    },
+    "map": {
+      "start": "Inicio",
+      "connectionError": "Error de conexión",
+      "vehiclesError": "No se pudo cargar la información de los vehículos. Por favor, verifica tu conexión a internet.",
+      "nearby": "Vehículos cercanos",
+      "noVehicles": "No hay vehículos disponibles cerca de esta ubicación",
+      "alternatives": "Ubicaciones alternativas con vehículos:",
+      "activeBookingError": "No se pudo consultar tu reserva activa",
+      "vehicleLocationError": "No se pudo encontrar la ubicación del vehículo",
+      "startError": "No se pudo iniciar la reserva",
+      "noGeolocation": "Tu navegador no soporta geolocalización",
+      "noActiveToFinish": "No hay una reserva activa para finalizar",
+      "simulationError": "No se pudo generar el recorrido simulado",
+      "finishError": "No se pudo finalizar el viaje. Tu reserva sigue activa; intenta nuevamente.",
+      "noActiveToChange": "No hay una reserva activa para cambiar el destino"
+    },
+    "init": {
+      "alreadyBooked": "Ya tienes una reserva. Continúa desde tus reservas.",
+      "invalidLocation": "Este vehículo no tiene una ubicación válida y no se puede reservar ahora.",
+      "unlockLater": "La reserva está guardada. Puedes desbloquearla desde Mis Reservas.",
+      "retryUnlock": "La reserva está guardada. Reintenta el desbloqueo desde Mis Reservas."
     }
   },
   "plans": {
@@ -807,7 +869,8 @@
       "unknown": "Ocurrió un error inesperado.",
       "maxRetries": "Se alcanzó el máximo de reintentos.",
       "retry": "Reintentar"
-    }
+    },
+    "bookFirst": "Reserva un vehículo primero"
   },
   "errors": {
     "generic": "Ha ocurrido un error. Por favor, intente nuevamente.",
@@ -922,5 +985,48 @@
       "hours": "Hace {{count}} h",
       "days": "Hace {{count}} d"
     }
+  },
+  "scheduleUnlock": {
+    "draftRestoreError": "Este borrador ya no se puede recuperar",
+    "locationsError": "No se pudieron cargar las estaciones",
+    "stationUnavailable": "Esta estación no está disponible",
+    "savedDrafts": "Borradores guardados",
+    "selectDate": "Seleccionar fecha",
+    "selectTime": "Seleccionar hora",
+    "selectDuration": "Seleccionar duración",
+    "unavailable": "Vehículo no disponible",
+    "available": "Vehículo disponible para la fecha seleccionada",
+    "futureDate": "La fecha debe ser futura",
+    "selectDateTime": "Selecciona fecha y hora",
+    "noVehicleSelected": "Vehículo no seleccionado",
+    "tryFrom": "Prueba a partir de las {{time}}.",
+    "tryOther": "Prueba con otro vehículo.",
+    "unavailableAtTime": "El vehículo no está disponible en ese horario.",
+    "unlockRequestFailed": "No se pudo crear la solicitud de desbloqueo",
+    "unlockRequestError": "Error al crear la solicitud de desbloqueo. Intenta de nuevo.",
+    "requiredFields": "Por favor completa todos los campos requeridos",
+    "futureDateTime": "La fecha y hora deben ser futuras",
+    "confirmed": "Reserva confirmada. ¡Disfruta tu viaje!",
+    "scheduled": "Reserva programada exitosamente",
+    "bookingError": "Error al crear la reserva. Intenta de nuevo.",
+    "alreadyBooked": "El vehículo ya está reservado en ese horario. Por favor, selecciona otro horario.",
+    "invalidBooking": "Los datos de la reserva no son válidos. Verifica la información.",
+    "selectVehicleFirst": "Selecciona un vehículo primero",
+    "draftSaved": "Borrador guardado exitosamente",
+    "viewDrafts": "Ver borradores",
+    "draftSaveError": "Error al guardar borrador",
+    "draftLoaded": "Borrador cargado",
+    "draftDeleted": "Borrador eliminado",
+    "draftDeleteError": "Error al eliminar borrador"
+  },
+  "unlock": {
+    "code": "Código",
+    "qrContent": "Contenido del QR (simulación)",
+    "scanning": "Escaneando...",
+    "enterManually": "Ingresar código manualmente",
+    "reopenMap": "El vehículo se desbloqueó. Vuelve a abrir el mapa para cargar el viaje.",
+    "success": "Vehículo desbloqueado con éxito",
+    "error": "Error al desbloquear",
+    "scanError": "Error al escanear el código QR"
   }
 }
