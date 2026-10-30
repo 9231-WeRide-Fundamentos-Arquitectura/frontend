@@ -1,16 +1,17 @@
+@if (currentVehicle() && currentLocation() && destinationLocation()) {
 <div class="trip-info-panel">
   <div class="trip-header">
-    <h3 class="trip-title">Viaje en Curso</h3>
+    <h3 class="trip-title">{{ 'trip.active.title' | translate }}</h3>
     <div class="header-actions">
-      <button class="report-problem-button" (click)="reportProblem()" title="{{ 'trip.reportProblem.reportButton' | translate }}">
+      <button class="report-problem-button" [disabled]="busy()" (click)="reportProblem()" title="{{ 'trip.reportProblem.reportButton' | translate }}">
         <span class="button-icon">⚠️</span>
       </button>
-      <button class="end-trip-button" (click)="endTrip()">Finalizar</button>
+      <button class="end-trip-button" [disabled]="busy()" (click)="endTrip()">{{ 'trip.active.finish' | translate }}</button>
     </div>
   </div>
   <div class="trip-status">
     <div class="status-indicator"></div>
-    <span class="status-text">Viaje en progreso</span>
+    <span class="status-text">{{ 'trip.active.status' | translate }}</span>
   </div>
 
   <div class="vehicle-trip-info">
@@ -26,7 +27,7 @@
       <div class="trip-stat">
         <div class="stat-icon">🔋</div>
         <div class="stat-content">
-          <span class="stat-label">Batería</span>
+          <span class="stat-label">{{ 'trip.active.battery' | translate }}</span>
           <span class="stat-value" [style.color]="currentBattery() > 50 ? '#10b981' : currentBattery() > 20 ? '#f59e0b' : '#ef4444'">
             {{currentBattery()}}%
           </span>
@@ -36,7 +37,7 @@
       <div class="trip-stat">
         <div class="stat-icon">⏱️</div>
         <div class="stat-content">
-          <span class="stat-label">Tiempo transcurrido</span>
+          <span class="stat-label">{{ 'trip.active.elapsed' | translate }}</span>
           <span class="stat-value">{{elapsedTime()}}</span>
         </div>
       </div>
@@ -44,7 +45,7 @@
       <div class="trip-stat">
         <div class="stat-icon">⏳</div>
         <div class="stat-content">
-          <span class="stat-label">Tiempo restante</span>
+          <span class="stat-label">{{ 'trip.active.remaining' | translate }}</span>
           <span class="stat-value">{{remainingTime()}}</span>
         </div>
       </div>
@@ -52,7 +53,7 @@
       <div class="trip-stat">
         <div class="stat-icon">📍</div>
         <div class="stat-content">
-          <span class="stat-label">Distancia estimada</span>
+          <span class="stat-label">{{ 'trip.active.estimatedDistance' | translate }}</span>
           <span class="stat-value">{{estimatedDistance() | number:'1.1-1'}} km</span>
         </div>
       </div>
@@ -62,7 +63,7 @@
       <div class="route-point">
         <div class="route-dot start-dot"></div>
         <div class="route-details">
-          <span class="route-label">Origen</span>
+          <span class="route-label">{{ 'trip.active.origin' | translate }}</span>
           <span class="route-name">{{currentLocation()!.name}}</span>
         </div>
       </div>
@@ -70,7 +71,7 @@
       <div class="route-point">
         <div class="route-dot destination-dot"></div>
         <div class="route-details">
-          <span class="route-label">Destino</span>
+          <span class="route-label">{{ 'trip.active.destination' | translate }}</span>
           <span class="route-name">{{destinationLocation()!.name}}</span>
           @if (destinationEstimate(); as estimate) {
             <span class="route-estimate">
@@ -82,18 +83,24 @@
       </div>
     </div>
 
-    <button class="change-destination-button" (click)="changeDestination()">
+    <button type="button" class="simulate-trip-button" [disabled]="busy()" [attr.aria-busy]="busy()" (click)="simulateTrip()">
+      {{ (busy() ? 'trip.active.finishing' : 'trip.active.simulate') | translate }}
+    </button>
+    <p class="simulation-hint" aria-live="polite">{{ 'trip.active.simulateHint' | translate }}</p>
+
+    <button class="change-destination-button" [disabled]="busy()" (click)="changeDestination()">
       <span class="button-icon">📍</span>
       {{ 'booking.destination.change' | translate }}
     </button>
 
   </div>
 </div>
+}
 
 @if (connectionError()) {
   <div class="trip-error-banner">
     <span class="error-banner-icon">⚠️</span>
-    <span class="error-banner-text">Error de conexión - La información puede no estar actualizada</span>
-    <button class="error-banner-button" (click)="retryUpdate()">Reintentar</button>
+    <span class="error-banner-text">{{ 'trip.active.connectionError' | translate }}</span>
+    <button class="error-banner-button" (click)="retryUpdate()">{{ 'common.retry' | translate }}</button>
   </div>
 }

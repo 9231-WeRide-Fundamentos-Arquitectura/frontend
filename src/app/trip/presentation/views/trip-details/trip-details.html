@@ -2,13 +2,13 @@
   @if (isLoading()) {
   <div class="loading-state">
     <mat-spinner diameter="50"></mat-spinner>
-    <p>Cargando detalles del viaje...</p>
+    <p>{{ 'trip.detailsView.loading' | translate }}</p>
   </div>
   } @if (!isLoading() && relatedBooking()) {
   <mat-card class="booking-card">
     <mat-card-header>
       <mat-icon mat-card-avatar>confirmation_number</mat-icon>
-      <mat-card-title>Estado de Reserva</mat-card-title>
+      <mat-card-title>{{ 'trip.detailsView.bookingStatus' | translate }}</mat-card-title>
     </mat-card-header>
 
     <mat-card-content>
@@ -42,7 +42,7 @@
         <div class="info-item">
           <mat-icon>schedule</mat-icon>
           <span
-            >Activada: {{ relatedBooking()?.activatedAt | date:'short' }}</span
+            >{{ 'trip.detailsView.activated' | translate }}: {{ relatedBooking()?.activatedAt | date:'short' }}</span
           >
         </div>
         }
@@ -56,12 +56,12 @@
         class="activate-booking-button"
       >
         <mat-icon>play_arrow</mat-icon>
-        Activar Reserva Ahora
+        {{ 'trip.detailsView.activateNow' | translate }}
       </button>
       } @if (relatedBooking()?.activationStatus === 'active') {
       <div class="activation-notice">
         <mat-icon>check_circle</mat-icon>
-        <p>Tu reserva está activa y en uso</p>
+        <p>{{ 'trip.detailsView.activeInUse' | translate }}</p>
       </div>
       }
     </mat-card-content>

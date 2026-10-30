@@ -37,14 +37,14 @@ export class TripInitializerService {
   async reserveAndStart(vehicleId: string, startLocationId: string, endLocationId = startLocationId): Promise<void> {
     let booking = await this.activeBooking.checkAndStoreActiveBooking(this.auth.userId);
     if (booking && (booking.vehicleId !== vehicleId || booking.status === 'active')) {
-      throw new Error('Ya tienes una reserva. Continúa desde tus reservas.');
+      throw new Error(this.translate.instant('trip.init.alreadyBooked'));
     }
     if (!booking) {
       const vehicle = await firstValueFrom(this.vehiclesApi.getById(vehicleId));
       if (hasCriticalBattery(vehicle)) throw new Error(this.translate.instant('garage.vehicle.criticalBattery'));
       // Sin ubicación válida no se crea la reserva: evita dejar una reserva iniciada huérfana.
       await firstValueFrom(this.locationsApi.getById(startLocationId)).catch(() => {
-        throw new Error('Este vehículo no tiene una ubicación válida y no se puede reservar ahora.');
+        throw new Error(this.translate.instant('trip.init.invalidLocation'));
       });
       booking = toDomainBooking(await firstValueFrom(this.bookingsApi.create({
         userId: this.auth.userId, vehicleId, startLocationId, endLocationId
@@ -64,14 +64,14 @@ export class TripInitializerService {
       data: { booking, vehicle }, width: '500px', maxWidth: '95vw'
     }).afterClosed());
     if (selection?.method !== 'manual' && selection?.method !== 'qr_code') {
-      throw new Error('La reserva está guardada. Puedes desbloquearla desde Mis Reservas.');
+      throw new Error(this.translate.instant('trip.init.unlockLater'));
     }
     const data = { booking, vehicle };
     const dialog = selection.method === 'manual'
       ? this.dialog.open(ManualUnlockModal, { data, width: '600px', maxWidth: '95vw' })
       : this.dialog.open(QrScannerModal, { data, width: '600px', maxWidth: '95vw' });
     const result = await firstValueFrom(dialog.afterClosed());
-    if (!result?.success) throw new Error('La reserva está guardada. Reintenta el desbloqueo desde Mis Reservas.');
+    if (!result?.success) throw new Error(this.translate.instant('trip.init.retryUnlock'));
   }
 
   // Abre el modal compartido de destino. Devuelve la reserva con el destino guardado, o null si el usuario cancela.

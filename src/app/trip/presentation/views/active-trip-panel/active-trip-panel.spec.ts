@@ -1,3 +1,4 @@
+import { componentTestProviders } from '../../../../../testing/component-test-providers';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ActiveTripPanel } from './active-trip-panel';
@@ -8,6 +9,7 @@ describe('ActiveTripPanel', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      providers: componentTestProviders(),
       imports: [ActiveTripPanel]
     })
     .compileComponents();

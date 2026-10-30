@@ -18,8 +18,10 @@ export class ActiveTripPanel {
   currentBattery = input.required<number>();
   estimatedDistance = input.required<number>();
   connectionError = input<boolean>(false);
+  busy = input<boolean>(false);
 
   onEndTrip = output<void>();
+  onSimulateTrip = output<void>();
   onRetryUpdate = output<void>();
   onReportProblem = output<void>();
   onChangeDestination = output<void>();
@@ -39,6 +41,10 @@ export class ActiveTripPanel {
 
   endTrip() {
     this.onEndTrip.emit();
+  }
+
+  simulateTrip() {
+    if (!this.busy()) this.onSimulateTrip.emit();
   }
 
   retryUpdate() {

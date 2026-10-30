@@ -19,14 +19,14 @@ import {RateTripModal} from '../rate-trip-modal/rate-trip-modal';
 import {RatingsApiEndpoint} from '../../../infrastructure/ratings-api-endpoint';
 import {OfflineSyncService} from '../../../application/offline-sync.service';
 import {MatSnackBar} from '@angular/material/snack-bar';
-import {TranslateService} from '@ngx-translate/core';
+import {TranslateService, TranslatePipe } from '@ngx-translate/core';
 import { ActiveBookingService } from '../../../../booking/application/active-booking.service';
 import { TripInitializerService } from '../../../application/trip-initializer.service';
 import { RouteCoordinate } from '../../../domain/model/trip.entity';
 
 @Component({
   selector: 'app-trip-map',
-  imports: [MapComponent, MarkerComponent, CommonModule, ActiveTripPanel],
+  imports: [MapComponent, MarkerComponent, CommonModule, ActiveTripPanel, TranslatePipe],
   templateUrl: './trip-map.html',
   styleUrl: './trip-map.css'
 })
@@ -44,7 +44,8 @@ export class TripMap implements OnInit, OnDestroy {
   private auth = inject(AuthService);
   private bookingsApi = inject(BookingsApiEndpoint);
   private bookingStore = inject(BookingStore);
-  private bookingBusy = false;
+  protected bookingBusy = signal(false);
+  private pendingCompletion: { bookingId: string; metrics: Parameters<BookingsApiEndpoint['complete']>[1] } | null = null;
   private completedBookingId: string | null = null;
   private routeCoordinates: RouteCoordinate[] = [];
   private routeBookingId: string | null = null;
@@ -108,7 +109,7 @@ export class TripMap implements OnInit, OnDestroy {
       setTimeout(async () => {
         let activeBooking;
         try { activeBooking = await this.activeBookingService.checkAndStoreActiveBooking(this.auth.userId); }
-        catch { this.showMessage('No se pudo consultar tu reserva activa', 'error'); return; }
+        catch { this.showMessage(this.translate.instant('trip.map.activeBookingError'), 'error'); return; }
 
         if (activeBooking && this.tripInitializer.canInitializeTripFromBooking(activeBooking)) {
           // Intentar inicializar el viaje desde el booking
@@ -281,17 +282,17 @@ export class TripMap implements OnInit, OnDestroy {
   }
 
   async reserveVehicle(vehicle: Vehicle) {
-    if (this.bookingBusy || this.isActiveTrip()) return;
+    if (this.bookingBusy() || this.isActiveTrip()) return;
     const location = this.tripStore.locations().find(loc => loc.id === vehicle.location);
-    if (!location) { this.showMessage('No se pudo encontrar la ubicación del vehículo', 'error'); return; }
-    this.bookingBusy = true;
+    if (!location) { this.showMessage(this.translate.instant('trip.map.vehicleLocationError'), 'error'); return; }
+    this.bookingBusy.set(true);
     try {
       await this.tripInitializer.reserveAndStart(vehicle.id, location.id, this.destinationLocation()?.id ?? location.id);
       this.currentBattery.set(vehicle.battery);
       this.clearSelection();
     } catch (error) {
-      this.showMessage(error instanceof Error ? error.message : 'No se pudo iniciar la reserva', 'error');
-    } finally { this.bookingBusy = false; }
+      this.showMessage(error instanceof Error ? error.message : this.translate.instant('trip.map.startError'), 'error');
+    } finally { this.bookingBusy.set(false); }
   }
 
   calculateDistanceBetweenLocations(loc1: Location, loc2: Location): number {
@@ -321,7 +322,7 @@ export class TripMap implements OnInit, OnDestroy {
         }
       );
     } else {
-      alert('Tu navegador no soporta geolocalizacion')
+      alert(this.translate.instant('trip.map.noGeolocation'))
     }
   }
 
@@ -357,7 +358,8 @@ export class TripMap implements OnInit, OnDestroy {
 
   private simulateRoute(fromId: string, toId: string, destination?: { lat: number; lng: number }): { points: RouteCoordinate[]; distance: number } | null {
     const locations = this.tripStore.locations();
-    const from = locations.find(l => l.id === fromId)?.coordinates, to = destination ?? locations.find(l => l.id === toId)?.coordinates;
+    const from = locations.find(l => l.id === fromId)?.coordinates ?? this.currentLocation()?.coordinates;
+    const to = destination ?? locations.find(l => l.id === toId)?.coordinates ?? this.destinationLocation()?.coordinates;
     if (!from || !to) return null;
     const steps = 10;
     const points = Array.from({ length: steps + 1 }, (_, i) => ({
@@ -404,37 +406,50 @@ export class TripMap implements OnInit, OnDestroy {
     return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
   }
 
-  async endTrip() {
-    if (this.bookingBusy) return;
+  async endTrip(simulate = false) {
+    if (this.bookingBusy()) return;
     const booking = this.activeBookingService.getActiveBooking();
     const vehicle = this.currentVehicle();
     const start = this.tripStartTime();
-    if (!booking || !vehicle || !start) { this.showMessage('No hay una reserva activa para finalizar', 'error'); return; }
-    this.bookingBusy = true;
+    if (!booking || !vehicle || !start) { this.showMessage(this.translate.instant('trip.map.noActiveToFinish'), 'error'); return; }
+    this.bookingBusy.set(true);
     try {
-      if (this.routeBookingId !== booking.id) {
-        try {
-          const saved = JSON.parse(sessionStorage.getItem(`weride_route_${booking.userId}_${booking.id}`) || '[]');
-          if (Array.isArray(saved) && saved.length) this.recordRoutePosition(saved.at(-1));
-        } catch { /* Invalid browser data cannot block completion. */ }
+      let pending = this.pendingCompletion;
+      if (!pending || pending.bookingId !== booking.id) {
+        if (this.routeBookingId !== booking.id) {
+          try {
+            const saved = JSON.parse(sessionStorage.getItem(`weride_route_${booking.userId}_${booking.id}`) || '[]');
+            if (Array.isArray(saved) && saved.length) this.recordRoutePosition(saved.at(-1));
+          } catch { /* Invalid browser data cannot block completion. */ }
+        }
+        let duration = Math.max(0, Math.ceil((Date.now() - start.getTime()) / 60000));
+        let distance = this.routeBookingId === booking.id ? this.routeDistance : 0;
+        let route = this.routeBookingId === booking.id ? this.routeCoordinates : [];
+        let routeSource: 'gps' | 'simulated' = 'gps';
+        if (simulate || route.length < 2) {
+          // No usable GPS (e.g. desktop): interpolate station to station and flag it as simulated.
+          const free = booking.destinationLat != null && booking.destinationLng != null
+            ? { lat: booking.destinationLat, lng: booking.destinationLng } : undefined;
+          const simulated = this.simulateRoute(booking.startLocationId, booking.endLocationId, free);
+          if (simulated) { route = simulated.points; distance = simulated.distance; routeSource = 'simulated'; }
+          else if (simulate) throw new Error(this.translate.instant('trip.map.simulationError'));
+        }
+        if (simulate) {
+          const estimatedMinutes = booking.estimatedDuration;
+          const speed = vehicle.type === 'bike' ? 12 : 18;
+          duration = Math.max(1, Math.ceil(estimatedMinutes != null && Number.isFinite(estimatedMinutes) && estimatedMinutes > 0
+            ? estimatedMinutes : distance / speed * 60));
+        }
+        pending = { bookingId: booking.id, metrics: {
+          totalCost: duration * vehicle.pricePerMinute, discount: 0, distance, duration,
+          averageSpeed: duration ? distance / (duration / 60) : 0, rating: null,
+          routeCoordinates: route.map(point => ({ ...point })), routeSource
+        }};
+        this.pendingCompletion = pending;
       }
-      const duration = Math.max(0, Math.ceil((Date.now() - start.getTime()) / 60000));
-      let distance = this.routeBookingId === booking.id ? this.routeDistance : 0;
-      let route = this.routeBookingId === booking.id ? this.routeCoordinates : [];
-      let routeSource: 'gps' | 'simulated' = 'gps';
-      if (route.length < 2) {
-        // No usable GPS (e.g. desktop): interpolate station to station and flag it as simulated.
-        const free = booking.destinationLat != null && booking.destinationLng != null
-          ? { lat: booking.destinationLat, lng: booking.destinationLng } : undefined;
-        const simulated = this.simulateRoute(booking.startLocationId, booking.endLocationId, free);
-        if (simulated) { route = simulated.points; distance = simulated.distance; routeSource = 'simulated'; }
-      }
-      const response = await firstValueFrom(this.bookingsApi.complete(booking.id, {
-        totalCost: duration * vehicle.pricePerMinute, discount: 0, distance, duration,
-        averageSpeed: duration ? distance / (duration / 60) : 0, rating: null,
-        routeCoordinates: route, routeSource
-      }));
+      const response = await firstValueFrom(this.bookingsApi.complete(booking.id, pending.metrics));
       this.bookingStore.updateBooking(toDomainBooking(response));
+      this.pendingCompletion = null;
       try { sessionStorage.removeItem(`weride_route_${booking.userId}_${booking.id}`); } catch { /* Completion already persisted on the server. */ }
       this.routeCoordinates = [];
       this.routeBookingId = null;
@@ -449,13 +464,13 @@ export class TripMap implements OnInit, OnDestroy {
       this.currentBattery.set(0);
       this.estimatedDistance.set(0);
     } catch {
-      this.showMessage('No se pudo finalizar el viaje. Tu reserva sigue activa; intenta nuevamente.', 'error');
-    } finally { this.bookingBusy = false; }
+      this.showMessage(this.translate.instant('trip.map.finishError'), 'error');
+    } finally { this.bookingBusy.set(false); }
   }
 
   async changeDestination() {
     const booking = this.activeBookingService.getActiveBooking();
-    if (!booking) { this.showMessage('No hay una reserva activa para cambiar el destino', 'error'); return; }
+    if (!booking) { this.showMessage(this.translate.instant('trip.map.noActiveToChange'), 'error'); return; }
     try {
       const updated = await this.tripInitializer.changeDestination(booking);
       if (!updated) return;
