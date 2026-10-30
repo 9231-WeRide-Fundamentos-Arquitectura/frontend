@@ -1,3 +1,4 @@
+import { componentTestProviders } from '../../../../testing/component-test-providers';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { SidebarComponent } from './sidebar';
 
@@ -7,6 +8,7 @@ describe('SidebarComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      providers: componentTestProviders(),
       imports: [SidebarComponent]
     })
     .compileComponents();

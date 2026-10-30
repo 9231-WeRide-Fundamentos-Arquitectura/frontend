@@ -1,3 +1,4 @@
+import { componentTestProviders } from '../../../../../testing/component-test-providers';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { TripSettings } from './trip-settings';
@@ -8,6 +9,7 @@ describe('TripSettings', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      providers: componentTestProviders(),
       imports: [TripSettings]
     })
     .compileComponents();

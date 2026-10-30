@@ -86,7 +86,7 @@
   <div class="notification-empty" (click)="$event.stopPropagation()">
     <img
       src="/assets/auth/notification.png"
-      alt="No notifications"
+      [alt]="'navbar.notifications.empty' | translate"
       class="empty-notification-image"
     />
   </div>

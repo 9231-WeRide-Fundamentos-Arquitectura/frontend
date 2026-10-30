@@ -1,3 +1,4 @@
+import { componentTestProviders } from '../../../../testing/component-test-providers';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { LanguageSwitcher } from './language-switcher';
@@ -8,6 +9,7 @@ describe('LanguageSwitcher', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      providers: componentTestProviders(),
       imports: [LanguageSwitcher]
     })
     .compileComponents();

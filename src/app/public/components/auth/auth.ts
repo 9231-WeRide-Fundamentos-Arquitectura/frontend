@@ -75,8 +75,11 @@ export class AuthComponent {
     const request = register
       ? this.signUp(email, password).pipe(
           switchMap(() => this.auth.signIn(email, password)),
-          // El sign-up ya crea el perfil vacío; si guardar el nombre falla, la cuenta sigue siendo válida.
-          switchMap(() => this.http.put(`${environment.apiUrl}/profiles/${this.auth.userId}`, { name }).pipe(catchError(() => of(null))))
+          // Profile crea el perfil en el primer GET autenticado (ADR-011).
+          switchMap(() => this.http.get(`${environment.apiUrl}/profiles/${this.auth.userId}`).pipe(
+            switchMap(() => this.http.put(`${environment.apiUrl}/profiles/${this.auth.userId}`, { name })),
+            catchError(() => of(null))
+          ))
         )
       : this.auth.signIn(email, password);
     request.pipe(finalize(() => {

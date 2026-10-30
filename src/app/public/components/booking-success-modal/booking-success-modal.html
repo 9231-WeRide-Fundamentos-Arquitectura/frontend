@@ -3,7 +3,7 @@
     <div class="success-icon">
       <mat-icon>check_circle</mat-icon>
     </div>
-    <h2 mat-dialog-title>Vehículo reservado satisfactoriamente</h2>
+    <h2 mat-dialog-title>{{ 'booking.success.title' | translate }}</h2>
     <button mat-icon-button (click)="onClose()" class="close-button">
       <mat-icon>close</mat-icon>
     </button>
@@ -26,12 +26,12 @@
           </div>
           <div class="detail-item">
             <mat-icon class="detail-icon">battery_charging_full</mat-icon>
-            <span class="detail-label">Batería:</span>
+            <span class="detail-label">{{ 'booking.success.battery' | translate }}</span>
             <span class="detail-value">{{ vehicle.battery }}%</span>
           </div>
           <div class="detail-item">
             <mat-icon class="detail-icon">attach_money</mat-icon>
-            <span class="detail-label">Precio:</span>
+            <span class="detail-label">{{ 'booking.success.price' | translate }}</span>
             <span class="detail-value">${{ vehicle.pricePerMinute }}/min</span>
           </div>
         </div>
@@ -39,26 +39,26 @@
     </div>
 
     <div class="booking-info-section">
-      <h4 class="section-title">Detalles de la reserva</h4>
+      <h4 class="section-title">{{ 'booking.success.details' | translate }}</h4>
       <div class="info-grid">
         <div class="info-item">
           <mat-icon class="info-icon">calendar_today</mat-icon>
           <div class="info-content">
-            <span class="info-label">Fecha:</span>
+            <span class="info-label">{{ 'booking.success.date' | translate }}</span>
             <span class="info-value">{{ formatDate(booking.startDate) }}</span>
           </div>
         </div>
         <div class="info-item">
           <mat-icon class="info-icon">access_time</mat-icon>
           <div class="info-content">
-            <span class="info-label">Hora de inicio:</span>
+            <span class="info-label">{{ 'booking.success.startTime' | translate }}</span>
             <span class="info-value">{{ formatTime(booking.startDate) }}</span>
           </div>
         </div>
         <div class="info-item">
           <mat-icon class="info-icon">schedule</mat-icon>
           <div class="info-content">
-            <span class="info-label">Duración estimada:</span>
+            <span class="info-label">{{ 'booking.success.estimatedDuration' | translate }}</span>
             <span class="info-value"
               >{{ formatDuration(booking.duration) }}</span
             >
@@ -67,7 +67,7 @@
         <div class="info-item" *ngIf="booking.endDate">
           <mat-icon class="info-icon">event_available</mat-icon>
           <div class="info-content">
-            <span class="info-label">Fecha de fin:</span>
+            <span class="info-label">{{ 'booking.success.endDate' | translate }}</span>
             <span class="info-value">{{ formatDate(booking.endDate) }}</span>
           </div>
         </div>
@@ -83,7 +83,7 @@
       class="continue-button"
     >
       <mat-icon>arrow_forward</mat-icon>
-      Continuar al viaje
+      {{ 'booking.success.continue' | translate }}
     </button>
   </div>
 </div>

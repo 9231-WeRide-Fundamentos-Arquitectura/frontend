@@ -4,7 +4,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CommonModule } from '@angular/common';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ActiveBookingService } from '../../../booking/application/active-booking.service';
 import { HomeStore } from '../../application/home.store';
 import { SkeletonLoaderComponent } from '../skeleton-loader/skeleton-loader';
@@ -29,6 +29,7 @@ import { AuthService } from '../../../core/services/auth.service';
   styleUrl: './home.css'
 })
 export class Home {
+  private translate = inject(TranslateService);
   private router = inject(Router);
   private snackBar = inject(MatSnackBar);
   private activeBookingService = inject(ActiveBookingService);
@@ -44,7 +45,7 @@ export class Home {
   constructor() {
     const userId = inject(AuthService).userId;
     void this.activeBookingService.checkAndStoreActiveBooking(userId).catch(() => {
-      this.snackBar.open('No se pudo consultar tu reserva activa', 'Cerrar', { duration: 4000 });
+      this.snackBar.open(this.translate.instant('trip.map.activeBookingError'), this.translate.instant('common.close'), { duration: 4000 });
     });
   }
 
@@ -67,8 +68,8 @@ export class Home {
       this.router.navigate(['/trip/details']);
     } else {
       this.snackBar.open(
-        'Reserva un vehículo primero',
-        'Cerrar',
+        this.translate.instant('home.bookFirst'),
+        this.translate.instant('common.close'),
         {
           duration: 4000,
           horizontalPosition: 'end',
