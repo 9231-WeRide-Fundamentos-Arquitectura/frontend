@@ -29,26 +29,29 @@
               "src/custom-theme.scss",
               "src/styles.css",
               "mapbox-gl/dist/mapbox-gl.css"
-            ]
+            ],
+            "outputPath": "dist/weride"
           },
           "configurations": {
             "production": {
               "fileReplacements": [
-                { "replace": "src/environments/environment.ts", "with": "src/environments/environment.prod.ts" }
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
               ],
-            "budgets": [
-              {
-                "type": "initial",
-                "maximumWarning": "3mb",
-                "maximumError": "5mb"
-              },
-              {
-                "type": "anyComponentStyle",
-                "maximumWarning": "500kb",
-                "maximumError": "1mb"
-              }
-            ],
-
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "3mb",
+                  "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "500kb",
+                  "maximumError": "1mb"
+                }
+              ],
               "outputHashing": "all"
             },
             "development": {
@@ -69,7 +72,10 @@
               "buildTarget": "Frontend-WeRide:build:development"
             }
           },
-          "defaultConfiguration": "development"
+          "defaultConfiguration": "development",
+          "options": {
+            "proxyConfig": "proxy.conf.json"
+          }
         },
         "extract-i18n": {
           "builder": "@angular/build:extract-i18n"
@@ -101,5 +107,3 @@
     "analytics": false
   }
 }
-
-
