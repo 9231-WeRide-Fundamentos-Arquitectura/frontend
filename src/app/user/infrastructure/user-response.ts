@@ -1,6 +1,6 @@
 export interface UserResponse {
-  id: number;
-  accountId: number;
+  id: string | number;
+  accountId: string | number;
   name: string | null;
   phone: string | null;
   profilePicture: string | null;

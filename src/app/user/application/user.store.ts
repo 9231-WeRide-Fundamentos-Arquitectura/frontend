@@ -43,7 +43,7 @@ export class UserStore {
     ).subscribe();
   }
 
-  loadUsersById(id: number): void {
+  loadUsersById(id: string | number): void {
     this.loadingSubject.next(true);
     this.userApiEndpoint.getById(id).pipe(
       tap(user => {
@@ -70,7 +70,7 @@ export class UserStore {
     this.selectedUserSubject.next(user);
   }
 
-  updateUser(id: number, user: User): Observable<User> {
+  updateUser(id: string | number, user: User): Observable<User> {
     return this.userApiEndpoint.update(id, user)
       .pipe(
         tap(updatedUser => {

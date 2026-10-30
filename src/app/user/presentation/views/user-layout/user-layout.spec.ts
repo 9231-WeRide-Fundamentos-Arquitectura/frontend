@@ -1,3 +1,4 @@
+import { componentTestProviders } from '../../../../../testing/component-test-providers';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { UserLayout } from './user-layout';
@@ -8,6 +9,7 @@ describe('UserLayout', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      providers: componentTestProviders(),
       imports: [UserLayout]
     })
     .compileComponents();
@@ -21,4 +23,3 @@ describe('UserLayout', () => {
     expect(component).toBeTruthy();
   });
 });
-

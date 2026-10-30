@@ -4,7 +4,7 @@ import { UserResponse } from './user-response';
 export class UserAssembler {
   static toDomain(response: UserResponse): User {
     return new User(
-      response.accountId, response.name ?? '', '', 0, response.phone ?? '', '', true,
+      String(response.accountId), response.name ?? '', '', 0, response.phone ?? '', '', true,
       response.profilePicture ?? '', response.dateOfBirth ?? '', response.address ?? '',
       response.emergencyContact ?? '', '', new Date(0),
       { language: response.language, notifications: response.notifications, theme: response.theme },

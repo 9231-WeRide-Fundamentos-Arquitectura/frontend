@@ -1,3 +1,4 @@
+import { componentTestProviders } from '../../../../../testing/component-test-providers';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { UserSettings } from './user-settings';
@@ -9,6 +10,7 @@ describe('UserSettings', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      providers: componentTestProviders(),
       imports: [UserSettings, TranslateModule.forRoot()]
     })
     .compileComponents();

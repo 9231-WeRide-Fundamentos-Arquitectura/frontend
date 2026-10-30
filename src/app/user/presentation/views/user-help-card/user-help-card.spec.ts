@@ -1,3 +1,4 @@
+import { componentTestProviders } from '../../../../../testing/component-test-providers';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { UserHelpCard } from './user-help-card';
@@ -11,7 +12,7 @@ describe('UserHelpCard', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [UserHelpCard, TranslateModule.forRoot()],
-      providers: [provideRouter([])]
+      providers: [...componentTestProviders(), provideRouter([])]
     })
     .compileComponents();
 
@@ -38,4 +39,3 @@ describe('UserHelpCard', () => {
     expect(component.filteredFaqs.length).toBe(4);
   });
 });
-

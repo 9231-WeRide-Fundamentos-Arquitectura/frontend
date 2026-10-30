@@ -14,14 +14,14 @@ export class UserApiEndpoint {
   constructor(private http: HttpClient) {}
 
   getAll(): Observable<User[]> {
-    return this.getById(Number(this.auth.userId)).pipe(map(user => [user]));
+    return this.getById(this.auth.userId).pipe(map(user => [user]));
   }
 
-  getById(id: number): Observable<User> {
+  getById(id: string | number): Observable<User> {
     return this.http.get<UserResponse>(this.baseUrl + '/' + id).pipe(map(UserAssembler.toDomain));
   }
 
-  update(id: number, user: User): Observable<User> {
+  update(id: string | number, user: User): Observable<User> {
     const { name, phone, profilePicture, dateOfBirth, address, emergencyContact } = user;
     return this.http.put<UserResponse>(this.baseUrl + '/' + id, {
       name, phone, profilePicture, dateOfBirth: dateOfBirth || null, address, emergencyContact

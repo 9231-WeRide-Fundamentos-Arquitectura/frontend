@@ -1,3 +1,4 @@
+import { componentTestProviders } from '../../../../../testing/component-test-providers';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { UserSecurityCard } from './user-security-card';
@@ -8,6 +9,7 @@ describe('UserSecurityCard', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      providers: componentTestProviders(),
       imports: [UserSecurityCard]
     })
     .compileComponents();
@@ -21,4 +23,3 @@ describe('UserSecurityCard', () => {
     expect(component).toBeTruthy();
   });
 });
-
